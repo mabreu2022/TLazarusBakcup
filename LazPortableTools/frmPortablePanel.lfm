@@ -1,0 +1,92 @@
+object frmPortablePanel: TfrmPortablePanel
+  Left = 300
+  Height = 400
+  Top = 200
+  Width = 320
+  Caption = 'Lazarus Portable Tools'
+  ClientHeight = 400
+  ClientWidth = 320
+  Color = 2105376
+  Font.Color = clWhite
+  Font.Height = -12
+  Font.Name = 'Segoe UI'
+  OnCreate = FormCreate
+  LCLVersion = '3.0.0.0'
+  object pnlHeader: TPanel
+    Left = 0
+    Height = 65
+    Top = 0
+    Width = 320
+    Align = alTop
+    BevelOuter = bvNone
+    Color = 1710618
+    ClientHeight = 65
+    ClientWidth = 320
+    TabOrder = 0
+    object lblTitle: TLabel
+      Left = 10
+      Height = 20
+      Top = 8
+      Width = 180
+      Caption = '⚡ Portable IDE Addon'
+      Font.Color = clWhite
+      Font.Height = -15
+      Font.Name = 'Segoe UI'
+      Font.Style = [fsBold]
+      ParentFont = False
+    end
+    object lblDirInfo: TLabel
+      Left = 10
+      Height = 15
+      Top = 35
+      Width = 295
+      Caption = 'Portable Dir: Detectando...'
+      Font.Color = 12632256
+      Font.Height = -11
+      Font.Name = 'Segoe UI'
+      ParentFont = False
+    end
+  end
+  object btnRePatch: TButton
+    Left = 10
+    Height = 32
+    Top = 75
+    Width = 145
+    Caption = '🔧 Re-Patch Config'
+    OnClick = btnRePatchClick
+    TabOrder = 1
+  end
+  object btnBackup: TButton
+    Left = 165
+    Height = 32
+    Top = 75
+    Width = 145
+    Caption = '💾 Backup Config'
+    OnClick = btnBackupClick
+    TabOrder = 2
+  end
+  object lblLog: TLabel
+    Left = 10
+    Height = 15
+    Top = 115
+    Width = 80
+    Caption = '📋 Activity Log:'
+    Font.Color = 12632256
+    ParentFont = False
+  end
+  object memoLog: TMemo
+    Left = 10
+    Height = 250
+    Top = 135
+    Width = 300
+    Anchors = [akTop, akLeft, akRight, akBottom]
+    Color = 1052688
+    Font.Color = clYellow
+    Font.Height = -11
+    Font.Name = 'Consolas'
+    ParentFont = False
+    ReadOnly = True
+    ScrollBars = ssVertical
+    TabOrder = 3
+  end
+end

@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CONFIG>
+  <InputHistory>
+    <Version Value="1"/>
+    <Find>
+      <History>
+        <Find Count="9">
+          <Item1 Value="RefreshPackageList"/>
+          <Item2 Value="BuildCommentItems"/>
+          <Item3 Value="LoadComments"/>
+          <Item4 Value="BuildAssigneeChips"/>
+          <Item5 Value="LoadAssignees"/>
+          <Item6 Value="LoadCardData"/>
+          <Item7 Value="LoadAllUsers"/>
+          <Item8 Value="FCardID"/>
+          <Item9 Value="FOnCardDetail"/>
+        </Find>
+      </History>
+      <Version Value="1"/>
+    </Find>
+    <FileDialog InitialDir="C:\Fontes\Componentes\TLazarusBakcup\LazarusPortable\">
+      <HistoryList Count="10">
+        <Item1 Value="C:\Fontes\Componentes\TLazarusBakcup\LazarusPortable\"/>
+        <Item2 Value="C:\Fontes\Componentes\TLazarusBakcup\LazPortableTools\"/>
+        <Item3 Value="C:\Fontes\Componentes\TLazarusBakcup\"/>
+        <Item4 Value="C:\Users\conec\Pictures\"/>
+        <Item5 Value="C:\Projetos Antigravity\Gerador de Programas Lazarus\Componentes\"/>
+        <Item6 Value="C:\Projetos Antigravity\Gerador de Programas Lazarus\sistemas_gerados\MvcExemplo\"/>
+        <Item7 Value="C:\Projetos Antigravity\Gerador de Programas Lazarus\sistemas_gerados\MeuERP\"/>
+        <Item8 Value="C:\Projetos Antigravity\Gerador de Programas Lazarus\"/>
+        <Item9 Value="C:\Fontes\connecttask lazarus\"/>
+        <Item10 Value="C:\Fontes\connecttask lazarus\componentes\cards\"/>
+      </HistoryList>
+    </FileDialog>
+    <HistoryLists Count="2">
+      <List0 Name="TEvaluateDlg" Count="1">
+        <Item1 Value="Q"/>
+      </List0>
+      <List1 Name="CleanBuildFileMask" Type="File" Count="2">
+        <Item1 Value="*.ppu;*.ppl;*.o;*.or"/>
+        <Item2 Value="*"/>
+      </List1>
+    </HistoryLists>
+    <FileEncodings Count="1">
+      <Item0 Name="C:\Projetos Antigravity\Gerador de Programas Lazarus\Componentes\project1.lpr"/>
+    </FileEncodings>
+  </InputHistory>
+</CONFIG>

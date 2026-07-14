@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CONFIG>
+  <Package Version="5">
+    <PathDelim Value="\"/>
+    <Name Value="LazPortableTools"/>
+    <Type Value="DesignTime"/>
+    <Author Value="LazarusPortable Project"/>
+    <CompilerOptions>
+      <Version Value="11"/>
+      <PathDelim Value="\"/>
+      <SearchPaths>
+        <OtherUnitFiles Value="."/>
+        <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
+      </SearchPaths>
+    </CompilerOptions>
+    <Description Value="Lazarus Portable Tools - Pacote IDE para gerenciamento de instalação portável do Lazarus. Adiciona painel dockado e menus no IDE."/>
+    <License Value="GPL-3.0"/>
+    <Version Major="2" Minor="0"/>
+    <Files>
+      <Item>
+        <Filename Value="uPortableIDEAddon.pas"/>
+        <HasRegisterProc Value="True"/>
+        <UnitName Value="uPortableIDEAddon"/>
+      </Item>
+      <Item>
+        <Filename Value="frmPortablePanel.pas"/>
+        <UnitName Value="frmPortablePanel"/>
+      </Item>
+      <Item>
+        <Filename Value="uSharedPatcher.pas"/>
+        <UnitName Value="uSharedPatcher"/>
+      </Item>
+    </Files>
+    <RequiredPkgs>
+      <Item>
+        <PackageName Value="IDEIntf"/>
+      </Item>
+      <Item>
+        <PackageName Value="LazUtils"/>
+      </Item>
+      <Item>
+        <PackageName Value="LCL"/>
+      </Item>
+    </RequiredPkgs>
+    <UsageOptions>
+      <UnitPath Value="$(PkgOutDir)"/>
+    </UsageOptions>
+    <PublishOptions>
+      <Version Value="2"/>
+      <UseFileFilters Value="True"/>
+    </PublishOptions>
+  </Package>
+</CONFIG>

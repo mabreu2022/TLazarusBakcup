@@ -1,0 +1,179 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CONFIG>
+  <ProjectSession>
+    <PathDelim Value="\"/>
+    <Version Value="12"/>
+    <BuildModes Active="Default"/>
+    <Units>
+      <Unit>
+        <Filename Value="LazarusPortable.lpr"/>
+        <IsPartOfProject Value="True"/>
+        <UsageCount Value="25"/>
+      </Unit>
+      <Unit>
+        <Filename Value="forms\frmMain.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="frmMain"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <TopLine Value="823"/>
+        <CursorPos X="96" Y="842"/>
+        <UsageCount Value="25"/>
+        <Loaded Value="True"/>
+        <LoadedDesigner Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="units\uPortableCore.pas"/>
+        <IsPartOfProject Value="True"/>
+        <IsVisibleTab Value="True"/>
+        <EditorIndex Value="2"/>
+        <TopLine Value="248"/>
+        <CursorPos X="124" Y="262"/>
+        <UsageCount Value="25"/>
+        <Loaded Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="units\uPackageManager.pas"/>
+        <IsPartOfProject Value="True"/>
+        <EditorIndex Value="3"/>
+        <TopLine Value="386"/>
+        <CursorPos X="7" Y="386"/>
+        <UsageCount Value="25"/>
+        <Loaded Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="units\uProfileManager.pas"/>
+        <IsPartOfProject Value="True"/>
+        <EditorIndex Value="4"/>
+        <TopLine Value="148"/>
+        <CursorPos X="19" Y="148"/>
+        <UsageCount Value="25"/>
+        <Loaded Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="units\uDiagnostics.pas"/>
+        <IsPartOfProject Value="True"/>
+        <EditorIndex Value="5"/>
+        <TopLine Value="142"/>
+        <CursorPos X="21" Y="157"/>
+        <UsageCount Value="25"/>
+        <Loaded Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="units\uLauncher.pas"/>
+        <IsPartOfProject Value="True"/>
+        <EditorIndex Value="1"/>
+        <TopLine Value="18"/>
+        <CursorPos X="31" Y="18"/>
+        <UsageCount Value="25"/>
+        <Loaded Value="True"/>
+      </Unit>
+    </Units>
+    <JumpHistory HistoryIndex="24">
+      <Position>
+        <Filename Value="forms\frmMain.pas"/>
+        <Caret Line="22" Column="69"/>
+      </Position>
+      <Position>
+        <Filename Value="units\uPortableCore.pas"/>
+        <Caret Line="296" Column="123" TopLine="278"/>
+      </Position>
+      <Position>
+        <Filename Value="units\uPortableCore.pas"/>
+        <Caret Line="304" Column="92" TopLine="279"/>
+      </Position>
+      <Position>
+        <Filename Value="units\uPortableCore.pas"/>
+        <Caret Line="727" Column="6" TopLine="708"/>
+      </Position>
+      <Position>
+        <Filename Value="units\uPortableCore.pas"/>
+        <Caret Line="273" Column="80" TopLine="248"/>
+      </Position>
+      <Position>
+        <Filename Value="units\uPackageManager.pas"/>
+        <Caret Line="460" Column="6" TopLine="460"/>
+      </Position>
+      <Position>
+        <Filename Value="units\uDiagnostics.pas"/>
+        <Caret Line="91" Column="9" TopLine="91"/>
+      </Position>
+      <Position>
+        <Filename Value="units\uPackageManager.pas"/>
+        <Caret Line="386" Column="7" TopLine="386"/>
+      </Position>
+      <Position>
+        <Filename Value="units\uProfileManager.pas"/>
+        <Caret Line="148" Column="19" TopLine="148"/>
+      </Position>
+      <Position>
+        <Filename Value="units\uDiagnostics.pas"/>
+        <Caret Line="95" Column="7" TopLine="95"/>
+      </Position>
+      <Position>
+        <Filename Value="forms\frmMain.pas"/>
+        <Caret Line="180" Column="3" TopLine="161"/>
+      </Position>
+      <Position>
+        <Filename Value="units\uLauncher.pas"/>
+        <Caret Line="18" Column="31" TopLine="18"/>
+      </Position>
+      <Position>
+        <Filename Value="forms\frmMain.pas"/>
+        <Caret Line="180" Column="3" TopLine="161"/>
+      </Position>
+      <Position>
+        <Filename Value="forms\frmMain.pas"/>
+        <Caret Line="187" Column="3" TopLine="168"/>
+      </Position>
+      <Position>
+        <Filename Value="forms\frmMain.pas"/>
+        <Caret Line="181" Column="75" TopLine="168"/>
+      </Position>
+      <Position>
+        <Filename Value="forms\frmMain.pas"/>
+        <Caret Line="543" Column="66" TopLine="531"/>
+      </Position>
+      <Position>
+        <Filename Value="forms\frmMain.pas"/>
+        <Caret Line="549" Column="3" TopLine="530"/>
+      </Position>
+      <Position>
+        <Filename Value="forms\frmMain.pas"/>
+        <Caret Line="556" Column="106" TopLine="530"/>
+      </Position>
+      <Position>
+        <Filename Value="forms\frmMain.pas"/>
+        <Caret Line="170" Column="33" TopLine="151"/>
+      </Position>
+      <Position>
+        <Filename Value="forms\frmMain.pas"/>
+        <Caret Line="194" Column="103" TopLine="165"/>
+      </Position>
+      <Position>
+        <Filename Value="forms\frmMain.pas"/>
+        <Caret Line="291" TopLine="263"/>
+      </Position>
+      <Position>
+        <Filename Value="forms\frmMain.pas"/>
+        <Caret Line="211" Column="67" TopLine="189"/>
+      </Position>
+      <Position>
+        <Filename Value="units\uDiagnostics.pas"/>
+        <Caret Line="95" Column="7" TopLine="95"/>
+      </Position>
+      <Position>
+        <Filename Value="units\uPortableCore.pas"/>
+        <Caret Line="273" Column="80" TopLine="248"/>
+      </Position>
+      <Position>
+        <Filename Value="forms\frmMain.pas"/>
+        <Caret Line="194" TopLine="188"/>
+      </Position>
+    </JumpHistory>
+    <RunParams>
+      <FormatVersion Value="2"/>
+      <Modes ActiveMode=""/>
+    </RunParams>
+  </ProjectSession>
+</CONFIG>

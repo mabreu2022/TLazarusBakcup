@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CONFIG>
+  <Debugger Version="1">
+    <Backends Version="1">
+      <Config ConfigName="FpDebug" ConfigClass="TFpDebugDebugger" Active="True" UID="{025DB156-ED05-4B74-A0ED-34ECD7EFC417}"/>
+      <Config ConfigName="Gdb" ConfigClass="TGDBMIDebugger" DebuggerFilename="$(LazarusDir)\mingw\$(TargetCPU)-$(TargetOS)\bin\gdb.exe" UID="{1C2FCD53-0D45-4B4C-A698-58EED3F60FA2}"/>
+    </Backends>
+    <DisplayFormatConfigs>
+      <dtfGlobal NumInherit="False" Num2Inherit="False" ENumInherit="False" ENumValInherit="False" BoolInherit="False" CharInherit="False" FloatInherit="False" StructInherit="False" StructAddrInherit="False" PointerInherit="False" PointerAddrInherit="False" ArrayLineInherit="False" MultiLineInherit="False" ArrayNavBarInherit="False"/>
+    </DisplayFormatConfigs>
+  </Debugger>
+</CONFIG>

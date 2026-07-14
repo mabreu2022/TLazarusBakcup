@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CONFIG>
+  <MiscellaneousOptions>
+    <Version Value="3"/>
+    <BuildLazarusOptions>
+      <Profiles Count="4">
+        <Profile0 Name="IDE normal">
+          <LCLPlatform Value="win32"/>
+          <IdeBuildMode Value="Build"/>
+        </Profile0>
+        <Profile1 Name="Depurar IDE">
+          <LCLPlatform Value="win32"/>
+          <IdeBuildMode Value="Build"/>
+          <Options Count="1">
+            <Item1 Value="-gw3 -gl -gh -gt -Co -Cr -Ci -Sa"/>
+          </Options>
+        </Profile1>
+        <Profile2 Name="IDE Otimizada">
+          <LCLPlatform Value="win32"/>
+          <IdeBuildMode Value="Build"/>
+          <Options Count="1">
+            <Item1 Value="-O3 -g- -Xs"/>
+          </Options>
+        </Profile2>
+        <Profile3 Name="Limpar + Construir tudo">
+          <LCLPlatform Value="win32"/>
+          <IdeBuildMode Value="Clean All + Build"/>
+        </Profile3>
+      </Profiles>
+      <StaticAutoInstallPackages Count="39">
+        <Item1 Value="ConnectComponents"/>
+        <Item2 Value="DateTimeCtrls"/>
+        <Item3 Value="SDFLaz"/>
+        <Item4 Value="MetaDarkStyle"/>
+        <Item5 Value="pascalscript"/>
+        <Item6 Value="Printer4Lazarus"/>
+        <Item7 Value="cards"/>
+        <Item8 Value="zcomponentdesign"/>
+        <Item9 Value="metadarkstyledsgn"/>
+        <Item10 Value="AnchorDockingDsgn"/>
+        <Item11 Value="charactermap_ide_pkg"/>
+        <Item12 Value="LazProjectGroups"/>
+        <Item13 Value="ExampleProjects"/>
+        <Item14 Value="EditorMacroScript"/>
+        <Item15 Value="DBFLaz"/>
+        <Item16 Value="SQLDBLaz"/>
+        <Item17 Value="ToDoListLaz"/>
+        <Item18 Value="TAChartLazarusPkg"/>
+        <Item19 Value="ProjTemplates"/>
+        <Item20 Value="fpcunitide"/>
+        <Item21 Value="ChmHelpPkg"/>
+        <Item22 Value="jcfidelazarus"/>
+        <Item23 Value="TurboPowerIPro"/>
+        <Item24 Value="ExternHelp"/>
+        <Item25 Value="InstantFPCLaz"/>
+        <Item26 Value="MemDSLaz"/>
+        <Item27 Value="printers4lazide"/>
+        <Item28 Value="RunTimeTypeInfoControls"/>
+        <Item29 Value="DateTimeCtrlsDsgn"/>
+        <Item30 Value="SynEditDsgn"/>
+        <Item31 Value="ibcontrols"/>
+        <Item32 Value="CEF4Delphi_Lazarus"/>
+        <Item33 Value="DockedFormEditor"/>
+        <Item34 Value="SimpleWebServerGUI"/>
+        <Item35 Value="OnlinePackageManager"/>
+        <Item36 Value="TurboPowerIProDsgn"/>
+        <Item37 Value="dclibx"/>
+        <Item38 Value="Pas2JSDsgn"/>
+        <Item39 Value="leakview"/>
+      </StaticAutoInstallPackages>
+    </BuildLazarusOptions>
+  </MiscellaneousOptions>
+</CONFIG>

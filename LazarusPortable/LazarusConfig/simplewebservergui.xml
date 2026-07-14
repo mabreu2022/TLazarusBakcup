@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CONFIG>
+  <Browser>
+    <Cmd RecentCount="1">
+      <RecentItem1 Value="xdg-open &quot;$(URL)&quot;"/>
+    </Cmd>
+  </Browser>
+  <Server>
+    <Addr RecentCount="1">
+      <RecentItem1 Value="127.0.0.1"/>
+    </Addr>
+    <Exe RecentCount="1">
+      <RecentItem1 Value="simpleserver.exe"/>
+    </Exe>
+    <Port RecentCount="1">
+      <RecentItem1 Value="7777"/>
+    </Port>
+  </Server>
+</CONFIG>

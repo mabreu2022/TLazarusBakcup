@@ -1,0 +1,904 @@
+object frmMain: TfrmMain
+  Left = 200
+  Height = 620
+  Top = 150
+  Width = 900
+  Caption = 'Lazarus Portable Manager'
+  ClientHeight = 620
+  ClientWidth = 900
+  Color = 2105376
+  Font.Color = clWhite
+  Font.Height = -13
+  Font.Name = 'Segoe UI'
+  OnClose = FormClose
+  OnCreate = FormCreate
+  OnDestroy = FormDestroy
+  Position = poScreenCenter
+  object pnlTop: TPanel
+    Left = 0
+    Height = 56
+    Top = 0
+    Width = 900
+    Align = alTop
+    BevelOuter = bvNone
+    Color = 1315860
+    TabOrder = 0
+    object lblTitle: TLabel
+      Left = 60
+      Height = 26
+      Top = 14
+      Width = 260
+      Caption = '🔵 Lazarus Portable Manager'
+      Font.Color = clWhite
+      Font.Height = -19
+      Font.Name = 'Segoe UI'
+      Font.Style = [fsBold]
+      ParentFont = False
+    end
+    object btnLaunch: TButton
+      Left = 700
+      Height = 36
+      Top = 10
+      Width = 100
+      Caption = '▶  Lançar'
+      Font.Color = clWhite
+      Font.Height = -13
+      Font.Name = 'Segoe UI'
+      Font.Style = [fsBold]
+      OnClick = btnLaunchClick
+      TabOrder = 1
+    end
+    object btnConfig: TButton
+      Left = 808
+      Height = 36
+      Top = 10
+      Width = 80
+      Caption = '⚙ Config'
+      Font.Color = clWhite
+      Font.Height = -13
+      Font.Name = 'Segoe UI'
+      OnClick = btnConfigClick
+      TabOrder = 2
+    end
+  end
+  object pnlLeft: TPanel
+    Left = 0
+    Height = 540
+    Top = 56
+    Width = 180
+    Align = alLeft
+    BevelOuter = bvNone
+    Color = 1710618
+    TabOrder = 1
+    object lstMenu: TListBox
+      Left = 0
+      Height = 540
+      Top = 0
+      Width = 180
+      Align = alClient
+      BorderStyle = bsNone
+      Color = 1710618
+      Font.Color = clWhite
+      Font.Height = -13
+      Font.Name = 'Segoe UI'
+      ItemHeight = 40
+      Items.Strings = (
+        '  🏠  Dashboard'
+        '  📦  Pacotes'
+        '  👤  Perfis'
+        '  🔍  Diagnóstico'
+        '  📋  Log'
+        '  🌐  OPM Online'
+        '  📖  Manual'
+        '  ℹ   Sobre'
+      )
+      OnClick = lstMenuClick
+      TabOrder = 0
+    end
+  end
+  object pnlMain: TPanel
+    Left = 180
+    Height = 540
+    Top = 56
+    Width = 720
+    Align = alClient
+    BevelOuter = bvNone
+    Color = 2105376
+    TabOrder = 2
+    object pgcMain: TPageControl
+      Left = 0
+      Height = 540
+      Top = 0
+      Width = 720
+      Align = alClient
+      ShowTabs = False
+      TabOrder = 0
+      object tabDashboard: TTabSheet
+        Caption = 'Dashboard'
+        object pnlDash: TPanel
+          Left = 0
+          Height = 510
+          Top = 0
+          Width = 718
+          Align = alClient
+          BevelOuter = bvNone
+          Color = 2105376
+          TabOrder = 0
+          object lblDashTitle: TLabel
+            Left = 16
+            Height = 28
+            Top = 16
+            Width = 200
+            Caption = 'Dashboard'
+            Font.Color = clWhite
+            Font.Height = -21
+            Font.Name = 'Segoe UI'
+            Font.Style = [fsBold]
+            ParentFont = False
+          end
+          object lblPortableDir: TLabel
+            Left = 16
+            Height = 16
+            Top = 60
+            Width = 200
+            Caption = '📁 Diretório portável:'
+            Font.Color = 12632256
+            Font.Height = -12
+            Font.Name = 'Segoe UI'
+            ParentFont = False
+          end
+          object lblPortableDirVal: TLabel
+            Left = 16
+            Height = 18
+            Top = 76
+            Width = 680
+            Caption = '(carregando...)'
+            Font.Color = clWhite
+            Font.Height = -13
+            Font.Name = 'Segoe UI'
+            ParentFont = False
+          end
+          object lblStatusTitle: TLabel
+            Left = 16
+            Height = 16
+            Top = 110
+            Width = 100
+            Caption = '🔋 Status:'
+            Font.Color = 12632256
+            Font.Height = -12
+            Font.Name = 'Segoe UI'
+            ParentFont = False
+          end
+          object lblStatus: TLabel
+            Left = 16
+            Height = 18
+            Top = 128
+            Width = 200
+            Caption = '✅ Instalação válida'
+            Font.Color = 5570560
+            Font.Height = -13
+            Font.Name = 'Segoe UI'
+            Font.Style = [fsBold]
+            ParentFont = False
+          end
+          object pnlActions: TPanel
+            Left = 16
+            Height = 180
+            Top = 170
+            Width = 680
+            BevelOuter = bvNone
+            Color = 3026478
+            TabOrder = 0
+            object lblActTitle: TLabel
+              Left = 12
+              Height = 18
+              Top = 12
+              Width = 100
+              Caption = 'Ações Rápidas'
+              Font.Color = 12632256
+              Font.Height = -12
+              Font.Name = 'Segoe UI'
+              ParentFont = False
+            end
+            object btnPatchNow: TButton
+              Left = 12
+              Height = 40
+              Top = 36
+              Width = 200
+              Caption = '🔧 Re-Patch Configurações'
+              Font.Height = -12
+              Font.Name = 'Segoe UI'
+              OnClick = btnPatchNowClick
+              TabOrder = 0
+            end
+            object btnBackup: TButton
+              Left = 220
+              Height = 40
+              Top = 36
+              Width = 200
+              Caption = '💾 Backup Manual'
+              Font.Height = -12
+              Font.Name = 'Segoe UI'
+              OnClick = btnBackupClick
+              TabOrder = 1
+            end
+            object btnRestore: TButton
+              Left = 428
+              Height = 40
+              Top = 36
+              Width = 200
+              Caption = '↩ Restaurar Backup'
+              Font.Height = -12
+              Font.Name = 'Segoe UI'
+              OnClick = btnRestoreClick
+              TabOrder = 2
+            end
+            object btnDiag: TButton
+              Left = 12
+              Height = 40
+              Top = 90
+              Width = 200
+              Caption = '🔍 Executar Diagnóstico'
+              Font.Height = -12
+              Font.Name = 'Segoe UI'
+              OnClick = btnDiagClick
+              TabOrder = 3
+            end
+            object btnOpenConfig: TButton
+              Left = 220
+              Height = 40
+              Top = 90
+              Width = 200
+              Caption = '📂 Abrir LazarusConfig'
+              Font.Height = -12
+              Font.Name = 'Segoe UI'
+              OnClick = btnOpenConfigClick
+              TabOrder = 4
+            end
+          end
+          object memoLog: TMemo
+            Left = 16
+            Height = 180
+            Top = 370
+            Width = 680
+            Font.Color = clYellow
+            Font.Height = -12
+            Font.Name = 'Consolas'
+            ParentFont = False
+            ReadOnly = True
+            ScrollBars = ssVertical
+            TabOrder = 1
+            WordWrap = False
+            Color = 1052688
+          end
+          object lblLogTitle: TLabel
+            Left = 16
+            Height = 16
+            Top = 354
+            Width = 60
+            Caption = '📋 Log:'
+            Font.Color = 12632256
+            Font.Height = -12
+            Font.Name = 'Segoe UI'
+            ParentFont = False
+          end
+        end
+      end
+      object tabPackages: TTabSheet
+        Caption = 'Pacotes'
+        object pnlPkgHeader: TPanel
+          Left = 0
+          Height = 50
+          Top = 0
+          Width = 718
+          Align = alTop
+          BevelOuter = bvNone
+          Color = 2105376
+          TabOrder = 0
+          object lblPkgTitle: TLabel
+            Left = 16
+            Height = 28
+            Top = 10
+            Width = 200
+            Caption = 'Pacotes Instalados'
+            Font.Color = clWhite
+            Font.Height = -21
+            Font.Name = 'Segoe UI'
+            Font.Style = [fsBold]
+            ParentFont = False
+          end
+          object btnScanPkgs: TButton
+            Left = 580
+            Height = 32
+            Top = 9
+            Width = 120
+            Caption = '🔄 Varrer'
+            OnClick = btnScanPkgsClick
+            TabOrder = 0
+          end
+        end
+        object lvPackages: TListView
+          Left = 0
+          Height = 420
+          Top = 50
+          Width = 718
+          Align = alTop
+          Color = 2631720
+          Columns = <
+            item
+              Caption = 'Nome'
+              Width = 160
+            end
+            item
+              Caption = 'Versão'
+              Width = 70
+            end
+            item
+              Caption = 'Autor'
+              Width = 120
+            end
+            item
+              Caption = 'Status'
+              Width = 100
+            end
+            item
+              Caption = 'Caminho'
+              Width = 240
+            end>
+          Font.Color = clWhite
+          Font.Name = 'Segoe UI'
+          ReadOnly = True
+          RowSelect = True
+          TabOrder = 1
+          ViewStyle = vsReport
+        end
+        object pnlPkgBottom: TPanel
+          Left = 0
+          Height = 48
+          Top = 470
+          Width = 718
+          BevelOuter = bvNone
+          Color = 2105376
+          TabOrder = 2
+          object btnExportPkgs: TButton
+            Left = 8
+            Height = 32
+            Top = 8
+            Width = 120
+            Caption = '📤 Exportar Lista'
+            OnClick = btnExportPkgsClick
+            TabOrder = 0
+          end
+          object btnOPM: TButton
+            Left = 136
+            Height = 32
+            Top = 8
+            Width = 160
+            Caption = '🌐 OPM - Instalar Online'
+            OnClick = btnOPMClick
+            TabOrder = 1
+          end
+          object lblPkgCount: TLabel
+            Left = 400
+            Height = 16
+            Top = 16
+            Width = 200
+            Caption = '0 pacotes encontrados'
+            Font.Color = 12632256
+            Font.Name = 'Segoe UI'
+            ParentFont = False
+          end
+        end
+      end
+      object tabProfiles: TTabSheet
+        Caption = 'Perfis'
+        object pnlProfHeader: TPanel
+          Left = 0
+          Height = 50
+          Top = 0
+          Width = 718
+          Align = alTop
+          BevelOuter = bvNone
+          Color = 2105376
+          TabOrder = 0
+          object lblProfTitle: TLabel
+            Left = 16
+            Height = 28
+            Top = 10
+            Width = 200
+            Caption = 'Perfis de Configuração'
+            Font.Color = clWhite
+            Font.Height = -21
+            Font.Name = 'Segoe UI'
+            Font.Style = [fsBold]
+            ParentFont = False
+          end
+        end
+        object lvProfiles: TListView
+          Left = 0
+          Height = 300
+          Top = 50
+          Width = 718
+          Align = alTop
+          Color = 2631720
+          Columns = <
+            item
+              Caption = 'Nome'
+              Width = 160
+            end
+            item
+              Caption = 'Descrição'
+              Width = 250
+            end
+            item
+              Caption = 'Criado em'
+              Width = 130
+            end
+            item
+              Caption = 'Último uso'
+              Width = 130
+            end>
+          Font.Color = clWhite
+          Font.Name = 'Segoe UI'
+          ReadOnly = True
+          RowSelect = True
+          TabOrder = 1
+          ViewStyle = vsReport
+        end
+        object pnlProfButtons: TPanel
+          Left = 0
+          Height = 160
+          Top = 350
+          Width = 718
+          BevelOuter = bvNone
+          Color = 2105376
+          TabOrder = 2
+          object btnNewProfile: TButton
+            Left = 8
+            Height = 36
+            Top = 8
+            Width = 140
+            Caption = '➕ Novo Perfil'
+            OnClick = btnNewProfileClick
+            TabOrder = 0
+          end
+          object btnActivateProfile: TButton
+            Left = 156
+            Height = 36
+            Top = 8
+            Width = 140
+            Caption = '✅ Ativar Perfil'
+            OnClick = btnActivateProfileClick
+            TabOrder = 1
+          end
+          object btnSaveCurrentProfile: TButton
+            Left = 304
+            Height = 36
+            Top = 8
+            Width = 180
+            Caption = '💾 Salvar Config Atual'
+            OnClick = btnSaveCurrentProfileClick
+            TabOrder = 2
+          end
+          object btnDeleteProfile: TButton
+            Left = 492
+            Height = 36
+            Top = 8
+            Width = 120
+            Caption = '🗑 Deletar'
+            OnClick = btnDeleteProfileClick
+            TabOrder = 3
+          end
+        end
+      end
+      object tabDiag: TTabSheet
+        Caption = 'Diagnóstico'
+        object pnlDiagHeader: TPanel
+          Left = 0
+          Height = 50
+          Top = 0
+          Width = 718
+          Align = alTop
+          BevelOuter = bvNone
+          Color = 2105376
+          TabOrder = 0
+          object lblDiagTitle: TLabel
+            Left = 16
+            Height = 28
+            Top = 10
+            Width = 200
+            Caption = 'Diagnóstico do Ambiente'
+            Font.Color = clWhite
+            Font.Height = -21
+            Font.Name = 'Segoe UI'
+            Font.Style = [fsBold]
+            ParentFont = False
+          end
+          object btnRunDiag: TButton
+            Left = 580
+            Height = 32
+            Top = 9
+            Width = 120
+            Caption = '▶ Executar'
+            OnClick = btnRunDiagClick
+            TabOrder = 0
+          end
+        end
+        object lvDiag: TListView
+          Left = 0
+          Height = 400
+          Top = 50
+          Width = 718
+          Align = alTop
+          Color = 2631720
+          Columns = <
+            item
+              Caption = 'Status'
+              Width = 60
+            end
+            item
+              Caption = 'Categoria'
+              Width = 120
+            end
+            item
+              Caption = 'Verificação'
+              Width = 220
+            end
+            item
+              Caption = 'Detalhe'
+              Width = 290
+            end>
+          Font.Color = clWhite
+          Font.Name = 'Segoe UI'
+          ReadOnly = True
+          RowSelect = True
+          TabOrder = 1
+          ViewStyle = vsReport
+        end
+        object pnlDiagBottom: TPanel
+          Left = 0
+          Height = 56
+          Top = 450
+          Width = 718
+          BevelOuter = bvNone
+          Color = 2105376
+          TabOrder = 2
+          object lblDiagSummary: TLabel
+            Left = 16
+            Height = 18
+            Top = 20
+            Width = 500
+            Caption = 'Execute o diagnóstico para verificar o ambiente'
+            Font.Color = 12632256
+            Font.Name = 'Segoe UI'
+            ParentFont = False
+          end
+          object btnSaveReport: TButton
+            Left = 580
+            Height = 32
+            Top = 12
+            Width = 120
+            Caption = '📄 Salvar Relatório'
+            OnClick = btnSaveReportClick
+            TabOrder = 0
+          end
+        end
+      end
+      object tabLog: TTabSheet
+        Caption = 'Log'
+        object memoFullLog: TMemo
+          Left = 0
+          Height = 480
+          Top = 0
+          Width = 718
+          Align = alTop
+          Color = 1052688
+          Font.Color = clYellow
+          Font.Height = -12
+          Font.Name = 'Consolas'
+          ParentFont = False
+          ReadOnly = True
+          ScrollBars = ssBoth
+          TabOrder = 0
+          WordWrap = False
+        end
+        object pnlLogBottom: TPanel
+          Left = 0
+          Height = 36
+          Top = 480
+          Width = 718
+          BevelOuter = bvNone
+          Color = 2105376
+          TabOrder = 1
+          object btnClearLog: TButton
+            Left = 8
+            Height = 28
+            Top = 4
+            Width = 100
+            Caption = '🗑 Limpar'
+            OnClick = btnClearLogClick
+            TabOrder = 0
+          end
+          object btnSaveLog: TButton
+            Left = 116
+            Height = 28
+            Top = 4
+            Width = 120
+            Caption = '💾 Salvar Log'
+            OnClick = btnSaveLogClick
+            TabOrder = 1
+          end
+        end
+      end
+      object tabOPM: TTabSheet
+        Caption = 'OPM Online'
+        object pnlOPMHeader: TPanel
+          Left = 0
+          Height = 50
+          Top = 0
+          Width = 718
+          Align = alTop
+          BevelOuter = bvNone
+          Color = 2105376
+          TabOrder = 0
+          object lblOPMTitle: TLabel
+            Left = 16
+            Height = 28
+            Top = 10
+            Width = 300
+            Caption = 'Online Package Manager'
+            Font.Color = clWhite
+            Font.Height = -21
+            Font.Name = 'Segoe UI'
+            Font.Style = [fsBold]
+            ParentFont = False
+          end
+        end
+        object pnlOPMSearch: TPanel
+          Left = 0
+          Height = 44
+          Top = 50
+          Width = 718
+          Align = alTop
+          BevelOuter = bvNone
+          Color = 3026478
+          TabOrder = 1
+          object edtOPMSearch: TEdit
+            Left = 8
+            Height = 28
+            Top = 8
+            Width = 500
+            Font.Height = -13
+            Font.Name = 'Segoe UI'
+            TabOrder = 0
+            TextHint = '🔎  Buscar pacotes no OPM...'
+          end
+          object btnOPMSearch: TButton
+            Left = 516
+            Height = 28
+            Top = 8
+            Width = 100
+            Caption = '🔍 Buscar'
+            OnClick = btnOPMSearchClick
+            TabOrder = 1
+          end
+        end
+        object lvOPM: TListView
+          Left = 0
+          Height = 350
+          Top = 94
+          Width = 718
+          Align = alClient
+          Color = 2631720
+          Columns = <
+            item
+              Caption = 'Nome'
+              Width = 160
+            end
+            item
+              Caption = 'Versão'
+              Width = 70
+            end
+            item
+              Caption = 'Autor'
+              Width = 130
+            end
+            item
+              Caption = 'Categoria'
+              Width = 100
+            end
+            item
+              Caption = 'Descrição'
+              Width = 230
+            end>
+          Font.Color = clWhite
+          Font.Name = 'Segoe UI'
+          ReadOnly = True
+          RowSelect = True
+          TabOrder = 2
+          ViewStyle = vsReport
+        end
+        object pnlOPMBottom: TPanel
+          Left = 0
+          Height = 75
+          Top = 444
+          Width = 718
+          Align = alBottom
+          BevelOuter = bvNone
+          Color = 2105376
+          TabOrder = 3
+          object btnOPMDownload: TButton
+            Left = 8
+            Height = 36
+            Top = 16
+            Width = 200
+            Caption = '⬇ Baixar Pacote Selecionado'
+            OnClick = btnOPMDownloadClick
+            TabOrder = 0
+          end
+          object lblOPMStatus: TLabel
+            Left = 220
+            Height = 18
+            Top = 26
+            Width = 400
+            Caption = 'Busque pacotes acima para instalar'
+            Font.Color = 12632256
+            Font.Name = 'Segoe UI'
+            ParentFont = False
+          end
+          object pbOPM: TProgressBar
+            Left = 8
+            Height = 8
+            Top = 60
+            Width = 700
+            TabOrder = 1
+          end
+        end
+      end
+      object tabManual: TTabSheet
+        Caption = 'Manual'
+        object pnlManualHeader: TPanel
+          Left = 0
+          Height = 50
+          Top = 0
+          Width = 718
+          Align = alTop
+          BevelOuter = bvNone
+          Color = 2105376
+          TabOrder = 0
+          object lblManualTitle: TLabel
+            Left = 16
+            Height = 28
+            Top = 10
+            Width = 350
+            Caption = '📖 Manual do Usuário'
+            Font.Color = clWhite
+            Font.Height = -21
+            Font.Name = 'Segoe UI'
+            Font.Style = [fsBold]
+            ParentFont = False
+          end
+        end
+        object memoManual: TMemo
+          Left = 0
+          Height = 490
+          Top = 50
+          Width = 718
+          Align = alClient
+          Color = 1052688
+          Font.Color = clYellow
+          Font.Height = -13
+          Font.Name = 'Consolas'
+          ReadOnly = True
+          ScrollBars = ssAutoVertical
+          TabOrder = 1
+        end
+      end
+      object tabAbout: TTabSheet
+        Caption = 'Sobre'
+        object pnlAbout: TPanel
+          Left = 0
+          Height = 510
+          Top = 0
+          Width = 718
+          Align = alClient
+          BevelOuter = bvNone
+          Color = 2105376
+          TabOrder = 0
+          object lblAboutTitle: TLabel
+            Left = 16
+            Height = 36
+            Top = 20
+            Width = 400
+            Caption = 'Lazarus Portable Manager v2.0'
+            Font.Color = clWhite
+            Font.Height = -27
+            Font.Name = 'Segoe UI'
+            Font.Style = [fsBold]
+            ParentFont = False
+          end
+          object lblAboutSub: TLabel
+            Left = 16
+            Height = 18
+            Top = 64
+            Width = 400
+            Caption = 'Sistema completo de portabilidade para o Lazarus IDE'
+            Font.Color = 12632256
+            Font.Name = 'Segoe UI'
+            ParentFont = False
+          end
+          object lblAboutFeatures: TLabel
+            Left = 16
+            Height = 200
+            Top = 100
+            Width = 680
+            Caption = 
+              '✅ Gerenciamento completo de configurações portáveis'#13#10 +
+              '✅ Patch automático de todos os arquivos XML'#13#10 +
+              '✅ Backup e restauração de configurações'#13#10 +
+              '✅ Múltiplos perfis de configuração'#13#10 +
+              '✅ Diagnóstico completo do ambiente'#13#10 +
+              '✅ Integração com OPM (Online Package Manager)'#13#10 +
+              '✅ Pacote IDE instalável (equivalente ao OTA do Delphi)'#13#10 +
+              '✅ Painel dockado na IDE do Lazarus'
+            Font.Color = clWhite
+            Font.Name = 'Segoe UI'
+            ParentFont = False
+          end
+          object lblAboutLazarus: TLabel
+            Left = 16
+            Height = 18
+            Top = 320
+            Width = 400
+            Caption = 'Desenvolvido para Lazarus 4.8 / FPC 3.2.4+ / Windows'
+            Font.Color = 12632256
+            Font.Name = 'Segoe UI'
+            ParentFont = False
+          end
+          object lblAboutGithub: TLabel
+            Left = 16
+            Height = 18
+            Top = 350
+            Width = 400
+            Caption = 'Baseado em: github.com/JoeJoeTV/startLazarusPortable'
+            Cursor = crHandPoint
+            Font.Color = 4678655
+            Font.Name = 'Segoe UI'
+            ParentFont = False
+          end
+        end
+      end
+    end
+  end
+  object pnlBottom: TPanel
+    Left = 0
+    Height = 24
+    Top = 596
+    Width = 900
+    Align = alBottom
+    BevelOuter = bvNone
+    Color = 1052688
+    TabOrder = 3
+    object lblStatusBar: TLabel
+      Left = 8
+      Height = 16
+      Top = 4
+      Width = 400
+      Caption = 'Pronto.'
+      Font.Color = 12632256
+      Font.Name = 'Segoe UI'
+      ParentFont = False
+    end
+    object lblVersion: TLabel
+      Left = 800
+      Height = 16
+      Top = 4
+      Width = 90
+      Alignment = taRightJustify
+      Caption = 'v2.0'
+      Font.Color = 5921370
+      Font.Name = 'Segoe UI'
+      ParentFont = False
+    end
+  end
+end

@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CONFIG>
+  <EditorOptions Version="13">
+    <Misc TabFontSize="10">
+      <ScrollOnEditLeftOptions KeepBorderDistance="2" KeepBorderDistancePercent="0" ScrollExtraColumns="5" ScrollExtraPercent="20" ScrollExtraMax="10"/>
+      <ScrollOnEditRightOptions KeepBorderDistance="0" KeepBorderDistancePercent="0" ScrollExtraColumns="10" ScrollExtraPercent="30" ScrollExtraMax="25"/>
+    </Misc>
+    <Display DoNotWarnForFont="Courier New"/>
+    <KeyMapping>
+      <default Count="1">
+        <Version Value="6"/>
+        <Item1 Name="Run without debugging">
+          <KeyA Default="False" Key1="120" Shift1="3"/>
+        </Item1>
+      </default>
+    </KeyMapping>
+    <CodeTools CodeTemplateFileName="C:\Users\conec\AppData\Local\lazarus\lazarus.dci"/>
+    <Mouse>
+      <Default Version="1"/>
+    </Mouse>
+    <Color Version="13">
+      <LangObjectPascal>
+        <ColorScheme Value="Twilight"/>
+      </LangObjectPascal>
+      <Globals Version="13">
+        <SchemeTwilight>
+          <ahaDefault Background="clBackground"/>
+        </SchemeTwilight>
+      </Globals>
+    </Color>
+    <General>
+      <Editor ShowTabCloseButtons="False"/>
+    </General>
+  </EditorOptions>
+</CONFIG>
