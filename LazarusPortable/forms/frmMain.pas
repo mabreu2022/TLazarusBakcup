@@ -16,10 +16,10 @@ unit frmMain;
 interface
 
 uses
-  Classes, SysUtils, Forms, Controls, Graphics, Dialogs,
+  Classes, SysUtils, Forms, Controls, Graphics, Dialogs, LCLIntf,
   ComCtrls, StdCtrls, ExtCtrls, Buttons, Windows,
   uPortableCore, uPackageManager, uProfileManager,
-  uDiagnostics, uLauncher;
+  uDiagnostics, uLauncher, uLicenseManager, frmConfigDB;
 
 type
   { TfrmMain }
@@ -104,10 +104,11 @@ type
     pbOPM          : TProgressBar;
 
     { Tab Manual }
-    tabManual      : TTabSheet;
-    pnlManualHeader: TPanel;
-    lblManualTitle : TLabel;
-    memoManual     : TMemo;
+    tabManual          : TTabSheet;
+    pnlManualHeader    : TPanel;
+    lblManualTitle     : TLabel;
+    btnOpenHtmlManual  : TButton;
+    memoManual         : TMemo;
 
     { Tab Sobre }
     tabAbout       : TTabSheet;
@@ -163,12 +164,18 @@ type
     procedure btnOPMSearchClick(Sender: TObject);
     procedure btnOPMDownloadClick(Sender: TObject);
 
+    { Manual }
+    procedure btnOpenHtmlManualClick(Sender: TObject);
+
   private
-    FConfig     : TPortableConfig;
-    FPkgManager : TPackageManager;
-    FProfManager: TProfileManager;
-    FDiagnostics: TDiagnostics;
-    FLauncher   : TLauncher;
+    FConfig       : TPortableConfig;
+    FPkgManager   : TPackageManager;
+    FProfManager  : TProfileManager;
+    FDiagnostics  : TDiagnostics;
+    FLauncher     : TLauncher;
+    FLicenseMgr   : TLicenseManager; // referência externa — não libera aqui
+  public
+    property LicenseManager: TLicenseManager read FLicenseMgr write FLicenseMgr;
 
     procedure AppLog(const AMsg: string; ALevel: Integer = 0);
     procedure SetStatus(const AMsg: string);
@@ -241,6 +248,7 @@ begin
   FProfManager.Free;
   FPkgManager.Free;
   FConfig.Free;
+  FreeAndNil(FLicenseMgr); // libera o TLicenseManager que o lpr transferiu
 end;
 
 procedure TfrmMain.FormClose(Sender: TObject; var CloseAction: TCloseAction);
@@ -251,6 +259,21 @@ end;
 { Roteamento do menu lateral }
 procedure TfrmMain.lstMenuClick(Sender: TObject);
 begin
+  // Item 8 = Sair — não navega para aba, trata diretamente
+  if lstMenu.ItemIndex = 8 then
+  begin
+    if MessageDlg('Confirmar Saída', 'Deseja sair e voltar à tela de Login?',
+       mtConfirmation, [mbYes, mbNo], 0) = mrYes then
+    begin
+      // Sinaliza para o lpr que deve reabrir o login
+      FLicenseMgr.Free;
+      FLicenseMgr := nil;
+      Application.Terminate;  // termina o app (o usuário reabre se quiser)
+    end;
+    lstMenu.ItemIndex := -1;
+    Exit;
+  end;
+
   pgcMain.ActivePageIndex := lstMenu.ItemIndex;
 
   case lstMenu.ItemIndex of
@@ -370,9 +393,31 @@ begin
 end;
 
 procedure TfrmMain.btnConfigClick(Sender: TObject);
+var
+  FormConfig: TfrmConfigDB;
+  UserMail: string;
 begin
-  // Expansão futura: janela de configurações do launcher
-  ShowMessage('Configurações do launcher em desenvolvimento.');
+  // Somente o Super Admin tem acesso às configurações do banco de dados
+  if not Assigned(FLicenseMgr) or not FLicenseMgr.IsAdminUser then
+  begin
+    UserMail := '';
+    if Assigned(FLicenseMgr) then
+      UserMail := FLicenseMgr.CurrentLicense.UserEmail;
+    if UserMail = '' then UserMail := '(Modo Offline / Sem Login)';
+
+    MessageDlg('Acesso Restrito',
+      'Apenas o Administrador do sistema tem permissão para acessar as configurações do banco de dados.' + #13#10#13#10 +
+      'Usuário atual: ' + UserMail,
+      mtWarning, [mbOK], 0);
+    Exit;
+  end;
+
+  FormConfig := TfrmConfigDB.Create(nil);
+  try
+    FormConfig.ShowModal;
+  finally
+    FormConfig.Free;
+  end;
 end;
 
 procedure TfrmMain.btnPatchNowClick(Sender: TObject);
@@ -865,6 +910,22 @@ begin
   end;
 end;
 
+procedure TfrmMain.btnOpenHtmlManualClick(Sender: TObject);
+var
+  HtmlFile: string;
+begin
+  HtmlFile := FConfig.PortableDir + 'MANUAL.html';
+  if not FileExists(HtmlFile) then
+    HtmlFile := ExtractFileDir(Application.ExeName) + PathDelim + 'manual' + PathDelim + 'MANUAL.html';
+
+  if FileExists(HtmlFile) then
+    OpenURL('file:///' + HtmlFile)
+  else
+    MessageDlg('Manual Não Encontrado',
+      'O arquivo MANUAL.html não foi localizado.' + #13#10 +
+      'Caminho esperado: ' + HtmlFile, mtWarning, [mbOK], 0);
+end;
+
 procedure TfrmMain.LoadUserManual;
 var
   M: TStringList;
@@ -933,11 +994,26 @@ begin
     M.Add('  Navegue e pesquise na biblioteca remota oficial de pacotes da comunidade');
     M.Add('  do Lazarus e baixe componentes com 1 clique.');
     M.Add('');
-    M.Add('5. GERENCIAMENTO DE PERFIS');
-    M.Add('--------------------------');
-    M.Add('Na aba "👤 Perfis", você pode criar diferentes ambientes isolados para o Lazarus:');
-    M.Add('- Exemplo: Perfil "Desenvolvimento Web", Perfil "Comercial / Zeos / IBX".');
-    M.Add('- Alterne entre perfis a qualquer momento sem misturar configurações ou pacotes.');
+    M.Add('5. GERENCIAMENTO DE PERFIS DE CONFIGURAÇÃO');
+    M.Add('------------------------------------------');
+    M.Add('A aba "👤 Perfis" permite criar, salvar e alternar entre múltiplos ambientes de');
+    M.Add('trabalho completamente isolados para a sua IDE Lazarus.');
+    M.Add('');
+    M.Add('► O QUE É SALVO EM CADA PERFIL:');
+    M.Add('  Cada perfil armazena individualmente: pacotes e componentes instalados, layouts');
+    M.Add('  de janelas e paletas, caminhos de compiladores, macros de editor, atalhos de');
+    M.Add('  teclado e arquivos recentes.');
+    M.Add('');
+    M.Add('► EXEMPLOS DE USO:');
+    M.Add('  - Perfis por Cliente/Projeto: "Cliente A (ACBr + Fortes)" vs "Projeto Web (LAMW)".');
+    M.Add('  - Perfis por Ambiente: "Dev/Testes" (com logs e ferramentas de debug) vs');
+    M.Add('    "Produção/Clean" (IDE limpa e ultra-rápida para compilação final).');
+    M.Add('');
+    M.Add('► FUNÇÕES DOS BOTÕES DE PERFIL:');
+    M.Add('  [ + Novo Perfil ]       ➔ Cria uma pasta de perfil de configuração limpa.');
+    M.Add('  [ ☑ Ativar Perfil ]     ➔ Aplica o perfil selecionado na IDE Lazarus.');
+    M.Add('  [ 💾 Salvar Config Atual]➔ Grava as alterações atuais da IDE dentro do perfil.');
+    M.Add('  [ 🗑 Deletar ]           ➔ Exclui permanentemente um perfil selecionado.');
     M.Add('');
     M.Add('6. RESOLUÇÃO DE DÚVIDAS E PROBLEMAS');
     M.Add('------------------------------------');

@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manual do Usuário - Lazarus Portable Manager</title>
+    <style>
+        :root {
+            --bg-color: #0f172a;
+            --card-bg: #1e293b;
+            --card-border: #334155;
+            --text-color: #f8fafc;
+            --text-muted: #94a3b8;
+            --accent-color: #00adb5;
+            --accent-hover: #008891;
+            --gold-color: #f59e0b;
+            --success-color: #10b981;
+            --danger-color: #ef4444;
+            --code-bg: #090d16;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.6;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+
+        header {
+            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+            border: 1px solid var(--card-border);
+            border-left: 6px solid var(--accent-color);
+            padding: 30px;
+            border-radius: 12px;
+            margin-bottom: 25px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+        }
+
+        header h1 {
+            font-size: 28px;
+            color: #ffffff;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 8px;
+        }
+
+        header p {
+            color: var(--text-muted);
+            font-size: 15px;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: 260px 1fr;
+            gap: 25px;
+        }
+
+        @media (max-width: 768px) {
+            .grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        nav.toc {
+            background-color: var(--card-bg);
+            border: 1px solid var(--card-border);
+            padding: 20px;
+            border-radius: 12px;
+            position: sticky;
+            top: 20px;
+            height: fit-content;
+        }
+
+        nav.toc h3 {
+            font-size: 16px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--accent-color);
+            margin-bottom: 15px;
+            border-bottom: 1px solid var(--card-border);
+            padding-bottom: 8px;
+        }
+
+        nav.toc ul {
+            list-style: none;
+        }
+
+        nav.toc li {
+            margin-bottom: 10px;
+        }
+
+        nav.toc a {
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 14px;
+            transition: all 0.2s ease;
+            display: block;
+            padding: 4px 8px;
+            border-radius: 6px;
+        }
+
+        nav.toc a:hover {
+            color: #ffffff;
+            background-color: rgba(0, 173, 181, 0.15);
+            transform: translateX(4px);
+        }
+
+        section.card {
+            background-color: var(--card-bg);
+            border: 1px solid var(--card-border);
+            padding: 30px;
+            border-radius: 12px;
+            margin-bottom: 25px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+
+        section.card h2 {
+            font-size: 20px;
+            color: #ffffff;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            border-bottom: 2px solid rgba(0, 173, 181, 0.3);
+            padding-bottom: 8px;
+        }
+
+        section.card h3 {
+            font-size: 16px;
+            color: var(--gold-color);
+            margin: 18px 0 10px 0;
+        }
+
+        p {
+            margin-bottom: 12px;
+            color: #cbd5e1;
+            font-size: 14.5px;
+        }
+
+        ul, ol {
+            margin: 10px 0 15px 25px;
+            color: #cbd5e1;
+            font-size: 14.5px;
+        }
+
+        li {
+            margin-bottom: 6px;
+        }
+
+        .alert {
+            padding: 15px 20px;
+            border-radius: 8px;
+            margin: 15px 0;
+            font-size: 14px;
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+        }
+
+        .alert-tip {
+            background-color: rgba(16, 185, 129, 0.1);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            color: #6ee7b7;
+        }
+
+        .alert-warning {
+            background-color: rgba(245, 158, 11, 0.1);
+            border: 1px solid rgba(245, 158, 11, 0.3);
+            color: #fcd34d;
+        }
+
+        .alert-note {
+            background-color: rgba(0, 173, 181, 0.1);
+            border: 1px solid rgba(0, 173, 181, 0.3);
+            color: #67e8f9;
+        }
+
+        code, pre {
+            font-family: 'Consolas', 'Courier New', monospace;
+            background-color: var(--code-bg);
+            border: 1px solid #1e293b;
+            border-radius: 6px;
+        }
+
+        code {
+            padding: 2px 6px;
+            color: #38bdf8;
+            font-size: 13.5px;
+        }
+
+        pre {
+            padding: 15px;
+            overflow-x: auto;
+            margin: 12px 0;
+            color: #f1f5f9;
+            font-size: 13px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+            font-size: 14px;
+        }
+
+        th, td {
+            padding: 10px 14px;
+            text-align: left;
+            border: 1px solid var(--card-border);
+        }
+
+        th {
+            background-color: rgba(0, 173, 181, 0.15);
+            color: #ffffff;
+            font-weight: 600;
+        }
+
+        tr:nth-child(even) {
+            background-color: rgba(255, 255, 255, 0.02);
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+
+        .badge-pro {
+            background-color: #8b5cf6;
+            color: #ffffff;
+        }
+
+        .badge-free {
+            background-color: #10b981;
+            color: #ffffff;
+        }
+
+        footer {
+            text-align: center;
+            padding: 20px;
+            color: var(--text-muted);
+            font-size: 13px;
+            margin-top: 30px;
+            border-top: 1px solid var(--card-border);
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1>📘 Lazarus Portable Manager — Manual Interativo</h1>
+        <p>Guia completo de operação, mobilidade em Pen Drives, gerenciamento de perfis e licenciamento Firebird.</p>
+    </header>
+
+    <div class="grid">
+        <!-- Sumário (TOC) -->
+        <nav class="toc">
+            <h3>Navegação</h3>
+            <ul>
+                <li><a href="#visao-geral">1. Visão Geral</a></li>
+                <li><a href="#portabilidade">2. Portabilidade & Pen Drive</a></li>
+                <li><a href="#perfis">3. Perfis de Configuração</a></li>
+                <li><a href="#licenciamento">4. Licenciamento & PIX</a></li>
+                <li><a href="#firebird">5. Conexão Firebird (VPS)</a></li>
+                <li><a href="#ferramentas">6. Ferramentas & Botões</a></li>
+                <li><a href="#faq">7. Perguntas Frequentes (FAQ)</a></li>
+            </ul>
+        </nav>
+
+        <!-- Conteúdo Principal -->
+        <main>
+            <!-- 1. Visão Geral -->
+            <section id="visao-geral" class="card">
+                <h2>1. Visão Geral do Sistema</h2>
+                <p>O <strong>Lazarus Portable Manager</strong> é uma solução de orquestração avançada projetada para transformar a sua IDE Lazarus em uma aplicação 100% portável, segura e de alto desempenho.</p>
+                <div class="alert alert-note">
+                    📌 <strong>Objetivo Principal:</strong> Executar o Lazarus IDE completo com todos os seus componentes, ferramentas FPC e pacotes OPM em qualquer computador Windows (diretamente de um Pen Drive ou HD Externo) sem depender de instalações no sistema operacional.
+                </div>
+            </section>
+
+            <!-- 2. Portabilidade -->
+            <section id="portabilidade" class="card">
+                <h2>2. Como Funciona a Portabilidade & Pen Drive</h2>
+                <p>Por padrão, o Lazarus armazena arquivos de configuração no diretório do usuário do Windows (<code>%LOCALAPPDATA%\lazarus</code>). O Lazarus Portable altera dinamicamente essa dependência para direcionar 100% dos dados para a pasta local:</p>
+                <pre>$(DiretórioDoExe)\LazarusConfig\</pre>
+
+                <h3>🚀 Passos para Usar em um Pen Drive:</h3>
+                <ol>
+                    <li>Clique em <code>💾 Backup Manual</code> no Dashboard para criar uma cópia de segurança.</li>
+                    <li>Copie a pasta completa <code>C:\lazarus\</code> para o seu Pen Drive (recomendado 4 GB ou mais).</li>
+                    <li>Espete o Pen Drive em qualquer computador (ex: unidades <code>E:\</code> ou <code>F:\</code>).</li>
+                    <li>Execute <code>LazarusPortable.exe</code> e clique em <code>▶ Lançar</code>. Todos os 142+ pacotes e caminhos XML serão atualizados automaticamente!</li>
+                </ol>
+
+                <div class="alert alert-tip">
+                    💡 <strong>Dica de Desempenho:</strong> Para carregamentos instantâneos da IDE no Pen Drive, prefira unidades USB 3.0 ou SSDs Portáteis.
+                </div>
+            </section>
+
+            <!-- 3. Perfis de Configuração -->
+            <section id="perfis" class="card">
+                <h2>3. Perfis de Configuração Isolados</h2>
+                <p>Na aba <code>👤 Perfis</code>, você pode criar e alternar entre diferentes ambientes de trabalho no Lazarus sem misturar pacotes ou reinstalar a IDE.</p>
+                
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Recurso / Botão</th>
+                            <th>Descrição de Uso</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><code>+ Novo Perfil</code></td>
+                            <td>Cria um perfil com ambiente limpo e isolado de configurações.</td>
+                        </tr>
+                        <tr>
+                            <td><code>☑ Ativar Perfil</code></td>
+                            <td>Carrega o perfil selecionado na IDE Lazarus em tempo de execução.</td>
+                        </tr>
+                        <tr>
+                            <td><code>💾 Salvar Config Atual</code></td>
+                            <td>Salva as modificações e novos pacotes instalados na IDE para o perfil.</td>
+                        </tr>
+                        <tr>
+                            <td><code>🗑 Deletar</code></td>
+                            <td>Remove o perfil selecionado permanentemente.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </section>
+
+            <!-- 4. Licenciamento & PIX -->
+            <section id="licenciamento" class="card">
+                <h2>4. Sistema de Autenticação, Trial & PIX</h2>
+                <p>O gerenciador conta com controle de licenças e avaliação gratuita:</p>
+                <ul>
+                    <li><span class="badge badge-free">Trial 10 Dias</span> Na primeira execução, o usuário obtém 10 dias de testes gratuitos completos sem restrição.</li>
+                    <li><span class="badge badge-pro">Licença Vitalícia</span> Administradores e usuários aprovados têm acesso ilimitado com chave PIX e envio de comprovante.</li>
+                </ul>
+            </section>
+
+            <!-- 5. Firebird -->
+            <section id="firebird" class="card">
+                <h2>5. Configuração do Banco de Dados Firebird (VPS / Local)</h2>
+                <p>Apenas o <strong>Super Administrador</strong> (<code>conectsolutions@hotmail.com</code> ou marcados com <code>IS_ADMIN = 1</code>) tem acesso à tela de configurações do banco Firebird através do botão <code>⚙ Config</code>.</p>
+
+                <div class="alert alert-warning">
+                    ⚠️ <strong>Segurança do .INI:</strong> O usuário e a senha do banco Firebird são gravados criptografados com cifra XOR Hexadecimal no arquivo <code>vps_config.ini</code>.
+                </div>
+            </section>
+
+            <!-- 6. Ferramentas -->
+            <section id="ferramentas" class="card">
+                <h2>6. Resumo dos Botões Principais</h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Botão</th>
+                            <th>Ação Executada</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><code>▶ Lançar</code></td>
+                            <td>Aplica o patch de caminhos XML e inicia o Lazarus IDE.</td>
+                        </tr>
+                        <tr>
+                            <td><code>🔧 Re-Patch Configurações</code></td>
+                            <td>Regrava todos os caminhos dos arquivos XML na pasta <code>LazarusConfig</code>.</td>
+                        </tr>
+                        <tr>
+                            <td><code>🔍 Executar Diagnóstico</code></td>
+                            <td>Analisa 23 pontos críticos do ambiente FPC e Lazarus.</td>
+                        </tr>
+                        <tr>
+                            <td><code>🌐 OPM Online</code></td>
+                            <td>Instala componentes da comunidade Lazarus com 1 clique.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </section>
+
+            <!-- 7. FAQ -->
+            <section id="faq" class="card">
+                <h2>7. Perguntas Frequentes (FAQ)</h2>
+                <h3>Q: O banco Firebird deu erro "arquivo em uso por outro processo", o que fazer?</h3>
+                <p>R: Isso ocorre quando o IBExpert está conectado no modo Local (Embedded). Na tela de <code>⚙ Config</code>, certifique-se de que o Servidor é <code>localhost</code> ou <code>127.0.0.1</code> e a porta é <code>3050</code> para conectar via Socket TCP/IP.</p>
+
+                <h3>Q: Como redefinir ou salvar um backup de emergência?</h3>
+                <p>R: Vá até a tela inicial (Dashboard) e clique no botão <code>💾 Backup Manual</code>.</p>
+            </section>
+        </main>
+    </div>
+
+    <footer>
+        <p>Lazarus Portable Manager v2.0 &copy; 2026 — Desenvolvido para máxima portabilidade e produtividade.</p>
+    </footer>
+</div>
+
+</body>
+</html>

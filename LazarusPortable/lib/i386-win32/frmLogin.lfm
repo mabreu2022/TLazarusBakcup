@@ -1,0 +1,155 @@
+object frmLogin: TfrmLogin
+  Left = 350
+  Height = 490
+  Top = 180
+  Width = 450
+  BorderIcons = [biSystemMenu, biMinimize]
+  BorderStyle = bsSingle
+  Caption = 'Autenticação & Licença - Lazarus Portable'
+  ClientHeight = 490
+  ClientWidth = 450
+  Color = 2105376
+  Font.Color = clWhite
+  Font.Height = -13
+  Font.Name = 'Segoe UI'
+  OnCreate = FormCreate
+  OnDestroy = FormDestroy
+  Position = poScreenCenter
+  object pnlHeader: TPanel
+    Left = 0
+    Height = 60
+    Top = 0
+    Width = 450
+    Align = alTop
+    BevelOuter = bvNone
+    Color = 1315860
+    TabOrder = 0
+    object lblTitle: TLabel
+      Left = 16
+      Height = 28
+      Top = 16
+      Width = 320
+      Caption = '🔑 Entrar no Lazarus Portable'
+      Font.Color = clWhite
+      Font.Height = -20
+      Font.Name = 'Segoe UI'
+      Font.Style = [fsBold]
+      ParentFont = False
+    end
+  end
+  object pnlBody: TPanel
+    Left = 0
+    Height = 430
+    Top = 60
+    Width = 450
+    Align = alClient
+    BevelOuter = bvNone
+    Color = 2105376
+    TabOrder = 1
+    object lblName: TLabel
+      Left = 30
+      Height = 18
+      Top = 10
+      Width = 100
+      Caption = 'Nome Completo:'
+      Visible = False
+    end
+    object edtName: TEdit
+      Left = 30
+      Height = 32
+      Top = 30
+      Width = 390
+      Color = 3026478
+      Font.Color = clWhite
+      Font.Height = -14
+      ParentFont = False
+      TabOrder = 0
+      Visible = False
+    end
+    object lblEmail: TLabel
+      Left = 30
+      Height = 18
+      Top = 15
+      Width = 44
+      Caption = 'E-mail:'
+    end
+    object edtEmail: TEdit
+      Left = 30
+      Height = 32
+      Top = 35
+      Width = 390
+      Color = 3026478
+      Font.Color = clWhite
+      Font.Height = -14
+      ParentFont = False
+      TabOrder = 1
+    end
+    object lblPassword: TLabel
+      Left = 30
+      Height = 18
+      Top = 75
+      Width = 40
+      Caption = 'Senha:'
+    end
+    object edtPassword: TEdit
+      Left = 30
+      Height = 32
+      Top = 95
+      Width = 390
+      Color = 3026478
+      EchoMode = emPassword
+      Font.Color = clWhite
+      Font.Height = -14
+      PasswordChar = '*'
+      ParentFont = False
+      TabOrder = 2
+    end
+    object lblTrialInfo: TLabel
+      Left = 30
+      Height = 36
+      Top = 142
+      Width = 390
+      Alignment = taCenter
+      AutoSize = False
+      Caption = 'Verificando período de testes...'
+      Font.Color = 65535
+      Font.Height = -13
+      Font.Name = 'Segoe UI'
+      Font.Style = [fsBold]
+      ParentFont = False
+      WordWrap = True
+    end
+    object btnAction: TButton
+      Left = 30
+      Height = 42
+      Top = 188
+      Width = 390
+      Caption = '🔑 Entrar'
+      Font.Color = clWhite
+      Font.Height = -14
+      Font.Name = 'Segoe UI'
+      Font.Style = [fsBold]
+      OnClick = btnActionClick
+      TabOrder = 3
+    end
+    object btnToggleMode: TButton
+      Left = 30
+      Height = 34
+      Top = 242
+      Width = 390
+      Caption = 'Não tem conta? Cadastre-se e ganhe 10 dias grátis'
+      OnClick = btnToggleModeClick
+      TabOrder = 4
+    end
+    object btnContinueTrial: TButton
+      Left = 30
+      Height = 34
+      Top = 286
+      Width = 390
+      Caption = '⚡ Continuar sem Login (Usar Trial Local)'
+      Font.Color = 65535
+      OnClick = btnContinueTrialClick
+      TabOrder = 5
+    end
+  end
+end

@@ -91,6 +91,7 @@ object frmMain: TfrmMain
         '  🌐  OPM Online'
         '  📖  Manual'
         '  ℹ   Sobre'
+        '  🚪  Sair'
       )
       OnClick = lstMenuClick
       TabOrder = 0
@@ -770,13 +771,22 @@ object frmMain: TfrmMain
             Left = 16
             Height = 28
             Top = 10
-            Width = 350
+            Width = 240
             Caption = '📖 Manual do Usuário'
             Font.Color = clWhite
             Font.Height = -21
             Font.Name = 'Segoe UI'
             Font.Style = [fsBold]
             ParentFont = False
+          end
+          object btnOpenHtmlManual: TButton
+            Left = 450
+            Height = 32
+            Top = 9
+            Width = 250
+            Caption = '🌐 Abrir Manual no Navegador (HTML)'
+            OnClick = btnOpenHtmlManualClick
+            TabOrder = 0
           end
         end
         object memoManual: TMemo

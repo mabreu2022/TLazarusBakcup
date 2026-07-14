@@ -1,0 +1,186 @@
+object frmPayment: TfrmPayment
+  Left = 320
+  Height = 520
+  Top = 150
+  Width = 500
+  BorderIcons = [biSystemMenu, biMinimize]
+  BorderStyle = bsSingle
+  Caption = 'Registro de Licença & Pagamento PIX'
+  ClientHeight = 520
+  ClientWidth = 500
+  Color = 2105376
+  Font.Color = clWhite
+  Font.Height = -13
+  Font.Name = 'Segoe UI'
+  OnCreate = FormCreate
+  Position = poScreenCenter
+  object pnlHeader: TPanel
+    Left = 0
+    Height = 65
+    Top = 0
+    Width = 500
+    Align = alTop
+    BevelOuter = bvNone
+    Color = 1048600
+    TabOrder = 0
+    object lblTitle: TLabel
+      Left = 16
+      Height = 28
+      Top = 18
+      Width = 420
+      Caption = '🔒 Trial de 10 Dias Expirado - Ativar Licença'
+      Font.Color = clWhite
+      Font.Height = -20
+      Font.Name = 'Segoe UI'
+      Font.Style = [fsBold]
+      ParentFont = False
+    end
+  end
+  object pnlBody: TPanel
+    Left = 0
+    Height = 455
+    Top = 65
+    Width = 500
+    Align = alClient
+    BevelOuter = bvNone
+    Color = 2105376
+    TabOrder = 1
+    object lblInstruction: TLabel
+      Left = 20
+      Height = 40
+      Top = 15
+      Width = 460
+      AutoSize = False
+      Caption = 'Seu período de avaliação gratuita terminou. Para desbloquear o acesso ilimitado ao Lazarus Portable, efetue o pagamento via PIX e envie o comprovante.'
+      Font.Color = 14474460
+      Font.Height = -13
+      ParentFont = False
+      WordWrap = True
+    end
+    object pnlPIXBox: TPanel
+      Left = 20
+      Height = 110
+      Top = 65
+      Width = 460
+      BevelOuter = bvNone
+      Color = 1315860
+      TabOrder = 0
+      object lblPIXTitle: TLabel
+        Left = 14
+        Height = 20
+        Top = 10
+        Width = 220
+        Caption = '📲 Chave PIX (E-mail / Aleatória):'
+        Font.Color = 65535
+        Font.Height = -14
+        Font.Style = [fsBold]
+        ParentFont = False
+      end
+      object edtPIXKey: TEdit
+        Left = 14
+        Height = 30
+        Top = 35
+        Width = 320
+        Color = 3026478
+        Font.Color = clWhite
+        Font.Height = -13
+        ParentFont = False
+        ReadOnly = True
+        TabOrder = 0
+        Text = 'financeiro@lazarusportable.com.br'
+      end
+      object btnCopyPIX: TButton
+        Left = 342
+        Height = 30
+        Top = 35
+        Width = 104
+        Caption = '📋 Copiar'
+        OnClick = btnCopyPIXClick
+        TabOrder = 1
+      end
+      object lblPIXDesc: TLabel
+        Left = 14
+        Height = 18
+        Top = 75
+        Width = 400
+        Caption = 'Valor: R$ 49,90 (Licença Vitalícia / Suporte e Atualizações)'
+        Font.Color = 65280
+        Font.Style = [fsBold]
+        ParentFont = False
+      end
+    end
+    object lblFileTitle: TLabel
+      Left = 20
+      Height = 18
+      Top = 190
+      Width = 300
+      Caption = '📎 Anexar Comprovante de Pagamento (PDF/JPG):'
+    end
+    object edtFilePath: TEdit
+      Left = 20
+      Height = 30
+      Top = 212
+      Width = 350
+      Color = 3026478
+      Font.Color = clWhite
+      ReadOnly = True
+      TabOrder = 1
+    end
+    object btnSelectFile: TButton
+      Left = 376
+      Height = 30
+      Top = 212
+      Width = 104
+      Caption = '🔍 Procurar...'
+      OnClick = btnSelectFileClick
+      TabOrder = 2
+    end
+    object lblObs: TLabel
+      Left = 20
+      Height = 18
+      Top = 255
+      Width = 300
+      Caption = 'Observações / Nome do Pagador / CPF / CNPJ:'
+    end
+    object edtObs: TEdit
+      Left = 20
+      Height = 30
+      Top = 277
+      Width = 460
+      Color = 3026478
+      Font.Color = clWhite
+      TabOrder = 3
+    end
+    object btnUploadReceipt: TButton
+      Left = 20
+      Height = 44
+      Top = 325
+      Width = 460
+      Caption = '📤 Enviar Comprovante para Análise'
+      Font.Color = clWhite
+      Font.Height = -15
+      Font.Style = [fsBold]
+      OnClick = btnUploadReceiptClick
+      TabOrder = 4
+    end
+    object lblStatusMsg: TLabel
+      Left = 20
+      Height = 40
+      Top = 385
+      Width = 460
+      Alignment = taCenter
+      AutoSize = False
+      Caption = 'Após o envio, a liberação ocorre em até 1 hora útil.'
+      Font.Color = 12632256
+      Font.Style = [fsItalic]
+      ParentFont = False
+      WordWrap = True
+    end
+  end
+  object OpenDialog: TOpenDialog
+    Title = 'Selecionar Comprovante PIX'
+    Filter = 'Arquivos de Imagem e PDF (*.pdf;*.jpg;*.jpeg;*.png)|*.pdf;*.jpg;*.jpeg;*.png|Todos os arquivos (*.*)|*.*'
+    Left = 400
+    Top = 10
+  end
+end
