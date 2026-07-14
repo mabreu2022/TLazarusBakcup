@@ -173,9 +173,11 @@ type
     FProfManager  : TProfileManager;
     FDiagnostics  : TDiagnostics;
     FLauncher     : TLauncher;
-    FLicenseMgr   : TLicenseManager; // referência externa — não libera aqui
+    FLicenseMgr    : TLicenseManager; // referência externa — não libera aqui
+    FUserLoggedOut : Boolean;
   public
     property LicenseManager: TLicenseManager read FLicenseMgr write FLicenseMgr;
+    property UserLoggedOut: Boolean read FUserLoggedOut;
 
     procedure AppLog(const AMsg: string; ALevel: Integer = 0);
     procedure SetStatus(const AMsg: string);
@@ -204,6 +206,7 @@ procedure TfrmMain.FormCreate(Sender: TObject);
 var
   ExeDir: string;
 begin
+  FUserLoggedOut := False;
   // Determina o diretório portável (onde está o .exe)
   ExeDir := ExtractFileDir(Application.ExeName);
 
@@ -253,7 +256,7 @@ end;
 
 procedure TfrmMain.FormClose(Sender: TObject; var CloseAction: TCloseAction);
 begin
-  CloseAction := caFree;
+  // Permite fechamento normal por ShowModal
 end;
 
 { Roteamento do menu lateral }
@@ -265,10 +268,8 @@ begin
     if MessageDlg('Confirmar Saída', 'Deseja sair e voltar à tela de Login?',
        mtConfirmation, [mbYes, mbNo], 0) = mrYes then
     begin
-      // Sinaliza para o lpr que deve reabrir o login
-      FLicenseMgr.Free;
-      FLicenseMgr := nil;
-      Application.Terminate;  // termina o app (o usuário reabre se quiser)
+      FUserLoggedOut := True;
+      ModalResult := mrOK;
     end;
     lstMenu.ItemIndex := -1;
     Exit;

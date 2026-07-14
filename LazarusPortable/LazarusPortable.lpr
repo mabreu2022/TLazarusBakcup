@@ -25,6 +25,7 @@ var
   FormPayment     : TfrmPayment;
   SavedLicenseMgr : TLicenseManager;
   AllowRun        : Boolean;
+  UserWantsLogout : Boolean;
 
 begin
   RequireDerivedFormResource := True;
@@ -32,41 +33,49 @@ begin
   Application.Initialize;
   Application.Title := 'Lazarus Portable Manager';
 
-  AllowRun        := False;
-  SavedLicenseMgr := nil;
+  repeat
+    AllowRun        := False;
+    UserWantsLogout := False;
+    SavedLicenseMgr := nil;
 
-  FormLogin := TfrmLogin.Create(nil);
-  try
-    if FormLogin.ShowModal = mrOK then
-    begin
-      SavedLicenseMgr := FormLogin.LicenseManager; // salva referência antes do Free
-
-      if FormLogin.LicenseInfo.Status in [lsTrialActive, lsLicensed] then
-        AllowRun := True
-      else
+    FormLogin := TfrmLogin.Create(nil);
+    try
+      if FormLogin.ShowModal = mrOK then
       begin
-        // Trial ou Licença expirados -> abre tela de pagamento PIX
-        FormPayment := TfrmPayment.Create(nil);
-        try
-          FormPayment.LicenseManager := SavedLicenseMgr;
-          FormPayment.UserID         := FormLogin.LicenseInfo.UserID;
-          FormPayment.ShowModal;
-        finally
-          FormPayment.Free;
+        SavedLicenseMgr := FormLogin.LicenseManager;
+
+        if FormLogin.LicenseInfo.Status in [lsTrialActive, lsLicensed] then
+          AllowRun := True
+        else
+        begin
+          // Trial ou Licença expirados -> abre tela de pagamento PIX
+          FormPayment := TfrmPayment.Create(nil);
+          try
+            FormPayment.LicenseManager := SavedLicenseMgr;
+            FormPayment.UserID         := FormLogin.LicenseInfo.UserID;
+            FormPayment.ShowModal;
+          finally
+            FormPayment.Free;
+          end;
         end;
       end;
+    finally
+      FormLogin.Free;
     end;
-  finally
-    FormLogin.Free; // libera o formulário mas NÃO o LicenseManager (SavedLicenseMgr ainda aponta para ele)
-  end;
 
-  if AllowRun then
-  begin
-    Application.CreateForm(TfrmMain, FormMain);
-    FormMain.LicenseManager := SavedLicenseMgr; // passa para o FormMain controlar
-    Application.Run;
-    // SavedLicenseMgr será liberado quando o App fechar (está em FormMain)
-  end
-  else
-    FreeAndNil(SavedLicenseMgr);
+    if AllowRun then
+    begin
+      FormMain := TfrmMain.Create(nil);
+      try
+        FormMain.LicenseManager := SavedLicenseMgr;
+        FormMain.ShowModal;
+        UserWantsLogout := FormMain.UserLoggedOut;
+      finally
+        FormMain.Free;
+      end;
+    end
+    else
+      FreeAndNil(SavedLicenseMgr);
+
+  until not UserWantsLogout;
 end.
