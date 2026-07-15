@@ -1,0 +1,167 @@
+object frmReceiptViewer: TfrmReceiptViewer
+  Left = 280
+  Height = 650
+  Top = 100
+  Width = 850
+  Caption = 'Visualizador de Comprovante PIX'
+  ClientHeight = 650
+  ClientWidth = 850
+  Color = 2105376
+  Font.Color = clWhite
+  Font.Height = -13
+  Font.Name = 'Segoe UI'
+  OnCreate = FormCreate
+  OnDestroy = FormDestroy
+  OnShow = FormShow
+  Position = poScreenCenter
+  object pnlHeader: TPanel
+    Left = 0
+    Height = 55
+    Top = 0
+    Width = 850
+    Align = alTop
+    BevelOuter = bvNone
+    Color = 1048600
+    TabOrder = 0
+    object lblFileName: TLabel
+      Left = 16
+      Height = 22
+      Top = 16
+      Width = 320
+      Caption = '📜 Comprovante PIX'
+      Font.Color = clWhite
+      Font.Height = -16
+      Font.Name = 'Segoe UI'
+      Font.Style = [fsBold]
+      ParentFont = False
+    end
+    object btnZoomIn: TButton
+      Left = 360
+      Height = 32
+      Top = 11
+      Width = 85
+      Caption = '🔍 Zoom +'
+      OnClick = btnZoomInClick
+      TabOrder = 0
+    end
+    object btnZoomOut: TButton
+      Left = 450
+      Height = 32
+      Top = 11
+      Width = 85
+      Caption = '🔍 Zoom -'
+      OnClick = btnZoomOutClick
+      TabOrder = 1
+    end
+    object btnResetZoom: TButton
+      Left = 540
+      Height = 32
+      Top = 11
+      Width = 55
+      Caption = '100%'
+      OnClick = btnResetZoomClick
+      TabOrder = 2
+    end
+    object lblZoomLevel: TLabel
+      Left = 600
+      Height = 20
+      Top = 17
+      Width = 40
+      Caption = '100%'
+      Font.Color = 65535
+      Font.Style = [fsBold]
+      ParentFont = False
+    end
+    object btnSave: TButton
+      Left = 650
+      Height = 32
+      Top = 11
+      Width = 100
+      Caption = '💾 Salvar...'
+      OnClick = btnSaveClick
+      TabOrder = 3
+    end
+    object btnClose: TButton
+      Left = 760
+      Height = 32
+      Top = 11
+      Width = 75
+      Caption = '❌ Fechar'
+      OnClick = btnCloseClick
+      TabOrder = 4
+    end
+  end
+  object pnlBody: TPanel
+    Left = 0
+    Height = 595
+    Top = 55
+    Width = 850
+    Align = alClient
+    BevelOuter = bvNone
+    Color = 2105376
+    TabOrder = 1
+    object pnlPDFNotice: TPanel
+      Left = 150
+      Height = 180
+      Top = 180
+      Width = 550
+      BevelOuter = bvNone
+      Color = 1315860
+      TabOrder = 0
+      Visible = False
+      object lblPDFMsg: TLabel
+        Left = 20
+        Height = 50
+        Top = 25
+        Width = 510
+        Alignment = taCenter
+        AutoSize = False
+        Caption = '📄 Este comprovante foi enviado no formato PDF.'
+        Font.Color = clWhite
+        Font.Height = -16
+        Font.Style = [fsBold]
+        ParentFont = False
+        WordWrap = True
+      end
+      object btnOpenPDF: TButton
+        Left = 125
+        Height = 44
+        Top = 95
+        Width = 300
+        Caption = '🌐 Abrir PDF no Leitor do Sistema'
+        Font.Color = clWhite
+        Font.Height = -14
+        Font.Style = [fsBold]
+        OnClick = btnOpenPDFClick
+        ParentFont = False
+        TabOrder = 0
+      end
+    end
+    object ScrollBox: TScrollBox
+      Left = 0
+      Height = 595
+      Top = 0
+      Width = 850
+      Align = alClient
+      AutoScroll = True
+      Color = 2105376
+      ParentColor = False
+      TabOrder = 1
+      object imgReceipt: TImage
+        Left = 10
+        Height = 500
+        Top = 10
+        Width = 500
+        Center = True
+        Proportional = True
+        Stretch = True
+      end
+    end
+  end
+  object SaveDialog: TSaveDialog
+    Title = 'Salvar Comprovante em Disco'
+    Filter = 'Todos os Arquivos (*.*)|*.*'
+    Left = 400
+    Top = 10
+  end
+end

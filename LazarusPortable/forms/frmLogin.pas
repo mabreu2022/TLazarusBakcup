@@ -82,28 +82,20 @@ end;
 
 procedure TfrmLogin.LoadVPSConfig;
 var
-  Ini: TIniFile;
+  ConfigFile: string;
   Host, DBPath, User, Pass, Charset, ClientLib: string;
   Port: Integer;
-  ConfigFile: string;
 begin
   ConfigFile := FConfigDir + 'vps_config.ini';
-  Ini := TIniFile.Create(ConfigFile);
-  try
-    Host      := Ini.ReadString('VPS', 'Host', 'localhost');
-    Port      := StrToIntDef(Ini.ReadString('VPS', 'Port', '3050'), 3050);
-    DBPath    := Ini.ReadString('VPS', 'DatabasePath',
-                   'C:\Fontes\Componentes\TLazarusBakcup\Database\LazarusBackup.fdb');
-    Charset   := Ini.ReadString('VPS', 'Charset', 'UTF8');
-    ClientLib := Ini.ReadString('VPS', 'ClientLib',
-                   'C:\Program Files (x86)\Firebird\Firebird_5_0\fbclient.dll');
-  finally
-    Ini.Free;
-  end;
+  TConfigCrypt.MigrateAndEncrypt(ConfigFile);
 
-  // Credenciais criptografadas
-  User := TConfigCrypt.ReadEncrypted(ConfigFile, 'VPS', 'User', 'SYSDBA');
-  Pass := TConfigCrypt.ReadEncrypted(ConfigFile, 'VPS', 'Password', 'masterkey');
+  Host      := TConfigCrypt.ReadEncrypted(ConfigFile, 'Database', 'Host', 'localhost');
+  Port      := StrToIntDef(TConfigCrypt.ReadEncrypted(ConfigFile, 'Database', 'Port', '3050'), 3050);
+  DBPath    := TConfigCrypt.ReadEncrypted(ConfigFile, 'Database', 'Path', 'C:\Fontes\Componentes\TLazarusBakcup\Database\LazarusBackup.fdb');
+  User      := TConfigCrypt.ReadEncrypted(ConfigFile, 'Database', 'User', 'SYSDBA');
+  Pass      := TConfigCrypt.ReadEncrypted(ConfigFile, 'Database', 'Password', 'masterkey');
+  Charset   := TConfigCrypt.ReadEncrypted(ConfigFile, 'Database', 'Charset', 'UTF8');
+  ClientLib := TConfigCrypt.ReadEncrypted(ConfigFile, 'Database', 'ClientLib', 'C:\Program Files (x86)\Firebird\Firebird_5_0\fbclient.dll');
 
   FLicenseMgr.SetServerConfig(Host, DBPath, Port, User, Pass, Charset, ClientLib);
 end;

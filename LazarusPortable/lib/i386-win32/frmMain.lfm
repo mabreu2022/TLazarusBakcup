@@ -86,6 +86,7 @@ object frmMain: TfrmMain
         '  🏠  Dashboard'
         '  📦  Pacotes'
         '  👤  Perfis'
+        '  💳  Pagamentos'
         '  🔍  Diagnóstico'
         '  📋  Log'
         '  🌐  OPM Online'
@@ -489,6 +490,148 @@ object frmMain: TfrmMain
             Caption = '🗑 Deletar'
             OnClick = btnDeleteProfileClick
             TabOrder = 3
+          end
+        end
+      end
+      object tabPayments: TTabSheet
+        Caption = 'Pagamentos'
+        object pnlPayHeader: TPanel
+          Left = 0
+          Height = 78
+          Top = 0
+          Width = 718
+          Align = alTop
+          BevelOuter = bvNone
+          Color = 2105376
+          TabOrder = 0
+          object lblPayTitle: TLabel
+            Left = 16
+            Height = 25
+            Top = 8
+            Width = 320
+            Caption = '💳 Minha Licença & Histórico PIX'
+            Font.Color = clWhite
+            Font.Height = -18
+            Font.Name = 'Segoe UI'
+            Font.Style = [fsBold]
+            ParentFont = False
+          end
+          object btnNewReceipt: TButton
+            Left = 440
+            Height = 32
+            Top = 8
+            Width = 130
+            Caption = '➕ Enviar PIX'
+            OnClick = btnNewReceiptClick
+            TabOrder = 0
+          end
+          object btnRefreshReceipts: TButton
+            Left = 580
+            Height = 32
+            Top = 8
+            Width = 120
+            Caption = '🔄 Atualizar'
+            OnClick = btnRefreshReceiptsClick
+            TabOrder = 1
+          end
+          object lblPayUserStatus: TLabel
+            Left = 16
+            Height = 32
+            Top = 40
+            Width = 684
+            AutoSize = False
+            Caption = 'Carregando histórico...'
+            Font.Color = 65535
+            Font.Height = -12
+            Font.Name = 'Segoe UI'
+            ParentFont = False
+            WordWrap = True
+          end
+        end
+        object lvReceipts: TListView
+          Left = 0
+          Height = 380
+          Top = 60
+          Width = 718
+          Align = alClient
+          Color = 2631720
+          Columns = <
+            item
+              Caption = 'ID'
+              Width = 45
+            end
+            item
+              Caption = 'Data Envio'
+              Width = 120
+            end
+            item
+              Caption = 'Usuário / Chave PIX'
+              Width = 180
+            end
+            item
+              Caption = 'Valor Pago'
+              Width = 85
+            end
+            item
+              Caption = 'Comprovante'
+              Width = 120
+            end
+            item
+              Caption = 'Status Análise'
+              Width = 120
+            end
+            item
+              Caption = 'Observação'
+              Width = 150
+            end>
+          Font.Color = clWhite
+          Font.Height = -12
+          Font.Name = 'Segoe UI'
+          GridLines = True
+          ParentFont = False
+          ReadOnly = True
+          RowSelect = True
+          TabOrder = 1
+          ViewStyle = vsReport
+          OnDblClick = lvReceiptsDblClick
+        end
+        object pnlPayBottom: TPanel
+          Left = 0
+          Height = 50
+          Top = 440
+          Width = 718
+          Align = alBottom
+          BevelOuter = bvNone
+          Color = 2105376
+          TabOrder = 2
+          object btnApproveReceipt: TButton
+            Left = 16
+            Height = 36
+            Top = 7
+            Width = 220
+            Caption = '✅ Aprovar Licença (30 Dias)'
+            OnClick = btnApproveReceiptClick
+            TabOrder = 0
+            Visible = False
+          end
+          object btnRejectReceipt: TButton
+            Left = 246
+            Height = 36
+            Top = 7
+            Width = 180
+            Caption = '❌ Rejeitar Comprovante'
+            OnClick = btnRejectReceiptClick
+            TabOrder = 1
+            Visible = False
+          end
+          object btnViewReceipt: TButton
+            Left = 436
+            Height = 36
+            Top = 7
+            Width = 160
+            Caption = '👁️ Ver Comprovante'
+            OnClick = btnViewReceiptClick
+            TabOrder = 2
           end
         end
       end

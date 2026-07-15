@@ -9,7 +9,7 @@ interface
 
 uses
   Classes, SysUtils, StrUtils, IniFiles, Windows, sha1, db,
-  sqldb, ibconnection;
+  sqldb, ibconnection, uConfigCrypt;
 
 const
   SUPER_ADMIN_EMAIL = 'conectsolutions@hotmail.com';
@@ -36,6 +36,30 @@ type
     Message       : string;
   end;
 
+  TPaymentReceiptInfo = record
+    ID           : Integer;
+    UserID       : Integer;
+    UserName     : string;
+    UserEmail    : string;
+    DataEnvio    : TDateTime;
+    ChavePIX     : string;
+    ValorPago    : Double;
+    NomeArquivo  : string;
+    StatusAnalise: string; // 'AGUARDANDO_APROVACAO', 'APROVADO', 'REJEITADO'
+    Observacao   : string;
+  end;
+
+  TPaymentReceiptArray = array of TPaymentReceiptInfo;
+
+  TPIXConfigInfo = record
+    ChavePIX     : string;
+    TipoChave    : string;
+    Titular      : string;
+    Banco        : string;
+    ValorLicenca : Double;
+    Instrucoes   : string;
+  end;
+
   { TLicenseManager }
   TLicenseManager = class
   private
@@ -52,11 +76,13 @@ type
     FLastLicense  : TLicenseInfo;
     FIsAdmin      : Boolean;
     FUserEmail    : string;
+    FLastError    : string;
 
     function  GetHardwareID: string;
     function  HashPassword(const APassword: string): string;
     function  InitConnection: Boolean;
     procedure CloseConnection;
+    procedure LoadConfigFromINI;
 
   public
     constructor Create(const AConfigDir: string);
@@ -80,11 +106,20 @@ type
     { Cadastro de Novo Usuário com Trial de 10 Dias }
     function RegisterUser(const AName, AEmail, APassword: string; out AInfo: TLicenseInfo; out AErrorMsg: string): Boolean;
 
-    { Envio de Comprovante PIX (PDF/JPG) para o Banco Firebird }
+    { Envio e Controle de Comprovantes PIX }
     function SubmitPIXReceipt(AUserID: Integer; const AFilePath, AChavePIX, AObs: string; out AErrorMsg: string): Boolean;
+    function GetUserReceipts(AUserID: Integer; AAllUsers: Boolean = False): TPaymentReceiptArray;
+    function ApproveReceipt(AReceiptID, AUserID: Integer; ADaysToAdd: Integer; const AObs: string): Boolean;
+    function RejectReceipt(AReceiptID: Integer; const AObs: string): Boolean;
+    function GetReceiptBLOB(AReceiptID: Integer; out AFileName: string; AStream: TStream): Boolean;
+
+    { Gestão de Configuração de PIX do Administrador }
+    function GetPIXConfig: TPIXConfigInfo;
+    function SavePIXConfig(const AConfig: TPIXConfigInfo): Boolean;
 
     property Connection    : TIBConnection read FConnection;
     property CurrentLicense: TLicenseInfo  read FLastLicense;
+    property LastError     : string        read FLastError;
     function IsAdminUser: Boolean;
   end;
 
@@ -122,11 +157,29 @@ begin
   Result := SHA1Print(SHA1String('LazPortable_' + APassword + '_Salt2026'));
 end;
 
+procedure TLicenseManager.LoadConfigFromINI;
+var
+  ConfigFile: string;
+begin
+  ConfigFile := FConfigDir + 'vps_config.ini';
+  if FileExists(ConfigFile) then
+  begin
+    TConfigCrypt.MigrateAndEncrypt(ConfigFile);
+    FHost         := TConfigCrypt.ReadEncrypted(ConfigFile, 'Database', 'Host', 'localhost');
+    FPort         := StrToIntDef(TConfigCrypt.ReadEncrypted(ConfigFile, 'Database', 'Port', '3050'), 3050);
+    FDatabasePath := TConfigCrypt.ReadEncrypted(ConfigFile, 'Database', 'Path', 'C:\Fontes\Componentes\TLazarusBakcup\Database\LazarusBackup.fdb');
+    FDBUser       := TConfigCrypt.ReadEncrypted(ConfigFile, 'Database', 'User', 'SYSDBA');
+    FDBPassword   := TConfigCrypt.ReadEncrypted(ConfigFile, 'Database', 'Password', 'masterkey');
+    FCharset      := TConfigCrypt.ReadEncrypted(ConfigFile, 'Database', 'Charset', 'UTF8');
+    FClientLib    := TConfigCrypt.ReadEncrypted(ConfigFile, 'Database', 'ClientLib', 'C:\Program Files (x86)\Firebird\Firebird_5_0\fbclient.dll');
+  end;
+end;
+
 constructor TLicenseManager.Create(const AConfigDir: string);
 begin
   FConfigDir    := IncludeTrailingPathDelimiter(AConfigDir);
-  FHost         := '127.0.0.1'; // Padrão localhost (alterável por SetServerConfig)
-  FDatabasePath := '/var/lib/firebird/data/lazarus_portable.fdb';
+  FHost         := '127.0.0.1';
+  FDatabasePath := 'C:\Fontes\Componentes\TLazarusBakcup\Database\LazarusBackup.fdb';
   FPort         := 3050;
   FDBUser       := 'SYSDBA';
   FDBPassword   := 'masterkey';
@@ -137,6 +190,8 @@ begin
 
   FLastLicense := Default(TLicenseInfo);
   FLastLicense.HWID := GetHardwareID;
+
+  LoadConfigFromINI;
 end;
 
 destructor TLicenseManager.Destroy;
@@ -160,11 +215,10 @@ begin
 end;
 
 function TLicenseManager.InitConnection: Boolean;
-var
-  IsLocal: Boolean;
 begin
   Result := False;
   try
+    LoadConfigFromINI;
     CloseConnection;
 
     // Para Firebird local com DLL específica: adiciona o caminho da fbclient.dll ao PATH do processo
@@ -176,6 +230,11 @@ begin
 
     // Se o HostName for fornecido (ex: localhost, 127.0.0.1, IP remoto), conecta via TCP/IP
     // Isso permite conexões concorrentes com o IBExpert e evita o erro "arquivo em uso por outro processo"
+    if Trim(FHost) = '' then
+      FHost := 'localhost';
+    if FPort <= 0 then
+      FPort := 3050;
+
     FConnection.HostName := Trim(FHost);
     FConnection.DatabaseName := FDatabasePath;
     FConnection.UserName     := FDBUser;
@@ -185,15 +244,18 @@ begin
     FConnection.Params.Clear;
     FConnection.Params.Values['user_name'] := FDBUser;
     FConnection.Params.Values['password']  := FDBPassword;
-    if FConnection.HostName <> '' then
-      FConnection.Params.Values['port']    := IntToStr(FPort);
+    FConnection.Params.Values['port']      := IntToStr(FPort);
 
     FConnection.Connected := True;
     FTransaction.StartTransaction;
+    FLastError := '';
     Result := True;
   except
     on E: Exception do
+    begin
+      FLastError := E.Message;
       Result := False;
+    end;
   end;
 end;
 
@@ -316,9 +378,13 @@ begin
 
   if not InitConnection then
   begin
-    AInfo.Message := 'Servidor de licenças indisponível offline. Usando validação local.';
+    AInfo.Status := lsNotAuthenticated;
+    if FLastError <> '' then
+      AInfo.Message := 'Falha ao conectar com banco de dados: ' + FLastError
+    else
+      AInfo.Message := 'Servidor de licenças indisponível offline.';
     FLastLicense  := AInfo;
-    Exit(AInfo.Status in [lsTrialActive, lsLicensed]);
+    Exit(False);
   end;
 
   Query := TSQLQuery.Create(nil);
@@ -327,15 +393,16 @@ begin
     Query.Transaction := FTransaction;
 
     PassHash := HashPassword(APassword);
-    Query.SQL.Text := 'SELECT ID, NOME, STATUS FROM USUARIOS WHERE EMAIL = :EMAIL AND SENHA_HASH = :HASH';
+    Query.SQL.Text := 'SELECT ID, NOME, STATUS FROM USUARIOS WHERE LOWER(EMAIL) = LOWER(:EMAIL) AND SENHA_HASH = :HASH';
     Query.ParamByName('EMAIL').AsString := Trim(AEmail);
     Query.ParamByName('HASH').AsString  := PassHash;
     Query.Open;
 
     if Query.IsEmpty then
     begin
-      AInfo.Status := lsNotAuthenticated;
+      AInfo.Status  := lsNotAuthenticated;
       AInfo.Message := 'E-mail ou senha incorretos.';
+      FLastLicense  := AInfo;
       Exit(False);
     end;
 
@@ -531,9 +598,11 @@ function TLicenseManager.SubmitPIXReceipt(AUserID: Integer; const AFilePath, ACh
 var
   Query: TSQLQuery;
   FileStream: TFileStream;
+  RealUserID: Integer;
 begin
   Result := False;
   AErrorMsg := '';
+  RealUserID := AUserID;
 
   if not FileExists(AFilePath) then
   begin
@@ -543,7 +612,33 @@ begin
 
   if not InitConnection then
   begin
-    AErrorMsg := 'Falha ao conectar ao servidor da VPS Linux para enviar o comprovante.';
+    AErrorMsg := 'Falha ao conectar ao banco de dados: ' + FLastError;
+    Exit;
+  end;
+
+  // Busca automática do ID pelo e-mail se AUserID vier zerado
+  if RealUserID = 0 then
+  begin
+    Query := TSQLQuery.Create(nil);
+    try
+      Query.DataBase := FConnection;
+      Query.Transaction := FTransaction;
+      Query.SQL.Text := 'SELECT ID FROM USUARIOS WHERE LOWER(EMAIL) = LOWER(:EMAIL)';
+      if Trim(FUserEmail) <> '' then
+        Query.ParamByName('EMAIL').AsString := Trim(FUserEmail)
+      else
+        Query.ParamByName('EMAIL').AsString := Trim(FLastLicense.UserEmail);
+      Query.Open;
+      if not Query.IsEmpty then
+        RealUserID := Query.FieldByName('ID').AsInteger;
+    finally
+      Query.Free;
+    end;
+  end;
+
+  if RealUserID = 0 then
+  begin
+    AErrorMsg := 'Usuário não localizado no banco de dados. Efetue login novamente.';
     Exit;
   end;
 
@@ -556,8 +651,8 @@ begin
     Query.SQL.Text := 'INSERT INTO COMPROVANTES_PAGAMENTO ' +
                       '(USUARIO_ID, CHAVE_PIX_USADA, COMPROVANTE_BLOB, NOME_ARQUIVO, STATUS_ANALISE, OBSERVACAO) ' +
                       'VALUES (:UID, :CHAVE, :BLOB, :NOME, ''AGUARDANDO_APROVACAO'', :OBS)';
-    Query.ParamByName('UID').AsInteger  := AUserID;
-    Query.ParamByName('CHAVE').AsString := AChavePIX;
+    Query.ParamByName('UID').AsInteger  := RealUserID;
+    Query.ParamByName('CHAVE').AsString := Copy(AChavePIX, 1, 95);
     Query.ParamByName('NOME').AsString  := ExtractFileName(AFilePath);
     Query.ParamByName('OBS').AsString   := AObs;
     Query.ParamByName('BLOB').LoadFromStream(FileStream, ftBlob);
@@ -573,6 +668,222 @@ begin
     end;
   end;
   FileStream.Free;
+  Query.Free;
+  CloseConnection;
+end;
+
+function TLicenseManager.GetUserReceipts(AUserID: Integer; AAllUsers: Boolean): TPaymentReceiptArray;
+var
+  Query: TSQLQuery;
+  Count: Integer;
+begin
+  Result := nil;
+  SetLength(Result, 0);
+  if not InitConnection then Exit;
+
+  Query := TSQLQuery.Create(nil);
+  try
+    Query.DataBase := FConnection;
+    Query.Transaction := FTransaction;
+
+    if AAllUsers then
+    begin
+      Query.SQL.Text := 'SELECT C.ID, C.USUARIO_ID, U.NOME, U.EMAIL, C.DATA_ENVIO, ' +
+                        'C.CHAVE_PIX_USADA, C.VALOR_PAGO, C.NOME_ARQUIVO, C.STATUS_ANALISE, C.OBSERVACAO ' +
+                        'FROM COMPROVANTES_PAGAMENTO C ' +
+                        'LEFT JOIN USUARIOS U ON U.ID = C.USUARIO_ID ' +
+                        'ORDER BY C.ID DESC';
+    end
+    else
+    begin
+      Query.SQL.Text := 'SELECT C.ID, C.USUARIO_ID, U.NOME, U.EMAIL, C.DATA_ENVIO, ' +
+                        'C.CHAVE_PIX_USADA, C.VALOR_PAGO, C.NOME_ARQUIVO, C.STATUS_ANALISE, C.OBSERVACAO ' +
+                        'FROM COMPROVANTES_PAGAMENTO C ' +
+                        'LEFT JOIN USUARIOS U ON U.ID = C.USUARIO_ID ' +
+                        'WHERE C.USUARIO_ID = :UID ORDER BY C.ID DESC';
+      Query.ParamByName('UID').AsInteger := AUserID;
+    end;
+
+    Query.Open;
+    Count := 0;
+    while not Query.Eof do
+    begin
+      SetLength(Result, Count + 1);
+      Result[Count].ID            := Query.FieldByName('ID').AsInteger;
+      Result[Count].UserID        := Query.FieldByName('USUARIO_ID').AsInteger;
+      Result[Count].UserName      := Query.FieldByName('NOME').AsString;
+      Result[Count].UserEmail     := Query.FieldByName('EMAIL').AsString;
+      Result[Count].DataEnvio     := Query.FieldByName('DATA_ENVIO').AsDateTime;
+      Result[Count].ChavePIX      := Query.FieldByName('CHAVE_PIX_USADA').AsString;
+      Result[Count].ValorPago     := Query.FieldByName('VALOR_PAGO').AsFloat;
+      Result[Count].NomeArquivo   := Query.FieldByName('NOME_ARQUIVO').AsString;
+      Result[Count].StatusAnalise := Query.FieldByName('STATUS_ANALISE').AsString;
+      Result[Count].Observacao    := Query.FieldByName('OBSERVACAO').AsString;
+      Inc(Count);
+      Query.Next;
+    end;
+  finally
+    Query.Free;
+    CloseConnection;
+  end;
+end;
+
+function TLicenseManager.ApproveReceipt(AReceiptID, AUserID: Integer; ADaysToAdd: Integer; const AObs: string): Boolean;
+var
+  Query: TSQLQuery;
+  ExpDate: TDateTime;
+begin
+  Result := False;
+  if not InitConnection then Exit;
+
+  Query := TSQLQuery.Create(nil);
+  try
+    Query.DataBase := FConnection;
+    Query.Transaction := FTransaction;
+
+    Query.SQL.Text := 'UPDATE COMPROVANTES_PAGAMENTO SET STATUS_ANALISE = ''APROVADO'', OBSERVACAO = :OBS WHERE ID = :ID';
+    Query.ParamByName('OBS').AsString := AObs;
+    Query.ParamByName('ID').AsInteger := AReceiptID;
+    Query.ExecSQL;
+
+    ExpDate := Now + ADaysToAdd;
+
+    Query.SQL.Text := 'INSERT INTO LICENCAS (USUARIO_ID, TIPO_LICENCA, DATA_INICIO, DATA_EXPIRACAO, STATUS_ATIVO) ' +
+                      'VALUES (:UID, ''MENSAL'', CURRENT_TIMESTAMP, :EXP, 1)';
+    Query.ParamByName('UID').AsInteger := AUserID;
+    Query.ParamByName('EXP').AsDateTime := ExpDate;
+    Query.ExecSQL;
+
+    FTransaction.Commit;
+    Result := True;
+  except
+    on E: Exception do
+      FTransaction.Rollback;
+  end;
+  Query.Free;
+  CloseConnection;
+end;
+
+function TLicenseManager.RejectReceipt(AReceiptID: Integer; const AObs: string): Boolean;
+var
+  Query: TSQLQuery;
+begin
+  Result := False;
+  if not InitConnection then Exit;
+
+  Query := TSQLQuery.Create(nil);
+  try
+    Query.DataBase := FConnection;
+    Query.Transaction := FTransaction;
+
+    Query.SQL.Text := 'UPDATE COMPROVANTES_PAGAMENTO SET STATUS_ANALISE = ''REJEITADO'', OBSERVACAO = :OBS WHERE ID = :ID';
+    Query.ParamByName('OBS').AsString := AObs;
+    Query.ParamByName('ID').AsInteger := AReceiptID;
+    Query.ExecSQL;
+
+    FTransaction.Commit;
+    Result := True;
+  except
+    on E: Exception do
+      FTransaction.Rollback;
+  end;
+  Query.Free;
+  CloseConnection;
+end;
+
+function TLicenseManager.GetReceiptBLOB(AReceiptID: Integer; out AFileName: string; AStream: TStream): Boolean;
+var
+  Query: TSQLQuery;
+begin
+  Result := False;
+  AFileName := '';
+  if not InitConnection then Exit;
+
+  Query := TSQLQuery.Create(nil);
+  try
+    Query.DataBase := FConnection;
+    Query.Transaction := FTransaction;
+    Query.SQL.Text := 'SELECT NOME_ARQUIVO, COMPROVANTE_BLOB FROM COMPROVANTES_PAGAMENTO WHERE ID = :ID';
+    Query.ParamByName('ID').AsInteger := AReceiptID;
+    Query.Open;
+
+    if not Query.IsEmpty then
+    begin
+      AFileName := Query.FieldByName('NOME_ARQUIVO').AsString;
+      TBlobField(Query.FieldByName('COMPROVANTE_BLOB')).SaveToStream(AStream);
+      Result := True;
+    end;
+  finally
+    Query.Free;
+    CloseConnection;
+  end;
+end;
+
+function TLicenseManager.GetPIXConfig: TPIXConfigInfo;
+var
+  Query: TSQLQuery;
+begin
+  Result.ChavePIX     := '5511945457934';
+  Result.TipoChave    := 'TELEFONE';
+  Result.Titular      := 'Administrador Geral';
+  Result.Banco        := 'C6 Bank';
+  Result.ValorLicenca := 49.90;
+  Result.Instrucoes   := 'Após efetuar o PIX, anexe o comprovante na tela de licença para liberação.';
+
+  if not InitConnection then Exit;
+
+  Query := TSQLQuery.Create(nil);
+  try
+    Query.DataBase := FConnection;
+    Query.Transaction := FTransaction;
+    Query.SQL.Text := 'SELECT CHAVE_PIX, TIPO_CHAVE, TITULAR, BANCO, VALOR_LICENCA, INSTRUCOES ' +
+                      'FROM CONFIG_PIX WHERE ID = 1';
+    Query.Open;
+    if not Query.Eof then
+    begin
+      Result.ChavePIX     := Query.FieldByName('CHAVE_PIX').AsString;
+      Result.TipoChave    := Query.FieldByName('TIPO_CHAVE').AsString;
+      Result.Titular      := Query.FieldByName('TITULAR').AsString;
+      Result.Banco        := Query.FieldByName('BANCO').AsString;
+      Result.ValorLicenca := Query.FieldByName('VALOR_LICENCA').AsFloat;
+      Result.Instrucoes   := Query.FieldByName('INSTRUCOES').AsString;
+    end;
+  finally
+    Query.Free;
+    CloseConnection;
+  end;
+end;
+
+function TLicenseManager.SavePIXConfig(const AConfig: TPIXConfigInfo): Boolean;
+var
+  Query: TSQLQuery;
+begin
+  Result := False;
+  if not InitConnection then Exit;
+
+  Query := TSQLQuery.Create(nil);
+  try
+    Query.DataBase := FConnection;
+    Query.Transaction := FTransaction;
+
+    Query.SQL.Text := 'UPDATE OR INSERT INTO CONFIG_PIX ' +
+                      '(ID, CHAVE_PIX, TIPO_CHAVE, TITULAR, BANCO, VALOR_LICENCA, INSTRUCOES, ULTIMA_ATUALIZACAO) ' +
+                      'VALUES (1, :CHAVE, :TIPO, :TITULAR, :BANCO, :VALOR, :INST, CURRENT_TIMESTAMP) ' +
+                      'MATCHING (ID)';
+    Query.ParamByName('CHAVE').AsString   := AConfig.ChavePIX;
+    Query.ParamByName('TIPO').AsString    := AConfig.TipoChave;
+    Query.ParamByName('TITULAR').AsString := AConfig.Titular;
+    Query.ParamByName('BANCO').AsString   := AConfig.Banco;
+    Query.ParamByName('VALOR').AsFloat    := AConfig.ValorLicenca;
+    Query.ParamByName('INST').AsString    := AConfig.Instrucoes;
+    Query.ExecSQL;
+
+    FTransaction.Commit;
+    Result := True;
+  except
+    on E: Exception do
+      FTransaction.Rollback;
+  end;
   Query.Free;
   CloseConnection;
 end;

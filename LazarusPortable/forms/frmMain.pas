@@ -19,7 +19,8 @@ uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, LCLIntf,
   ComCtrls, StdCtrls, ExtCtrls, Buttons, Windows,
   uPortableCore, uPackageManager, uProfileManager,
-  uDiagnostics, uLauncher, uLicenseManager, frmConfigDB;
+  uDiagnostics, uLauncher, uLicenseManager, frmConfigDB, frmPayment,
+  frmReceiptViewer;
 
 type
   { TfrmMain }
@@ -63,15 +64,27 @@ type
     lblPkgCount    : TLabel;
 
     { Tab Perfis }
-    tabProfiles    : TTabSheet;
-    pnlProfHeader  : TPanel;
-    lblProfTitle   : TLabel;
-    lvProfiles     : TListView;
-    pnlProfButtons : TPanel;
-    btnNewProfile  : TButton;
+    tabProfiles          : TTabSheet;
+    pnlProfHeader        : TPanel;
+    lblProfTitle         : TLabel;
+    lvProfiles           : TListView;
+    pnlProfButtons       : TPanel;
+    btnNewProfile        : TButton;
     btnActivateProfile   : TButton;
     btnSaveCurrentProfile: TButton;
     btnDeleteProfile     : TButton;
+
+    { Tab Pagamentos }
+    tabPayments          : TTabSheet;
+    pnlPayHeader         : TPanel;
+    lblPayTitle          : TLabel;
+    lblPayUserStatus     : TLabel;
+    btnNewReceipt        : TButton;
+    btnRefreshReceipts   : TButton;
+    lvReceipts           : TListView;
+    pnlPayBottom         : TPanel;
+    btnApproveReceipt    : TButton;
+    btnRejectReceipt     : TButton;
 
     { Tab Diagnóstico }
     tabDiag        : TTabSheet;
@@ -167,6 +180,15 @@ type
     { Manual }
     procedure btnOpenHtmlManualClick(Sender: TObject);
 
+    { Pagamentos }
+    procedure RefreshPaymentReceipts;
+    procedure btnNewReceiptClick(Sender: TObject);
+    procedure btnRefreshReceiptsClick(Sender: TObject);
+    procedure btnApproveReceiptClick(Sender: TObject);
+    procedure btnRejectReceiptClick(Sender: TObject);
+    procedure btnViewReceiptClick(Sender: TObject);
+    procedure lvReceiptsDblClick(Sender: TObject);
+
   private
     FConfig       : TPortableConfig;
     FPkgManager   : TPackageManager;
@@ -259,11 +281,10 @@ begin
   // Permite fechamento normal por ShowModal
 end;
 
-{ Roteamento do menu lateral }
 procedure TfrmMain.lstMenuClick(Sender: TObject);
 begin
-  // Item 8 = Sair — não navega para aba, trata diretamente
-  if lstMenu.ItemIndex = 8 then
+  // Item 9 = Sair — não navega para aba, trata diretamente
+  if lstMenu.ItemIndex = 9 then
   begin
     if MessageDlg('Confirmar Saída', 'Deseja sair e voltar à tela de Login?',
        mtConfirmation, [mbYes, mbNo], 0) = mrYes then
@@ -281,10 +302,12 @@ begin
     0: RefreshDashboard;
     1: ; // Pacotes - refresca apenas quando clicar Varrer
     2: RefreshProfileList;
-    4: ; // Log
-    5: if lvOPM.Items.Count = 0 then btnOPMSearchClick(nil);
-    6: ; // Manual
-    7: ; // Sobre
+    3: RefreshPaymentReceipts;
+    4: ; // Diagnóstico
+    5: ; // Log
+    6: if lvOPM.Items.Count = 0 then btnOPMSearchClick(nil);
+    7: ; // Manual
+    8: ; // Sobre
   end;
 end;
 
@@ -345,6 +368,8 @@ end;
 procedure TfrmMain.RefreshDashboard;
 var
   IsOK: Boolean;
+  LicInfo: TLicenseInfo;
+  StatusStr: string;
 begin
   lblPortableDirVal.Caption := FConfig.PortableDir;
 
@@ -359,6 +384,22 @@ begin
   begin
     lblStatus.Caption    := '⚠️  Problema detectado — execute o Diagnóstico';
     lblStatus.Font.Color := clRed;
+  end;
+
+  if Assigned(FLicenseMgr) then
+  begin
+    LicInfo := FLicenseMgr.CurrentLicense;
+    if LicInfo.IsAdmin then
+      StatusStr := '🏆 Licença Vitalícia Ativa (Administrador Geral)'
+    else if LicInfo.Status = lsLicensed then
+      StatusStr := Format('⭐ Licença Ativa (Vence em %s - %d dias restantes)',
+                     [FormatDateTime('dd/mm/yyyy', LicInfo.ExpirationDate), LicInfo.DaysRemaining])
+    else if LicInfo.Status = lsTrialActive then
+      StatusStr := Format('⏳ Modo de Testes Gratuito (%d dias restantes)', [LicInfo.DaysRemaining])
+    else
+      StatusStr := Format('⚠️ Status: %s (%s)', [LicInfo.Message, LicInfo.UserEmail]);
+
+    SetStatus(Format('Usuário: %s | %s', [LicInfo.UserEmail, StatusStr]));
   end;
 end;
 
@@ -1039,6 +1080,147 @@ begin
   finally
     M.Free;
   end;
+end;
+
+procedure TfrmMain.RefreshPaymentReceipts;
+var
+  Receipts: TPaymentReceiptArray;
+  Item: TListItem;
+  I: Integer;
+  LicInfo: TLicenseInfo;
+begin
+  lvReceipts.Items.Clear;
+  if not Assigned(FLicenseMgr) then Exit;
+
+  LicInfo := FLicenseMgr.CurrentLicense;
+  if LicInfo.IsAdmin then
+    lblPayUserStatus.Caption := Format('Usuário: %s (ADMINISTRADOR) | Gestão Geral de Todos os Comprovantes', [LicInfo.UserEmail])
+  else
+  begin
+    lblPayUserStatus.Caption := Format('Usuário: %s | Status: %s', [LicInfo.UserEmail, LicInfo.Message]);
+    if FLicenseMgr.LastError <> '' then
+      lblPayUserStatus.Caption := lblPayUserStatus.Caption + ' [Erro: ' + FLicenseMgr.LastError + ']';
+  end;
+
+  btnApproveReceipt.Visible := LicInfo.IsAdmin;
+  btnRejectReceipt.Visible  := LicInfo.IsAdmin;
+
+  Receipts := FLicenseMgr.GetUserReceipts(LicInfo.UserID, LicInfo.IsAdmin);
+
+  for I := 0 to Length(Receipts) - 1 do
+  begin
+    Item := lvReceipts.Items.Add;
+    Item.Caption := IntToStr(Receipts[I].ID);
+    Item.SubItems.Add(FormatDateTime('dd/mm/yyyy hh:nn', Receipts[I].DataEnvio));
+    if LicInfo.IsAdmin then
+      Item.SubItems.Add(Format('%s (%s)', [Receipts[I].UserName, Receipts[I].UserEmail]))
+    else
+      Item.SubItems.Add(Receipts[I].ChavePIX);
+
+    Item.SubItems.Add(Format('R$ %.2f', [Receipts[I].ValorPago]));
+    Item.SubItems.Add(Receipts[I].NomeArquivo);
+    Item.SubItems.Add(Receipts[I].StatusAnalise);
+    Item.SubItems.Add(Receipts[I].Observacao);
+  end;
+end;
+
+procedure TfrmMain.btnNewReceiptClick(Sender: TObject);
+var
+  FormPay: TfrmPayment;
+begin
+  FormPay := TfrmPayment.Create(nil);
+  try
+    FormPay.LicenseManager := FLicenseMgr;
+    if Assigned(FLicenseMgr) then
+      FormPay.UserID := FLicenseMgr.CurrentLicense.UserID;
+    if FormPay.ShowModal = mrOK then
+      RefreshPaymentReceipts;
+  finally
+    FormPay.Free;
+  end;
+end;
+
+procedure TfrmMain.btnRefreshReceiptsClick(Sender: TObject);
+begin
+  RefreshPaymentReceipts;
+end;
+
+procedure TfrmMain.btnApproveReceiptClick(Sender: TObject);
+var
+  RecID: Integer;
+  Obs: string;
+begin
+  if lvReceipts.Selected = nil then
+  begin
+    ShowMessage('Selecione um comprovante na lista para aprovar.');
+    Exit;
+  end;
+
+  RecID := StrToIntDef(lvReceipts.Selected.Caption, 0);
+  Obs := InputBox('Aprovar Licença', 'Informe uma observação para a liberação:', 'Pagamento PIX verificado e aprovado');
+  if Trim(Obs) = '' then Exit;
+
+  if FLicenseMgr.ApproveReceipt(RecID, FLicenseMgr.CurrentLicense.UserID, 30, Obs) then
+  begin
+    ShowMessage('Licença APROVADA com sucesso! 30 dias adicionados ao usuário.');
+    RefreshPaymentReceipts;
+    RefreshDashboard;
+  end
+  else
+    MessageDlg('Erro', 'Falha ao aprovar o comprovante.', mtError, [mbOK], 0);
+end;
+
+procedure TfrmMain.btnRejectReceiptClick(Sender: TObject);
+var
+  RecID: Integer;
+  Obs: string;
+begin
+  if lvReceipts.Selected = nil then
+  begin
+    ShowMessage('Selecione um comprovante na lista para rejeitar.');
+    Exit;
+  end;
+
+  RecID := StrToIntDef(lvReceipts.Selected.Caption, 0);
+  Obs := InputBox('Rejeitar Comprovante', 'Informe o motivo da rejeição:', 'Comprovante ilegível ou valor incorreto');
+  if Trim(Obs) = '' then Exit;
+
+  if FLicenseMgr.RejectReceipt(RecID, Obs) then
+  begin
+    ShowMessage('Comprovante REJEITADO.');
+    RefreshPaymentReceipts;
+  end
+  else
+    MessageDlg('Erro', 'Falha ao rejeitar o comprovante.', mtError, [mbOK], 0);
+end;
+
+procedure TfrmMain.btnViewReceiptClick(Sender: TObject);
+var
+  RecID: Integer;
+  FormViewer: TfrmReceiptViewer;
+begin
+  if lvReceipts.Selected = nil then
+  begin
+    ShowMessage('Selecione um comprovante na lista para visualizar.');
+    Exit;
+  end;
+
+  RecID := StrToIntDef(lvReceipts.Selected.Caption, 0);
+  if RecID <= 0 then Exit;
+
+  FormViewer := TfrmReceiptViewer.Create(nil);
+  try
+    FormViewer.LicenseManager := FLicenseMgr;
+    FormViewer.ReceiptID      := RecID;
+    FormViewer.ShowModal;
+  finally
+    FormViewer.Free;
+  end;
+end;
+
+procedure TfrmMain.lvReceiptsDblClick(Sender: TObject);
+begin
+  btnViewReceiptClick(Sender);
 end;
 
 end.

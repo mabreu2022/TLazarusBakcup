@@ -1,18 +1,19 @@
 object frmPayment: TfrmPayment
   Left = 320
-  Height = 520
-  Top = 150
+  Height = 620
+  Top = 100
   Width = 500
   BorderIcons = [biSystemMenu, biMinimize]
   BorderStyle = bsSingle
   Caption = 'Registro de Licença & Pagamento PIX'
-  ClientHeight = 520
+  ClientHeight = 620
   ClientWidth = 500
   Color = 2105376
   Font.Color = clWhite
   Font.Height = -13
   Font.Name = 'Segoe UI'
   OnCreate = FormCreate
+  OnShow = FormShow
   Position = poScreenCenter
   object pnlHeader: TPanel
     Left = 0
@@ -38,7 +39,7 @@ object frmPayment: TfrmPayment
   end
   object pnlBody: TPanel
     Left = 0
-    Height = 455
+    Height = 555
     Top = 65
     Width = 500
     Align = alClient
@@ -47,20 +48,20 @@ object frmPayment: TfrmPayment
     TabOrder = 1
     object lblInstruction: TLabel
       Left = 20
-      Height = 40
-      Top = 15
+      Height = 36
+      Top = 10
       Width = 460
       AutoSize = False
-      Caption = 'Seu período de avaliação gratuita terminou. Para desbloquear o acesso ilimitado ao Lazarus Portable, efetue o pagamento via PIX e envie o comprovante.'
+      Caption = 'Para ativar o acesso ilimitado ao Lazarus Portable, escaneie o QR Code abaixo no seu aplicativo bancário ou utilize o código Copia e Cola.'
       Font.Color = 14474460
-      Font.Height = -13
+      Font.Height = -12
       ParentFont = False
       WordWrap = True
     end
     object pnlPIXBox: TPanel
       Left = 20
-      Height = 110
-      Top = 65
+      Height = 230
+      Top = 50
       Width = 460
       BevelOuter = bvNone
       Color = 1315860
@@ -69,57 +70,82 @@ object frmPayment: TfrmPayment
         Left = 14
         Height = 20
         Top = 10
-        Width = 220
-        Caption = '📲 Chave PIX (E-mail / Aleatória):'
+        Width = 260
+        Caption = '📲 Escaneie o QR Code ou Copie a Chave:'
         Font.Color = 65535
         Font.Height = -14
         Font.Style = [fsBold]
         ParentFont = False
       end
-      object edtPIXKey: TEdit
+      object imgQRCode: TImage
         Left = 14
+        Height = 175
+        Top = 38
+        Width = 175
+        Center = True
+        Proportional = True
+        Stretch = True
+      end
+      object lblCopyTitle: TLabel
+        Left = 205
+        Height = 18
+        Top = 38
+        Width = 150
+        Caption = 'Ou use o PIX Copia e Cola:'
+        Font.Color = 14474460
+        Font.Height = -12
+        ParentFont = False
+      end
+      object edtPIXKey: TEdit
+        Left = 205
         Height = 30
-        Top = 35
-        Width = 320
+        Top = 60
+        Width = 240
         Color = 3026478
         Font.Color = clWhite
-        Font.Height = -13
+        Font.Height = -12
         ParentFont = False
         ReadOnly = True
         TabOrder = 0
-        Text = 'financeiro@lazarusportable.com.br'
+        Text = 'Gerando PIX...'
       end
       object btnCopyPIX: TButton
-        Left = 342
-        Height = 30
-        Top = 35
-        Width = 104
-        Caption = '📋 Copiar'
+        Left = 205
+        Height = 34
+        Top = 96
+        Width = 240
+        Caption = '📋 Copiar Código PIX'
+        Font.Color = clWhite
+        Font.Style = [fsBold]
         OnClick = btnCopyPIXClick
+        ParentFont = False
         TabOrder = 1
       end
       object lblPIXDesc: TLabel
-        Left = 14
-        Height = 18
-        Top = 75
-        Width = 400
-        Caption = 'Valor: R$ 49,90 (Licença Vitalícia / Suporte e Atualizações)'
+        Left = 205
+        Height = 45
+        Top = 140
+        Width = 240
+        AutoSize = False
+        Caption = 'Valor: R$ 49,90 | C6 Bank'
         Font.Color = 65280
+        Font.Height = -12
         Font.Style = [fsBold]
         ParentFont = False
+        WordWrap = True
       end
     end
     object lblFileTitle: TLabel
       Left = 20
       Height = 18
-      Top = 190
+      Top = 290
       Width = 300
       Caption = '📎 Anexar Comprovante de Pagamento (PDF/JPG):'
     end
     object edtFilePath: TEdit
       Left = 20
       Height = 30
-      Top = 212
+      Top = 312
       Width = 350
       Color = 3026478
       Font.Color = clWhite
@@ -129,7 +155,7 @@ object frmPayment: TfrmPayment
     object btnSelectFile: TButton
       Left = 376
       Height = 30
-      Top = 212
+      Top = 312
       Width = 104
       Caption = '🔍 Procurar...'
       OnClick = btnSelectFileClick
@@ -138,14 +164,14 @@ object frmPayment: TfrmPayment
     object lblObs: TLabel
       Left = 20
       Height = 18
-      Top = 255
+      Top = 355
       Width = 300
       Caption = 'Observações / Nome do Pagador / CPF / CNPJ:'
     end
     object edtObs: TEdit
       Left = 20
       Height = 30
-      Top = 277
+      Top = 377
       Width = 460
       Color = 3026478
       Font.Color = clWhite
@@ -154,7 +180,7 @@ object frmPayment: TfrmPayment
     object btnUploadReceipt: TButton
       Left = 20
       Height = 44
-      Top = 325
+      Top = 425
       Width = 460
       Caption = '📤 Enviar Comprovante para Análise'
       Font.Color = clWhite
@@ -165,8 +191,8 @@ object frmPayment: TfrmPayment
     end
     object lblStatusMsg: TLabel
       Left = 20
-      Height = 40
-      Top = 385
+      Height = 35
+      Top = 480
       Width = 460
       Alignment = taCenter
       AutoSize = False

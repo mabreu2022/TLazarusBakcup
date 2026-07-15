@@ -1,5 +1,5 @@
 {
-  frmConfigDB.pas - Tela de Configuração de Conexão com o Banco de Dados Firebird
+  frmConfigDB.pas - Tela de Configuração de Conexão com o Banco Firebird & Dados PIX
 }
 unit frmConfigDB;
 
@@ -8,8 +8,8 @@ unit frmConfigDB;
 interface
 
 uses
-  Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls, ExtCtrls,
-  IniFiles, uLicenseManager, uConfigCrypt;
+  Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls, ExtCtrls, ComCtrls,
+  uLicenseManager, uConfigCrypt;
 
 type
 
@@ -18,7 +18,11 @@ type
   TfrmConfigDB = class(TForm)
     pnlHeader   : TPanel;
     lblTitle    : TLabel;
-    pnlBody     : TPanel;
+    pgcConfig   : TPageControl;
+    tabDBConfig : TTabSheet;
+    tabPIXConfig: TTabSheet;
+
+    // Campos Banco
     lblHost     : TLabel;
     edtHost     : TEdit;
     lblPort     : TLabel;
@@ -37,14 +41,31 @@ type
     btnSave     : TButton;
     btnCancel   : TButton;
 
+    // Campos PIX
+    lblPixKey   : TLabel;
+    edtPixKey   : TEdit;
+    lblPixType  : TLabel;
+    cboPixType  : TComboBox;
+    lblPixHolder: TLabel;
+    edtPixHolder: TEdit;
+    lblPixBank  : TLabel;
+    edtPixBank  : TEdit;
+    lblPixAmount: TLabel;
+    edtPixAmount: TEdit;
+    lblPixInst  : TLabel;
+    memoPixInst : TMemo;
+    btnSavePix  : TButton;
+
     procedure FormCreate(Sender: TObject);
     procedure btnTestClick(Sender: TObject);
     procedure btnSaveClick(Sender: TObject);
     procedure btnCancelClick(Sender: TObject);
+    procedure btnSavePixClick(Sender: TObject);
   private
     FConfigDir: string;
     procedure LoadConfig;
     procedure SaveConfig;
+    procedure LoadPIXConfig;
   public
   end;
 
@@ -59,88 +80,109 @@ procedure TfrmConfigDB.FormCreate(Sender: TObject);
 begin
   FConfigDir := IncludeTrailingPathDelimiter(ExtractFileDir(Application.ExeName)) + 'LazarusConfig' + PathDelim;
   LoadConfig;
+  LoadPIXConfig;
 end;
 
 procedure TfrmConfigDB.LoadConfig;
 var
-  Ini: TIniFile;
   ConfigFile: string;
 begin
   ConfigFile := FConfigDir + 'vps_config.ini';
-  Ini := TIniFile.Create(ConfigFile);
+  TConfigCrypt.MigrateAndEncrypt(ConfigFile);
+  edtHost.Text      := TConfigCrypt.ReadEncrypted(ConfigFile, 'Database', 'Host', 'localhost');
+  edtPort.Text      := TConfigCrypt.ReadEncrypted(ConfigFile, 'Database', 'Port', '3050');
+  edtDBPath.Text    := TConfigCrypt.ReadEncrypted(ConfigFile, 'Database', 'Path', 'C:\Fontes\Componentes\TLazarusBakcup\Database\LazarusBackup.fdb');
+  edtUser.Text      := TConfigCrypt.ReadEncrypted(ConfigFile, 'Database', 'User', 'SYSDBA');
+  edtPassword.Text  := TConfigCrypt.ReadEncrypted(ConfigFile, 'Database', 'Password', 'masterkey');
+  cboCharset.Text   := TConfigCrypt.ReadEncrypted(ConfigFile, 'Database', 'Charset', 'UTF8');
+  edtClientLib.Text := TConfigCrypt.ReadEncrypted(ConfigFile, 'Database', 'ClientLib', 'C:\Program Files (x86)\Firebird\Firebird_5_0\fbclient.dll');
+end;
+
+procedure TfrmConfigDB.LoadPIXConfig;
+var
+  LicMgr: TLicenseManager;
+  Conf: TPIXConfigInfo;
+begin
+  LicMgr := TLicenseManager.Create(FConfigDir);
   try
-    edtHost.Text      := Ini.ReadString('VPS', 'Host', 'localhost');
-    edtPort.Text      := Ini.ReadString('VPS', 'Port', '3050');
-    edtDBPath.Text    := Ini.ReadString('VPS', 'DatabasePath',
-                           'C:\Fontes\Componentes\TLazarusBakcup\Database\LazarusBackup.fdb');
-    cboCharset.Text   := Ini.ReadString('VPS', 'Charset', 'UTF8');
-    edtClientLib.Text := Ini.ReadString('VPS', 'ClientLib',
-                           'C:\Program Files (x86)\Firebird\Firebird_5_0\fbclient.dll');
+    Conf := LicMgr.GetPIXConfig;
+    edtPixKey.Text    := Conf.ChavePIX;
+    cboPixType.Text   := Conf.TipoChave;
+    edtPixHolder.Text := Conf.Titular;
+    edtPixBank.Text   := Conf.Banco;
+    edtPixAmount.Text := FloatToStrF(Conf.ValorLicenca, ffFixed, 15, 2);
+    memoPixInst.Text  := Conf.Instrucoes;
   finally
-    Ini.Free;
+    LicMgr.Free;
   end;
-
-  edtUser.Text     := TConfigCrypt.ReadEncrypted(ConfigFile, 'VPS', 'User', 'SYSDBA');
-  edtPassword.Text := TConfigCrypt.ReadEncrypted(ConfigFile, 'VPS', 'Password', 'masterkey');
-
-  if cboCharset.ItemIndex < 0 then
-    cboCharset.ItemIndex := 0;
 end;
 
 procedure TfrmConfigDB.SaveConfig;
 var
-  Ini: TIniFile;
   ConfigFile: string;
 begin
   ConfigFile := FConfigDir + 'vps_config.ini';
-  Ini := TIniFile.Create(ConfigFile);
-  try
-    Ini.WriteString('VPS', 'Host', Trim(edtHost.Text));
-    Ini.WriteString('VPS', 'Port', Trim(edtPort.Text));
-    Ini.WriteString('VPS', 'DatabasePath', Trim(edtDBPath.Text));
-    Ini.WriteString('VPS', 'Charset', Trim(cboCharset.Text));
-    Ini.WriteString('VPS', 'ClientLib', Trim(edtClientLib.Text));
-  finally
-    Ini.Free;
-  end;
-
-  TConfigCrypt.WriteEncrypted(ConfigFile, 'VPS', 'User', Trim(edtUser.Text));
-  TConfigCrypt.WriteEncrypted(ConfigFile, 'VPS', 'Password', Trim(edtPassword.Text));
+  TConfigCrypt.WriteEncrypted(ConfigFile, 'Database', 'Host',      edtHost.Text);
+  TConfigCrypt.WriteEncrypted(ConfigFile, 'Database', 'Port',      edtPort.Text);
+  TConfigCrypt.WriteEncrypted(ConfigFile, 'Database', 'Path',      edtDBPath.Text);
+  TConfigCrypt.WriteEncrypted(ConfigFile, 'Database', 'User',      edtUser.Text);
+  TConfigCrypt.WriteEncrypted(ConfigFile, 'Database', 'Password',  edtPassword.Text);
+  TConfigCrypt.WriteEncrypted(ConfigFile, 'Database', 'Charset',   cboCharset.Text);
+  TConfigCrypt.WriteEncrypted(ConfigFile, 'Database', 'ClientLib', edtClientLib.Text);
 end;
 
 procedure TfrmConfigDB.btnTestClick(Sender: TObject);
 var
-  LicenseMgr: TLicenseManager;
+  LicMgr: TLicenseManager;
   ErrMsg: string;
-  PortNum: Integer;
 begin
-  LicenseMgr := TLicenseManager.Create(FConfigDir);
-  try
-    PortNum := StrToIntDef(Trim(edtPort.Text), 3050);
-    LicenseMgr.SetServerConfig(
-      Trim(edtHost.Text),
-      Trim(edtDBPath.Text),
-      PortNum,
-      Trim(edtUser.Text),
-      Trim(edtPassword.Text),
-      Trim(cboCharset.Text),
-      Trim(edtClientLib.Text)
-    );
+  SaveConfig;
 
-    if LicenseMgr.TestConnection(ErrMsg) then
-      ShowMessage('Conexão com o Banco de Dados Firebird realizada com SUCESSO!')
+  LicMgr := TLicenseManager.Create(FConfigDir);
+  try
+    if LicMgr.TestConnection(ErrMsg) then
+      ShowMessage('Conexão estabelecida com sucesso no banco Firebird!')
     else
-      MessageDlg('Erro na Conexão', 'Falha ao conectar com o banco Firebird:' + #13#10#13#10 + ErrMsg, mtError, [mbOK], 0);
+      MessageDlg('Erro de Conexão', 'Falha ao conectar:' + #13#10 + ErrMsg, mtError, [mbOK], 0);
   finally
-    LicenseMgr.Free;
+    LicMgr.Free;
   end;
 end;
 
 procedure TfrmConfigDB.btnSaveClick(Sender: TObject);
 begin
   SaveConfig;
-  ShowMessage('Configurações do banco de dados salvas com sucesso!');
+  ShowMessage('Configurações de conexão salvas com sucesso!');
   ModalResult := mrOK;
+end;
+
+procedure TfrmConfigDB.btnSavePixClick(Sender: TObject);
+var
+  LicMgr: TLicenseManager;
+  Conf: TPIXConfigInfo;
+  ValStr: string;
+  Val: Double;
+begin
+  ValStr := StringReplace(edtPixAmount.Text, ',', '.', [rfReplaceAll]);
+  Val    := StrToFloatDef(ValStr, 49.90);
+
+  Conf.ChavePIX     := Trim(edtPixKey.Text);
+  Conf.TipoChave    := cboPixType.Text;
+  Conf.Titular      := Trim(edtPixHolder.Text);
+  Conf.Banco        := Trim(edtPixBank.Text);
+  Conf.ValorLicenca := Val;
+  Conf.Instrucoes   := Trim(memoPixInst.Text);
+
+  LicMgr := TLicenseManager.Create(FConfigDir);
+  try
+    if LicMgr.SavePIXConfig(Conf) then
+      ShowMessage('Configurações do PIX salvas no Banco de Dados com sucesso!')
+    else
+      MessageDlg('Erro', 'Falha ao salvar a Chave PIX no Banco de Dados.' + #13#10 +
+        'Verifique a conexão de rede ou a aba Conexão Firebird.', mtError, [mbOK], 0);
+  finally
+    LicMgr.Free;
+  end;
 end;
 
 procedure TfrmConfigDB.btnCancelClick(Sender: TObject);
