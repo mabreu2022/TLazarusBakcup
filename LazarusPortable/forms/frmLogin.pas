@@ -18,6 +18,7 @@ type
   TfrmLogin = class(TForm)
     pnlHeader       : TPanel;
     lblTitle        : TLabel;
+    imgLogo         : TImage;
     pnlBody         : TPanel;
     lblName         : TLabel;
     edtName         : TEdit;
@@ -58,12 +59,23 @@ implementation
 {$R *.lfm}
 
 procedure TfrmLogin.FormCreate(Sender: TObject);
+var
+  LogoFile: string;
 begin
   FConfigDir   := IncludeTrailingPathDelimiter(ExtractFileDir(Application.ExeName)) + 'LazarusConfig' + PathDelim;
   ForceDirectories(FConfigDir);
   FLicenseMgr  := TLicenseManager.Create(FConfigDir);
   FIsRegister  := False;
   FAuthSuccess := False;
+
+  LogoFile := ExtractFilePath(Application.ExeName) + 'logo_nova_conect.jpg';
+  if FileExists(LogoFile) then
+  begin
+    try
+      imgLogo.Picture.LoadFromFile(LogoFile);
+    except
+    end;
+  end;
 
   LoadVPSConfig;
   UpdateLayout;

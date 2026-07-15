@@ -18,6 +18,7 @@ type
   TfrmPayment = class(TForm)
     pnlHeader       : TPanel;
     lblTitle        : TLabel;
+    imgPayLogo      : TImage;
     pnlBody         : TPanel;
     lblInstruction  : TLabel;
     pnlPIXBox       : TPanel;
@@ -58,8 +59,18 @@ implementation
 {$R *.lfm}
 
 procedure TfrmPayment.FormCreate(Sender: TObject);
+var
+  LogoFile: string;
 begin
   FUserID := 0;
+  LogoFile := ExtractFilePath(Application.ExeName) + 'logo_nova_conect.jpg';
+  if FileExists(LogoFile) then
+  begin
+    try
+      imgPayLogo.Picture.LoadFromFile(LogoFile);
+    except
+    end;
+  end;
 end;
 
 procedure TfrmPayment.FormShow(Sender: TObject);

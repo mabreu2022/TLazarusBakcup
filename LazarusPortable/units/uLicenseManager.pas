@@ -731,7 +731,8 @@ end;
 function TLicenseManager.ApproveReceipt(AReceiptID, AUserID: Integer; ADaysToAdd: Integer; const AObs: string): Boolean;
 var
   Query: TSQLQuery;
-  ExpDate: TDateTime;
+  TargetUserID: Integer;
+  CurrentExp, ExpDate: TDateTime;
 begin
   Result := False;
   if not InitConnection then Exit;
@@ -741,16 +742,37 @@ begin
     Query.DataBase := FConnection;
     Query.Transaction := FTransaction;
 
+    // 1. Busca o USUARIO_ID real do dono do comprovante
+    Query.SQL.Text := 'SELECT USUARIO_ID FROM COMPROVANTES_PAGAMENTO WHERE ID = :ID';
+    Query.ParamByName('ID').AsInteger := AReceiptID;
+    Query.Open;
+
+    if Query.IsEmpty then Exit;
+    TargetUserID := Query.FieldByName('USUARIO_ID').AsInteger;
+    Query.Close;
+
+    // 2. Marca o comprovante como APROVADO
     Query.SQL.Text := 'UPDATE COMPROVANTES_PAGAMENTO SET STATUS_ANALISE = ''APROVADO'', OBSERVACAO = :OBS WHERE ID = :ID';
     Query.ParamByName('OBS').AsString := AObs;
     Query.ParamByName('ID').AsInteger := AReceiptID;
     Query.ExecSQL;
 
-    ExpDate := Now + ADaysToAdd;
+    // 3. Busca a expiração atual do usuário (acumula dias se licença estiver ativa)
+    Query.SQL.Text := 'SELECT FIRST 1 DATA_EXPIRACAO FROM LICENCAS WHERE USUARIO_ID = :UID AND STATUS_ATIVO = 1 ORDER BY DATA_EXPIRACAO DESC';
+    Query.ParamByName('UID').AsInteger := TargetUserID;
+    Query.Open;
 
+    CurrentExp := Now;
+    if not Query.IsEmpty and (Query.FieldByName('DATA_EXPIRACAO').AsDateTime > Now) then
+      CurrentExp := Query.FieldByName('DATA_EXPIRACAO').AsDateTime;
+    Query.Close;
+
+    ExpDate := CurrentExp + ADaysToAdd;
+
+    // 4. Insere a nova licença para o usuário correto
     Query.SQL.Text := 'INSERT INTO LICENCAS (USUARIO_ID, TIPO_LICENCA, DATA_INICIO, DATA_EXPIRACAO, STATUS_ATIVO) ' +
                       'VALUES (:UID, ''MENSAL'', CURRENT_TIMESTAMP, :EXP, 1)';
-    Query.ParamByName('UID').AsInteger := AUserID;
+    Query.ParamByName('UID').AsInteger := TargetUserID;
     Query.ParamByName('EXP').AsDateTime := ExpDate;
     Query.ExecSQL;
 

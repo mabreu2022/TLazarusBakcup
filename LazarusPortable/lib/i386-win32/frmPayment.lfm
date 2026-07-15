@@ -24,14 +24,24 @@ object frmPayment: TfrmPayment
     BevelOuter = bvNone
     Color = 1048600
     TabOrder = 0
+    object imgPayLogo: TImage
+      Left = 390
+      Height = 55
+      Top = 5
+      Width = 105
+      Align = alRight
+      Center = True
+      Proportional = True
+      Stretch = True
+    end
     object lblTitle: TLabel
       Left = 16
       Height = 28
       Top = 18
-      Width = 420
-      Caption = '🔒 Trial de 10 Dias Expirado - Ativar Licença'
+      Width = 360
+      Caption = '🔒 Ativar Licença via PIX'
       Font.Color = clWhite
-      Font.Height = -20
+      Font.Height = -18
       Font.Name = 'Segoe UI'
       Font.Style = [fsBold]
       ParentFont = False

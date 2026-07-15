@@ -27,6 +27,7 @@ type
   TfrmMain = class(TForm)
     pnlTop         : TPanel;
     lblTitle       : TLabel;
+    imgMainLogo    : TImage;
     btnLaunch      : TButton;
     btnConfig      : TButton;
     pnlLeft        : TPanel;
@@ -226,11 +227,20 @@ implementation
 
 procedure TfrmMain.FormCreate(Sender: TObject);
 var
-  ExeDir: string;
+  ExeDir, LogoFile: string;
 begin
   FUserLoggedOut := False;
   // Determina o diretório portável (onde está o .exe)
   ExeDir := ExtractFileDir(Application.ExeName);
+
+  LogoFile := IncludeTrailingPathDelimiter(ExeDir) + 'logo_nova_conect.jpg';
+  if FileExists(LogoFile) then
+  begin
+    try
+      imgMainLogo.Picture.LoadFromFile(LogoFile);
+    except
+    end;
+  end;
 
   // Inicializa os gerenciadores
   FConfig      := TPortableConfig.Create(ExeDir);
