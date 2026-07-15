@@ -33,6 +33,15 @@ begin
   Application.Initialize;
   Application.Title := 'Lazarus Portable Manager';
 
+  {$IFDEF MSWINDOWS}
+  // Configura a janela principal no Windows Taskbar para evitar erros de renderização no Explorer ao minimizar
+  Application.MainFormOnTaskbar := True;
+  {$ENDIF}
+
+  // Instancia FormMain via CreateForm para definir Application.MainForm
+  Application.CreateForm(TfrmMain, FormMain);
+  FormMain.Hide;
+
   repeat
     AllowRun        := False;
     UserWantsLogout := False;
@@ -65,14 +74,9 @@ begin
 
     if AllowRun then
     begin
-      FormMain := TfrmMain.Create(nil);
-      try
-        FormMain.LicenseManager := SavedLicenseMgr;
-        FormMain.ShowModal;
-        UserWantsLogout := FormMain.UserLoggedOut;
-      finally
-        FormMain.Free;
-      end;
+      FormMain.LicenseManager := SavedLicenseMgr;
+      FormMain.ShowModal;
+      UserWantsLogout := FormMain.UserLoggedOut;
     end
     else
       FreeAndNil(SavedLicenseMgr);
