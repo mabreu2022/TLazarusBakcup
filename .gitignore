@@ -1,0 +1,19 @@
+# Firebird Databases
+*.fdb
+*.gdb
+
+# Lazarus & Free Pascal build artifacts
+*.exe
+*.o
+*.ppu
+*.or
+*.res
+*.bak
+*.manifest
+backup/
+lib/
+scratch/
+
+# Environment / Logs
+*.log
+vps_config.ini

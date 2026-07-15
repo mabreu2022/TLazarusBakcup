@@ -13,7 +13,10 @@ object frmMain: TfrmMain
   OnClose = FormClose
   OnCreate = FormCreate
   OnDestroy = FormDestroy
+  OnResize = FormResize
+  OnShow = FormShow
   Position = poScreenCenter
+  WindowState = wsMaximized
   object pnlTop: TPanel
     Left = 0
     Height = 56
@@ -128,170 +131,371 @@ object frmMain: TfrmMain
         Caption = 'Dashboard'
         object pnlDash: TPanel
           Left = 0
-          Height = 510
+          Height = 540
           Top = 0
           Width = 718
           Align = alClient
           BevelOuter = bvNone
           Color = 2105376
           TabOrder = 0
-          object lblDashTitle: TLabel
-            Left = 16
-            Height = 28
-            Top = 16
-            Width = 200
-            Caption = 'Dashboard'
-            Font.Color = clWhite
-            Font.Height = -21
-            Font.Name = 'Segoe UI'
-            Font.Style = [fsBold]
-            ParentFont = False
-          end
-          object lblPortableDir: TLabel
-            Left = 16
-            Height = 16
-            Top = 60
-            Width = 200
-            Caption = '📁 Diretório portável:'
-            Font.Color = 12632256
-            Font.Height = -12
-            Font.Name = 'Segoe UI'
-            ParentFont = False
-          end
-          object lblPortableDirVal: TLabel
-            Left = 16
-            Height = 18
-            Top = 76
-            Width = 680
-            Caption = '(carregando...)'
-            Font.Color = clWhite
-            Font.Height = -13
-            Font.Name = 'Segoe UI'
-            ParentFont = False
-          end
-          object lblStatusTitle: TLabel
-            Left = 16
-            Height = 16
-            Top = 110
-            Width = 100
-            Caption = '🔋 Status:'
-            Font.Color = 12632256
-            Font.Height = -12
-            Font.Name = 'Segoe UI'
-            ParentFont = False
-          end
-          object lblStatus: TLabel
-            Left = 16
-            Height = 18
-            Top = 128
-            Width = 200
-            Caption = '✅ Instalação válida'
-            Font.Color = 5570560
-            Font.Height = -13
-            Font.Name = 'Segoe UI'
-            Font.Style = [fsBold]
-            ParentFont = False
-          end
-          object pnlActions: TPanel
-            Left = 16
-            Height = 180
-            Top = 170
-            Width = 680
+          object pnlLicBanner: TPanel
+            Left = 8
+            Height = 35
+            Top = 8
+            Width = 702
+            Align = alTop
+            BorderSpacing.Around = 8
             BevelOuter = bvNone
-            Color = 3026478
+            Color = 2652875
             TabOrder = 0
-            object lblActTitle: TLabel
+            Visible = False
+            object lblLicBannerMsg: TLabel
               Left = 12
-              Height = 18
-              Top = 12
-              Width = 100
-              Caption = 'Ações Rápidas'
-              Font.Color = 12632256
-              Font.Height = -12
-              Font.Name = 'Segoe UI'
+              Height = 20
+              Top = 7
+              Width = 480
+              Caption = '⚠️ Alerta de Licença: Sua licença expira em breve!'
+              Font.Color = 65535
+              Font.Height = -13
+              Font.Style = [fsBold]
               ParentFont = False
             end
-            object btnPatchNow: TButton
-              Left = 12
-              Height = 40
-              Top = 36
-              Width = 200
-              Caption = '🔧 Re-Patch Configurações'
-              Font.Height = -12
-              Font.Name = 'Segoe UI'
-              OnClick = btnPatchNowClick
+            object btnLicBannerAction: TButton
+              Left = 550
+              Height = 25
+              Top = 5
+              Width = 135
+              Caption = '💳 Renovar Agora'
+              Font.Height = -11
+              Font.Style = [fsBold]
+              OnClick = btnStatLicActionClick
               TabOrder = 0
             end
-            object btnBackup: TButton
-              Left = 220
-              Height = 40
-              Top = 36
+          end
+          object pnlStatCards: TPanel
+            Left = 8
+            Height = 150
+            Top = 51
+            Width = 702
+            Align = alTop
+            BorderSpacing.Around = 8
+            BevelOuter = bvNone
+            Color = 2105376
+            TabOrder = 1
+            object pnlStatLic: TPanel
+              Left = 0
+              Height = 150
+              Top = 0
+              Width = 168
+              BevelOuter = bvNone
+              Color = 3026478
+              TabOrder = 0
+              object lblStatLicTitle: TLabel
+                Left = 10
+                Height = 16
+                Top = 8
+                Width = 148
+                Caption = '🛡️ LICENÇA / TRIAL'
+                Font.Color = 12632256
+                Font.Height = -11
+                Font.Style = [fsBold]
+                ParentFont = False
+              end
+              object lblStatLicVal: TLabel
+                Left = 10
+                Height = 20
+                Top = 28
+                Width = 148
+                Caption = 'Ativa (10 dias)'
+                Font.Color = clWhite
+                Font.Height = -14
+                Font.Style = [fsBold]
+                ParentFont = False
+              end
+              object pbLicDays: TProgressBar
+                Left = 10
+                Height = 12
+                Top = 54
+                Width = 148
+                Max = 30
+                Position = 30
+                TabOrder = 0
+              end
+              object lblStatLicSub: TLabel
+                Left = 10
+                Height = 14
+                Top = 72
+                Width = 148
+                Caption = 'vencimento 13/08/2026'
+                Font.Color = 11184810
+                Font.Height = -10
+                ParentFont = False
+              end
+              object btnStatLicAction: TButton
+                Left = 10
+                Height = 32
+                Top = 106
+                Width = 148
+                Caption = '💳 Renovar PIX'
+                Font.Height = -11
+                OnClick = btnStatLicActionClick
+                TabOrder = 1
+              end
+            end
+            object pnlStatPkgs: TPanel
+              Left = 176
+              Height = 150
+              Top = 0
+              Width = 168
+              BevelOuter = bvNone
+              Color = 3026478
+              TabOrder = 1
+              object lblStatPkgsTitle: TLabel
+                Left = 10
+                Height = 16
+                Top = 8
+                Width = 148
+                Caption = '📦 COMPONENTES'
+                Font.Color = 12632256
+                Font.Height = -11
+                Font.Style = [fsBold]
+                ParentFont = False
+              end
+              object lblStatPkgsVal: TLabel
+                Left = 10
+                Height = 22
+                Top = 32
+                Width = 148
+                Caption = '12 Detectados'
+                Font.Color = clWhite
+                Font.Height = -16
+                Font.Style = [fsBold]
+                ParentFont = False
+              end
+              object lblStatPkgsSub: TLabel
+                Left = 10
+                Height = 14
+                Top = 64
+                Width = 148
+                Caption = 'OPM + LazUtils OK'
+                Font.Color = 11184810
+                Font.Height = -11
+                ParentFont = False
+              end
+              object btnStatPkgsAction: TButton
+                Left = 10
+                Height = 32
+                Top = 106
+                Width = 148
+                Caption = '📦 Gerenciar'
+                Font.Height = -11
+                OnClick = btnStatPkgsActionClick
+                TabOrder = 0
+              end
+            end
+            object pnlStatProfiles: TPanel
+              Left = 352
+              Height = 150
+              Top = 0
+              Width = 168
+              BevelOuter = bvNone
+              Color = 3026478
+              TabOrder = 2
+              object lblStatProfTitle: TLabel
+                Left = 10
+                Height = 16
+                Top = 8
+                Width = 148
+                Caption = '👤 PERFIL ATIVO'
+                Font.Color = 12632256
+                Font.Height = -11
+                Font.Style = [fsBold]
+                ParentFont = False
+              end
+              object lblStatProfVal: TLabel
+                Left = 10
+                Height = 22
+                Top = 32
+                Width = 148
+                Caption = 'Padrão'
+                Font.Color = clWhite
+                Font.Height = -16
+                Font.Style = [fsBold]
+                ParentFont = False
+              end
+              object lblStatProfSub: TLabel
+                Left = 10
+                Height = 14
+                Top = 64
+                Width = 148
+                Caption = '1 Perfil configurado'
+                Font.Color = 11184810
+                Font.Height = -11
+                ParentFont = False
+              end
+              object btnStatProfAction: TButton
+                Left = 10
+                Height = 32
+                Top = 106
+                Width = 148
+                Caption = '👤 Ver Perfis'
+                Font.Height = -11
+                OnClick = btnStatProfActionClick
+                TabOrder = 0
+              end
+            end
+            object pnlStatBackup: TPanel
+              Left = 528
+              Height = 150
+              Top = 0
+              Width = 170
+              BevelOuter = bvNone
+              Color = 3026478
+              TabOrder = 3
+              object lblStatBackupTitle: TLabel
+                Left = 10
+                Height = 16
+                Top = 8
+                Width = 150
+                Caption = '💾 ÚLTIMO BACKUP'
+                Font.Color = 12632256
+                Font.Height = -11
+                Font.Style = [fsBold]
+                ParentFont = False
+              end
+              object lblStatBackupVal: TLabel
+                Left = 10
+                Height = 22
+                Top = 32
+                Width = 150
+                Caption = 'Hoje 19:30'
+                Font.Color = clWhite
+                Font.Height = -15
+                Font.Style = [fsBold]
+                ParentFont = False
+              end
+              object lblStatBackupSub: TLabel
+                Left = 10
+                Height = 14
+                Top = 64
+                Width = 150
+                Caption = 'Cópia de segurança'
+                Font.Color = 11184810
+                Font.Height = -11
+                ParentFont = False
+              end
+              object btnStatBackupAction: TButton
+                Left = 10
+                Height = 32
+                Top = 106
+                Width = 150
+                Caption = '💾 Criar Backup'
+                Font.Height = -11
+                OnClick = btnBackupClick
+                TabOrder = 0
+              end
+            end
+          end
+          object pnlActions: TPanel
+            Left = 8
+            Height = 120
+            Top = 209
+            Width = 702
+            Align = alTop
+            BorderSpacing.Around = 8
+            BevelOuter = bvNone
+            Color = 3026478
+            TabOrder = 2
+            object lblActTitle: TLabel
+              Left = 12
+              Height = 16
+              Top = 8
               Width = 200
-              Caption = '💾 Backup Manual'
+              Caption = '⚡ BARRA DE PRODUTIVIDADE'
+              Font.Color = 12632256
+              Font.Height = -11
+              Font.Style = [fsBold]
+              ParentFont = False
+            end
+            object btnLaunchMain: TButton
+              Left = 12
+              Height = 34
+              Top = 30
+              Width = 215
+              Caption = '▶ Lançar Lazarus IDE'
+              Font.Color = clWhite
               Font.Height = -12
-              Font.Name = 'Segoe UI'
-              OnClick = btnBackupClick
+              Font.Style = [fsBold]
+              OnClick = btnLaunchClick
+              ParentFont = False
+              TabOrder = 0
+            end
+            object btnOpenConfigDir: TButton
+              Left = 241
+              Height = 34
+              Top = 30
+              Width = 215
+              Caption = '📂 Pasta LazarusConfig'
+              Font.Height = -12
+              OnClick = btnOpenConfigDirClick
               TabOrder = 1
             end
-            object btnRestore: TButton
-              Left = 428
-              Height = 40
-              Top = 36
-              Width = 200
-              Caption = '↩ Restaurar Backup'
+            object btnOpenCMD: TButton
+              Left = 470
+              Height = 34
+              Top = 30
+              Width = 215
+              Caption = '💻 Terminal Portável'
               Font.Height = -12
-              Font.Name = 'Segoe UI'
-              OnClick = btnRestoreClick
+              OnClick = btnOpenCMDClick
               TabOrder = 2
             end
-            object btnDiag: TButton
+            object btnCleanCache: TButton
               Left = 12
-              Height = 40
-              Top = 90
-              Width = 200
-              Caption = '🔍 Executar Diagnóstico'
+              Height = 34
+              Top = 72
+              Width = 215
+              Caption = '🧹 Limpar Cache (.ppu / .o)'
               Font.Height = -12
-              Font.Name = 'Segoe UI'
-              OnClick = btnDiagClick
+              OnClick = btnCleanCacheClick
               TabOrder = 3
             end
-            object btnOpenConfig: TButton
-              Left = 220
-              Height = 40
-              Top = 90
-              Width = 200
-              Caption = '📂 Abrir LazarusConfig'
+            object btnPatchNow: TButton
+              Left = 241
+              Height = 34
+              Top = 72
+              Width = 215
+              Caption = '🔧 Re-Patch Config'
               Font.Height = -12
-              Font.Name = 'Segoe UI'
-              OnClick = btnOpenConfigClick
+              OnClick = btnPatchNowClick
               TabOrder = 4
+            end
+            object btnDiag: TButton
+              Left = 470
+              Height = 34
+              Top = 72
+              Width = 215
+              Caption = '🔍 Diagnóstico Completo'
+              Font.Height = -12
+              OnClick = btnDiagClick
+              TabOrder = 5
             end
           end
           object memoLog: TMemo
-            Left = 16
-            Height = 180
-            Top = 370
-            Width = 680
+            Left = 8
+            Height = 195
+            Top = 337
+            Width = 702
+            Align = alClient
+            BorderSpacing.Around = 8
+            Color = 1052688
             Font.Color = clYellow
             Font.Height = -12
             Font.Name = 'Consolas'
             ParentFont = False
             ReadOnly = True
-            ScrollBars = ssVertical
-            TabOrder = 1
-            WordWrap = False
-            Color = 1052688
-          end
-          object lblLogTitle: TLabel
-            Left = 16
-            Height = 16
-            Top = 354
-            Width = 60
-            Caption = '📋 Log:'
-            Font.Color = 12632256
-            Font.Height = -12
-            Font.Name = 'Segoe UI'
-            ParentFont = False
+            ScrollBars = ssAutoVertical
+            TabOrder = 3
           end
         end
       end
@@ -1034,8 +1238,8 @@ object frmMain: TfrmMain
   end
   object pnlBottom: TPanel
     Left = 0
-    Height = 24
-    Top = 596
+    Height = 26
+    Top = 594
     Width = 900
     Align = alBottom
     BevelOuter = bvNone
@@ -1043,24 +1247,48 @@ object frmMain: TfrmMain
     TabOrder = 3
     object lblStatusBar: TLabel
       Left = 8
-      Height = 16
+      Height = 18
       Top = 4
-      Width = 400
-      Caption = 'Pronto.'
-      Font.Color = 12632256
+      Width = 620
+      Caption = '👤 Usuário: (carregando...) | 🔋 Licença: (carregando...)'
+      Font.Color = clWhite
+      Font.Height = -12
       Font.Name = 'Segoe UI'
+      Font.Style = [fsBold]
+      ParentFont = False
+    end
+    object lblDigitalClock: TLabel
+      Left = 650
+      Height = 18
+      Top = 4
+      Width = 180
+      Alignment = taRightJustify
+      Anchors = [akTop, akRight]
+      Caption = '🕒 00/00/0000 00:00:00'
+      Font.Color = 65535
+      Font.Height = -12
+      Font.Name = 'Segoe UI'
+      Font.Style = [fsBold]
       ParentFont = False
     end
     object lblVersion: TLabel
-      Left = 800
-      Height = 16
+      Left = 840
+      Height = 18
       Top = 4
-      Width = 90
+      Width = 50
       Alignment = taRightJustify
+      Anchors = [akTop, akRight]
       Caption = 'v2.0'
-      Font.Color = 5921370
+      Font.Color = 12632256
+      Font.Height = -12
       Font.Name = 'Segoe UI'
       ParentFont = False
     end
+  end
+  object tmrClock: TTimer
+    Interval = 1000
+    OnTimer = tmrClockTimer
+    Left = 16
+    Top = 16
   end
 end

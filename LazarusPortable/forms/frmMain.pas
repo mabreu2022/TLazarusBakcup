@@ -36,22 +36,42 @@ type
     pgcMain        : TPageControl;
 
     { Tab Dashboard }
-    tabDashboard   : TTabSheet;
-    pnlDash        : TPanel;
-    lblDashTitle   : TLabel;
-    lblPortableDir : TLabel;
-    lblPortableDirVal : TLabel;
-    lblStatusTitle : TLabel;
-    lblStatus      : TLabel;
-    pnlActions     : TPanel;
-    lblActTitle    : TLabel;
-    btnPatchNow    : TButton;
-    btnBackup      : TButton;
-    btnRestore     : TButton;
-    btnDiag        : TButton;
-    btnOpenConfig  : TButton;
-    lblLogTitle    : TLabel;
-    memoLog        : TMemo;
+    tabDashboard        : TTabSheet;
+    pnlDash             : TPanel;
+    pnlLicBanner        : TPanel;
+    lblLicBannerMsg     : TLabel;
+    btnLicBannerAction  : TButton;
+    pnlStatCards        : TPanel;
+    pnlStatLic          : TPanel;
+    lblStatLicTitle     : TLabel;
+    lblStatLicVal       : TLabel;
+    pbLicDays           : TProgressBar;
+    lblStatLicSub       : TLabel;
+    btnStatLicAction    : TButton;
+    pnlStatPkgs         : TPanel;
+    lblStatPkgsTitle    : TLabel;
+    lblStatPkgsVal      : TLabel;
+    lblStatPkgsSub      : TLabel;
+    btnStatPkgsAction   : TButton;
+    pnlStatProfiles     : TPanel;
+    lblStatProfTitle    : TLabel;
+    lblStatProfVal      : TLabel;
+    lblStatProfSub      : TLabel;
+    btnStatProfAction   : TButton;
+    pnlStatBackup       : TPanel;
+    lblStatBackupTitle  : TLabel;
+    lblStatBackupVal    : TLabel;
+    lblStatBackupSub    : TLabel;
+    btnStatBackupAction : TButton;
+    pnlActions          : TPanel;
+    lblActTitle         : TLabel;
+    btnLaunchMain       : TButton;
+    btnOpenConfigDir    : TButton;
+    btnOpenCMD          : TButton;
+    btnCleanCache       : TButton;
+    btnPatchNow         : TButton;
+    btnDiag             : TButton;
+    memoLog             : TMemo;
 
     { Tab Pacotes }
     tabPackages    : TTabSheet;
@@ -136,12 +156,17 @@ type
     { Status bar }
     pnlBottom      : TPanel;
     lblStatusBar   : TLabel;
+    lblDigitalClock: TLabel;
     lblVersion     : TLabel;
+    tmrClock       : TTimer;
 
     { Eventos }
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
+    procedure FormResize(Sender: TObject);
+    procedure FormShow(Sender: TObject);
+    procedure tmrClockTimer(Sender: TObject);
 
     { Menu lateral }
     procedure lstMenuClick(Sender: TObject);
@@ -154,6 +179,12 @@ type
     procedure btnRestoreClick(Sender: TObject);
     procedure btnDiagClick(Sender: TObject);
     procedure btnOpenConfigClick(Sender: TObject);
+    procedure btnOpenConfigDirClick(Sender: TObject);
+    procedure btnOpenCMDClick(Sender: TObject);
+    procedure btnCleanCacheClick(Sender: TObject);
+    procedure btnStatLicActionClick(Sender: TObject);
+    procedure btnStatPkgsActionClick(Sender: TObject);
+    procedure btnStatProfActionClick(Sender: TObject);
 
     { Pacotes }
     procedure btnScanPkgsClick(Sender: TObject);
@@ -199,7 +230,8 @@ type
     FLicenseMgr    : TLicenseManager; // referência externa — não libera aqui
     FUserLoggedOut : Boolean;
   public
-    property LicenseManager: TLicenseManager read FLicenseMgr write FLicenseMgr;
+    procedure SetLicenseManager(AValue: TLicenseManager);
+    property LicenseManager: TLicenseManager read FLicenseMgr write SetLicenseManager;
     property UserLoggedOut: Boolean read FUserLoggedOut;
 
     procedure AppLog(const AMsg: string; ALevel: Integer = 0);
@@ -278,7 +310,12 @@ begin
   AppLog('Lazarus Portable Manager iniciado.');
   AppLog('Diretório portável: ' + FConfig.PortableDir);
 
-  SetStatus('Pronto.');
+  tmrClockTimer(nil);
+end;
+
+procedure TfrmMain.tmrClockTimer(Sender: TObject);
+begin
+  lblDigitalClock.Caption := FormatDateTime('"🕒 " dd/mm/yyyy hh:nn:ss', Now);
 end;
 
 procedure TfrmMain.FormDestroy(Sender: TObject);
@@ -293,7 +330,76 @@ end;
 
 procedure TfrmMain.FormClose(Sender: TObject; var CloseAction: TCloseAction);
 begin
-  // Permite fechamento normal por ShowModal
+  CloseAction := caFree;
+end;
+
+procedure TfrmMain.FormResize(Sender: TObject);
+var
+  AvailWidth, CardW, BtnW, Spacing: Integer;
+begin
+  Spacing := 10;
+
+  // 1. Redimensiona os 4 Cards de Estatística
+  AvailWidth := pnlStatCards.ClientWidth;
+  if AvailWidth > 100 then
+  begin
+    CardW := (AvailWidth - (3 * Spacing)) div 4;
+
+    pnlStatLic.Left        := 0;
+    pnlStatLic.Width       := CardW;
+    btnStatLicAction.Width := CardW - 20;
+    pbLicDays.Width        := CardW - 20;
+
+    pnlStatPkgs.Left       := CardW + Spacing;
+    pnlStatPkgs.Width      := CardW;
+    btnStatPkgsAction.Width := CardW - 20;
+
+    pnlStatProfiles.Left   := (CardW + Spacing) * 2;
+    pnlStatProfiles.Width  := CardW;
+    btnStatProfAction.Width := CardW - 20;
+
+    pnlStatBackup.Left     := (CardW + Spacing) * 3;
+    pnlStatBackup.Width    := CardW;
+    btnStatBackupAction.Width := CardW - 20;
+  end;
+
+  // 2. Redimensiona os Botões de Ações Rápidas (3 colunas x 2 linhas)
+  AvailWidth := pnlActions.ClientWidth - 24;
+  if AvailWidth > 100 then
+  begin
+    BtnW := (AvailWidth - (2 * Spacing)) div 3;
+
+    // Linha 1
+    btnLaunchMain.Left     := 12;
+    btnLaunchMain.Width    := BtnW;
+
+    btnOpenConfigDir.Left  := 12 + BtnW + Spacing;
+    btnOpenConfigDir.Width := BtnW;
+
+    btnOpenCMD.Left        := 12 + (BtnW + Spacing) * 2;
+    btnOpenCMD.Width       := BtnW;
+
+    // Linha 2
+    btnCleanCache.Left     := 12;
+    btnCleanCache.Width    := BtnW;
+
+    btnPatchNow.Left       := 12 + BtnW + Spacing;
+    btnPatchNow.Width      := BtnW;
+
+    btnDiag.Left           := 12 + (BtnW + Spacing) * 2;
+    btnDiag.Width          := BtnW;
+  end;
+end;
+
+procedure TfrmMain.SetLicenseManager(AValue: TLicenseManager);
+begin
+  FLicenseMgr := AValue;
+  RefreshDashboard;
+end;
+
+procedure TfrmMain.FormShow(Sender: TObject);
+begin
+  RefreshDashboard;
 end;
 
 procedure TfrmMain.lstMenuClick(Sender: TObject);
@@ -382,28 +488,62 @@ end;
 
 procedure TfrmMain.RefreshDashboard;
 var
-  IsOK: Boolean;
   LicInfo: TLicenseInfo;
-  StatusStr: string;
+  StatusStr, ProfName, LastBackupStr: string;
+  PkgCount, ProfCount: Integer;
+  Profs: TProfileArray;
 begin
-  lblPortableDirVal.Caption := FConfig.PortableDir;
-
-  IsOK := FConfig.IsValid;
-
-  if IsOK then
-  begin
-    lblStatus.Caption    := '✅  Instalação válida e pronta';
-    lblStatus.Font.Color := clGreen;
-  end
-  else
-  begin
-    lblStatus.Caption    := '⚠️  Problema detectado — execute o Diagnóstico';
-    lblStatus.Font.Color := clRed;
-  end;
-
   if Assigned(FLicenseMgr) then
   begin
     LicInfo := FLicenseMgr.CurrentLicense;
+
+    // 1. Atualiza Card da Licença
+    if LicInfo.IsAdmin then
+    begin
+      lblStatLicVal.Caption := 'Administrador';
+      lblStatLicSub.Caption := 'Acesso Vitalício Total';
+      pbLicDays.Position := 30;
+      pbLicDays.Max := 30;
+      pnlLicBanner.Visible := False;
+    end
+    else
+    begin
+      lblStatLicVal.Caption := Format('%d dias restantes', [LicInfo.DaysRemaining]);
+      lblStatLicSub.Caption := 'Expira: ' + FormatDateTime('dd/mm/yyyy', LicInfo.ExpirationDate);
+
+      pbLicDays.Max := 30;
+      if LicInfo.DaysRemaining > 30 then
+        pbLicDays.Position := 30
+      else
+        pbLicDays.Position := LicInfo.DaysRemaining;
+
+      // Banner de alerta se faltar menos de 7 dias
+      if LicInfo.DaysRemaining <= 7 then
+      begin
+        pnlLicBanner.Visible := True;
+        lblLicBannerMsg.Caption := Format('⚠️ ATENÇÃO: Sua licença expira em %d dias! Renove para não perder o acesso.', [LicInfo.DaysRemaining]);
+      end
+      else
+        pnlLicBanner.Visible := False;
+    end;
+
+    // 2. Atualiza Card de Componentes
+    FPkgManager.ScanInstalledPackages;
+    PkgCount := FPkgManager.PackageList.Count;
+    lblStatPkgsVal.Caption := Format('%d Detectados', [PkgCount]);
+
+    // 3. Atualiza Card de Perfis
+    Profs := FProfManager.ListProfiles;
+    ProfCount := Length(Profs);
+    ProfName := FProfManager.GetActiveProfileName;
+    if ProfName = '' then ProfName := 'Padrão';
+    lblStatProfVal.Caption := ProfName;
+    lblStatProfSub.Caption := Format('%d Perfil(is) configurado(s)', [ProfCount]);
+
+    // 4. Card de Último Backup
+    LastBackupStr := FormatDateTime('dd/mm/yyyy hh:nn', Now);
+    lblStatBackupVal.Caption := LastBackupStr;
+
     if LicInfo.IsAdmin then
       StatusStr := '🏆 Licença Vitalícia Ativa (Administrador Geral)'
     else if LicInfo.Status = lsLicensed then
@@ -416,6 +556,91 @@ begin
 
     SetStatus(Format('Usuário: %s | %s', [LicInfo.UserEmail, StatusStr]));
   end;
+
+  FormResize(nil);
+end;
+
+procedure TfrmMain.btnOpenConfigDirClick(Sender: TObject);
+begin
+  if DirectoryExists(FConfig.ConfigDir) then
+  begin
+    AppLog('Abrindo pasta de configurações: ' + FConfig.ConfigDir);
+    OpenURL('file:///' + StringReplace(FConfig.ConfigDir, '\', '/', [rfReplaceAll]));
+  end
+  else
+    ShowMessage('Diretório de configurações não encontrado: ' + FConfig.ConfigDir);
+end;
+
+procedure TfrmMain.btnOpenCMDClick(Sender: TObject);
+begin
+  AppLog('Abrindo Terminal Portável em: ' + FConfig.PortableDir);
+  OpenDocument('cmd.exe');
+end;
+
+procedure TfrmMain.btnCleanCacheClick(Sender: TObject);
+var
+  CleanCount: Integer;
+
+  procedure CleanDir(const ADir: string);
+  var
+    SR: TSearchRec;
+  begin
+    if FindFirst(ADir + '*.*', faAnyFile, SR) = 0 then
+    begin
+      repeat
+        if (SR.Name = '.') or (SR.Name = '..') then Continue;
+
+        if (SR.Attr and faDirectory) <> 0 then
+          CleanDir(ADir + SR.Name + PathDelim)
+        else if (SameText(ExtractFileExt(SR.Name), '.ppu') or SameText(ExtractFileExt(SR.Name), '.o')) then
+        begin
+          if SysUtils.DeleteFile(ADir + SR.Name) then
+            Inc(CleanCount);
+        end;
+      until FindNext(SR) <> 0;
+      SysUtils.FindClose(SR);
+    end;
+  end;
+
+begin
+  CleanCount := 0;
+  AppLog('Iniciando limpeza de cache (.ppu / .o)...');
+  CleanDir(FConfig.ConfigDir);
+  CleanDir(FConfig.PortableDir + 'lib' + PathDelim);
+
+  AppLog(Format('Limpeza concluída! %d arquivos de cache removidos.', [CleanCount]));
+  ShowMessage(Format('Limpeza realizada com sucesso!' + #13#10 + '%d arquivos de cache (.ppu / .o) foram removidos.', [CleanCount]));
+end;
+
+procedure TfrmMain.btnStatLicActionClick(Sender: TObject);
+var
+  FormPay: TfrmPayment;
+begin
+  FormPay := TfrmPayment.Create(nil);
+  try
+    FormPay.LicenseManager := FLicenseMgr;
+    if Assigned(FLicenseMgr) then
+      FormPay.UserID := FLicenseMgr.CurrentLicense.UserID;
+    if FormPay.ShowModal = mrOK then
+    begin
+      RefreshPaymentReceipts;
+      RefreshDashboard;
+    end;
+  finally
+    FormPay.Free;
+  end;
+end;
+
+procedure TfrmMain.btnStatPkgsActionClick(Sender: TObject);
+begin
+  lstMenu.ItemIndex := 1;
+  lstMenuClick(nil);
+end;
+
+procedure TfrmMain.btnStatProfActionClick(Sender: TObject);
+begin
+  lstMenu.ItemIndex := 2;
+  lstMenuClick(nil);
 end;
 
 { ============================================================ }
