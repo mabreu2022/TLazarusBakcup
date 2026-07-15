@@ -303,6 +303,20 @@ begin
                'FileName', 'Dir'];
 
   if ANode.HasAttributes then
+  begin
+    // Corrige layouts do AnchorDocking/IDE salvos como Minimized que travam o ambiente
+    Attr := ANode.Attributes.GetNamedItem('WindowState');
+    if Attr <> nil then
+    begin
+      if SameText(Attr.TextContent, 'Minimized') then
+      begin
+        if SameText(ANode.NodeName, 'MainIDE') then
+          Attr.TextContent := 'Maximized'
+        else
+          Attr.TextContent := 'Normal';
+      end;
+    end;
+
     for I := 0 to Length(PathKeys) - 1 do
     begin
       Key  := PathKeys[I];
@@ -314,6 +328,7 @@ begin
           Attr.TextContent := NewVal;
       end;
     end;
+  end;
 
   // Processa filhos recursivamente
   Child := ANode.FirstChild;

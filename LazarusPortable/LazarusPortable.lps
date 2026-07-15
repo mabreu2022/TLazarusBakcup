@@ -24,7 +24,6 @@
         <CursorPos X="93" Y="1135"/>
         <UsageCount Value="39"/>
         <Loaded Value="True"/>
-        <LoadedDesigner Value="True"/>
       </Unit>
       <Unit>
         <Filename Value="units\uPortableCore.pas"/>
@@ -88,7 +87,6 @@
         <CursorPos X="80" Y="61"/>
         <UsageCount Value="34"/>
         <Loaded Value="True"/>
-        <LoadedDesigner Value="True"/>
       </Unit>
       <Unit>
         <Filename Value="forms\frmPayment.pas"/>
@@ -101,7 +99,6 @@
         <CursorPos X="77" Y="93"/>
         <UsageCount Value="34"/>
         <Loaded Value="True"/>
-        <LoadedDesigner Value="True"/>
       </Unit>
       <Unit>
         <Filename Value="forms\frmConfigDB.pas"/>
@@ -114,7 +111,6 @@
         <CursorPos X="26" Y="95"/>
         <UsageCount Value="34"/>
         <Loaded Value="True"/>
-        <LoadedDesigner Value="True"/>
       </Unit>
       <Unit>
         <Filename Value="units\uLauncher.pas"/>

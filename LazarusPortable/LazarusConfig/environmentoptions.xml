@@ -236,7 +236,7 @@
       <MainIDE>
         <Caption Value="MainIDE"/>
         <CustomPosition Width="320" Height="240"/>
-        <WindowState Value="Minimized"/>
+        <WindowState Value="Maximized"/>
         <Visible Value="True"/>
       </MainIDE>
       <MessagesView>
@@ -450,80 +450,80 @@
         <Version Value="1"/>
         <MainConfig>
           <Nodes ChildCount="1">
-            <Item1 Name="MainIDE" Type="CustomSite" WindowState="Minimized" Monitor="0" ChildCount="1">
+            <Item1 Name="MainIDE" Type="CustomSite" WindowState="Maximized" Monitor="0" ChildCount="1">
               <Bounds Left="-8" Top="-8" Width="1920" Height="989">
                 <WorkArea>
                   <Rect Right="1920" Bottom="1032"/>
                 </WorkArea>
               </Bounds>
-              <Item1 Name="AnchorDockSite12" Type="Layout" WindowState="Minimized" Monitor="0" ChildCount="7">
+              <Item1 Name="AnchorDockSite12" Type="Layout" WindowState="Normal" Monitor="0" ChildCount="7">
                 <Bounds Top="60" Width="1920" Height="929" SplitterPos="58"/>
                 <Anchors Align="Bottom"/>
-                <Item1 Name="SourceNotebook" Type="Control" WindowState="Minimized" Monitor="0">
+                <Item1 Name="SourceNotebook" Type="Control" WindowState="Normal" Monitor="0">
                   <Bounds Left="328" Width="1224" Height="682"/>
                   <Anchors Left="AnchorDockSplitter5" Right="AnchorDockSplitter3" Bottom="AnchorDockSplitter2"/>
                   <Header Position="left"/>
                 </Item1>
-                <Item2 Name="AnchorDockSplitter2" Type="SplitterHorizontal" WindowState="Minimized" Monitor="0">
+                <Item2 Name="AnchorDockSplitter2" Type="SplitterHorizontal" WindowState="Normal" Monitor="0">
                   <Bounds Left="328" Top="682" Width="1224" Height="7"/>
                   <Anchors Left="AnchorDockSplitter5" Right="AnchorDockSplitter3"/>
                 </Item2>
-                <Item3 Name="AnchorDockSite13" Type="Pages" WindowState="Minimized" Monitor="0" ChildCount="5">
+                <Item3 Name="AnchorDockSite13" Type="Pages" WindowState="Normal" Monitor="0" ChildCount="5">
                   <Bounds Left="328" Top="689" Width="1224" Height="240"/>
                   <Anchors Left="AnchorDockSplitter5" Top="AnchorDockSplitter2" Right="AnchorDockSplitter3"/>
-                  <Item1 Name="MessagesView" Type="Control" WindowState="Minimized" Monitor="0">
+                  <Item1 Name="MessagesView" Type="Control" WindowState="Normal" Monitor="0">
                     <Bounds Width="1199" Height="212"/>
                     <Anchors Align="Client"/>
                   </Item1>
-                  <Item2 Name="Watches" Type="Control" WindowState="Minimized" Monitor="0">
+                  <Item2 Name="Watches" Type="Control" WindowState="Normal" Monitor="0">
                     <Bounds Width="1199" Height="212"/>
                     <Anchors Align="Client"/>
                   </Item2>
-                  <Item3 Name="SearchResults" Type="Control" WindowState="Minimized" Monitor="0">
+                  <Item3 Name="SearchResults" Type="Control" WindowState="Normal" Monitor="0">
                     <Bounds Width="1199" Height="212"/>
                     <Anchors Align="Client"/>
                   </Item3>
-                  <Item4 Name="Assembler" Type="Control" WindowState="Minimized" Monitor="0">
+                  <Item4 Name="Assembler" Type="Control" WindowState="Normal" Monitor="0">
                     <Bounds Width="1199" Height="212"/>
                     <Anchors Align="Client"/>
                   </Item4>
-                  <Item5 Name="BreakPoints" Type="Control" WindowState="Minimized" Monitor="0">
+                  <Item5 Name="BreakPoints" Type="Control" WindowState="Normal" Monitor="0">
                     <Bounds Width="1199" Height="212"/>
                     <Anchors Align="Client"/>
                   </Item5>
                 </Item3>
-                <Item4 Name="AnchorDockSplitter3" Type="SplitterVertical" WindowState="Minimized" Monitor="0">
+                <Item4 Name="AnchorDockSplitter3" Type="SplitterVertical" WindowState="Normal" Monitor="0">
                   <Bounds Left="1552" Width="9" Height="929"/>
                 </Item4>
-                <Item5 Name="AnchorDockSite14" Type="Layout" WindowState="Minimized" Monitor="0" ChildCount="3">
+                <Item5 Name="AnchorDockSite14" Type="Layout" WindowState="Normal" Monitor="0" ChildCount="3">
                   <Bounds Left="1561" Width="359" Height="929"/>
                   <Anchors Left="AnchorDockSplitter3"/>
-                  <Item1 Name="AnchorDockSite15" Type="Pages" WindowState="Minimized" Monitor="0" ChildCount="2">
+                  <Item1 Name="AnchorDockSite15" Type="Pages" WindowState="Normal" Monitor="0" ChildCount="2">
                     <Bounds Top="404" Width="359" Height="525"/>
                     <Anchors Top="AnchorDockSplitter4"/>
                     <Header PageIndex="1"/>
-                    <Item1 Name="CodeExplorerView" Type="Control" WindowState="Minimized" Monitor="0">
+                    <Item1 Name="CodeExplorerView" Type="Control" WindowState="Normal" Monitor="0">
                       <Bounds Width="351" Height="480"/>
                       <Anchors Align="Client"/>
                     </Item1>
-                    <Item2 Name="ComponentList" Type="Control" WindowState="Minimized" Monitor="0">
+                    <Item2 Name="ComponentList" Type="Control" WindowState="Normal" Monitor="0">
                       <Bounds Width="351" Height="480"/>
                       <Anchors Align="Client"/>
                     </Item2>
                   </Item1>
-                  <Item2 Name="AnchorDockSplitter4" Type="SplitterHorizontal" WindowState="Minimized" Monitor="0">
+                  <Item2 Name="AnchorDockSplitter4" Type="SplitterHorizontal" WindowState="Normal" Monitor="0">
                     <Bounds Top="400" Width="359" Height="4"/>
                   </Item2>
-                  <Item3 Name="ProjectInspector" Type="Control" WindowState="Minimized" Monitor="0">
+                  <Item3 Name="ProjectInspector" Type="Control" WindowState="Normal" Monitor="0">
                     <Bounds Width="359" Height="400"/>
                     <Anchors Bottom="AnchorDockSplitter4"/>
                   </Item3>
                 </Item5>
-                <Item6 Name="ObjectInspectorDlg" Type="Control" WindowState="Minimized" Monitor="0">
+                <Item6 Name="ObjectInspectorDlg" Type="Control" WindowState="Normal" Monitor="0">
                   <Bounds Width="324" Height="929"/>
                   <Anchors Right="AnchorDockSplitter5"/>
                 </Item6>
-                <Item7 Name="AnchorDockSplitter5" Type="SplitterVertical" WindowState="Minimized" Monitor="0">
+                <Item7 Name="AnchorDockSplitter5" Type="SplitterVertical" WindowState="Normal" Monitor="0">
                   <Bounds Left="324" Width="4" Height="929"/>
                 </Item7>
               </Item1>
