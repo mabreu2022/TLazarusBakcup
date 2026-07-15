@@ -8,7 +8,7 @@ unit uLicenseManager;
 interface
 
 uses
-  Classes, SysUtils, StrUtils, IniFiles, Windows, sha1, db,
+  Classes, SysUtils, StrUtils, IniFiles, Windows, registry, sha1, db,
   sqldb, ibconnection, uConfigCrypt;
 
 const
@@ -315,28 +315,87 @@ end;
 function TLicenseManager.CheckLocalTrial: TLicenseInfo;
 var
   IniFile: TIniFile;
-  FirstRunStr: string;
-  FirstRunDate: TDateTime;
+  Reg: TRegistry;
+  FirstRunStr, LastRunStr, RegFirstStr, RegLastStr: string;
+  FirstRunDate, LastRunDate: TDateTime;
   DaysPassed: Integer;
-  TrialFile: string;
+  TrialFile, RegPath: string;
+  ClockTampered: Boolean;
 begin
   Result := Default(TLicenseInfo);
   Result.HWID := GetHardwareID;
   TrialFile := FConfigDir + 'license_info.dat';
+  RegPath := 'Software\ConectSolutions\LazarusPortable';
+  ClockTampered := False;
 
+  FirstRunDate := 0;
+  LastRunDate := 0;
+  RegFirstStr := '';
+  RegLastStr := '';
+
+  // 1. Leitura no Registro do Windows (camada primária oculta)
+  Reg := TRegistry.Create(KEY_READ);
+  try
+    Reg.RootKey := HKEY_CURRENT_USER;
+    if Reg.OpenKeyReadOnly(RegPath) then
+    begin
+      if Reg.ValueExists('FirstActivation') then
+        RegFirstStr := Reg.ReadString('FirstActivation');
+      if Reg.ValueExists('LastRun') then
+        RegLastStr := Reg.ReadString('LastRun');
+    end;
+  finally
+    Reg.Free;
+  end;
+
+  // 2. Leitura no Arquivo Local INI (camada secundária)
   IniFile := TIniFile.Create(TrialFile);
   try
     FirstRunStr := IniFile.ReadString('License', 'FirstActivation', '');
+    LastRunStr  := IniFile.ReadString('License', 'LastRun', '');
+
+    // Prioriza a data do Registro se o arquivo local foi apagado ou manipulado
+    if (RegFirstStr <> '') and (FirstRunStr = '') then
+      FirstRunStr := RegFirstStr;
+
     if FirstRunStr = '' then
     begin
       FirstRunDate := Now;
-      IniFile.WriteString('License', 'FirstActivation', DateTimeToStr(FirstRunDate));
+      FirstRunStr := DateTimeToStr(FirstRunDate);
+      IniFile.WriteString('License', 'FirstActivation', FirstRunStr);
       IniFile.WriteString('License', 'HWID', Result.HWID);
     end
     else
       FirstRunDate := StrToDateTimeDef(FirstRunStr, Now);
+
+    // Verificação Anti-Rollback do Relógio (se voltou o relógio em mais de 1h)
+    if RegLastStr <> '' then
+      LastRunDate := StrToDateTimeDef(RegLastStr, 0)
+    else if LastRunStr <> '' then
+      LastRunDate := StrToDateTimeDef(LastRunStr, 0);
+
+    if (LastRunDate > 0) and (Now < (LastRunDate - (1.0 / 24.0))) then
+      ClockTampered := True;
+
+    // Atualiza o timestamp do último acesso no INI
+    IniFile.WriteString('License', 'LastRun', DateTimeToStr(Now));
   finally
     IniFile.Free;
+  end;
+
+  // 3. Atualiza ou cria as chaves no Registro do Windows
+  Reg := TRegistry.Create(KEY_WRITE);
+  try
+    Reg.RootKey := HKEY_CURRENT_USER;
+    if Reg.OpenKey(RegPath, True) then
+    begin
+      if not Reg.ValueExists('FirstActivation') then
+        Reg.WriteString('FirstActivation', DateTimeToStr(FirstRunDate));
+      Reg.WriteString('LastRun', DateTimeToStr(Now));
+      Reg.WriteString('HWID', Result.HWID);
+    end;
+  finally
+    Reg.Free;
   end;
 
   DaysPassed := Trunc(Now - FirstRunDate);
@@ -346,7 +405,13 @@ begin
   if Result.DaysRemaining < 0 then
     Result.DaysRemaining := 0;
 
-  if DaysPassed < 10 then
+  if ClockTampered then
+  begin
+    Result.Status := lsTrialExpired;
+    Result.DaysRemaining := 0;
+    Result.Message := 'Adulteração na data/hora do sistema detectada. O período de testes foi encerrado. Registre-se e realize o pagamento via PIX para continuar.';
+  end
+  else if DaysPassed < 10 then
   begin
     Result.Status := lsTrialActive;
     Result.Message := Format('Modo de Testes Gratuito Ativo (%d dias restantes)', [Result.DaysRemaining]);
@@ -522,7 +587,7 @@ begin
     Query.Transaction := FTransaction;
 
     // Verifica se e-mail já existe
-    Query.SQL.Text := 'SELECT ID FROM USUARIOS WHERE EMAIL = :EMAIL';
+    Query.SQL.Text := 'SELECT ID FROM USUARIOS WHERE LOWER(EMAIL) = LOWER(:EMAIL)';
     Query.ParamByName('EMAIL').AsString := Trim(AEmail);
     Query.Open;
 
@@ -532,6 +597,23 @@ begin
       Exit;
     end;
     Query.Close;
+
+    // Regra Anti-Fraude: Verifica se este HWID já possui cadastro no banco remoto
+    if not SameText(Trim(AEmail), SUPER_ADMIN_EMAIL) then
+    begin
+      Query.SQL.Text := 'SELECT FIRST 1 ID, EMAIL, DATA_CADASTRO FROM USUARIOS WHERE HWID = :HWID AND LOWER(EMAIL) <> LOWER(:EMAIL) ORDER BY ID ASC';
+      Query.ParamByName('HWID').AsString  := AInfo.HWID;
+      Query.ParamByName('EMAIL').AsString := Trim(AEmail);
+      Query.Open;
+
+      if not Query.IsEmpty then
+      begin
+        AErrorMsg := 'Esta máquina (HWID) já possui um cadastro de teste registrado. ' +
+                     'Faça login com a sua conta cadastrada ou realize o pagamento da licença via PIX.';
+        Exit;
+      end;
+      Query.Close;
+    end;
 
     // Insere novo usuário com IS_ADMIN = 0 (ou 1 se for o e-mail super admin)
     if SameText(AEmail, SUPER_ADMIN_EMAIL) then
