@@ -78,4 +78,6 @@ begin
       FreeAndNil(SavedLicenseMgr);
 
   until not UserWantsLogout;
+
+  Application.Terminate;
 end.

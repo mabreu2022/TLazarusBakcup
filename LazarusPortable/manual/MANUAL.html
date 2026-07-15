@@ -298,19 +298,20 @@
             <!-- 2. Portabilidade -->
             <section id="portabilidade" class="card">
                 <h2>2. Como Funciona a Portabilidade & Pen Drive</h2>
-                <p>Por padrão, o Lazarus armazena arquivos de configuração no diretório do usuário do Windows (<code>%LOCALAPPDATA%\lazarus</code>). O Lazarus Portable altera dinamicamente essa dependência para direcionar 100% dos dados para a pasta local:</p>
+                <p>Por padrão, o Lazarus armazena arquivos de configuração no diretório do usuário do Windows (<code>%LOCALAPPDATA%\lazarus</code>). O <strong>Lazarus Portable Manager</strong> altera dinamicamente essa dependência para direcionar 100% dos dados para a pasta local:</p>
                 <pre>$(DiretórioDoExe)\LazarusConfig\</pre>
+                <p>Quando o aplicativo é iniciado pela primeira vez em uma pasta (como no Pen Drive), ele detecta se a pasta <code>LazarusConfig</code> ainda não possui as configurações e <strong>importa automaticamente a estrutura completa do seu computador</strong> (<code>%LOCALAPPDATA%\lazarus</code>), incluindo todos os pacotes, componentes, atalhos e preferências personalizadas!</p>
 
-                <h3>🚀 Passos para Usar em um Pen Drive:</h3>
+                <h3>🚀 Guia Passo a Passo: Como Copiar Seu Lazarus Configurado para o Pen Drive:</h3>
                 <ol>
-                    <li>Clique em <code>💾 Backup Manual</code> no Dashboard para criar uma cópia de segurança.</li>
-                    <li>Copie a pasta completa <code>C:\lazarus\</code> para o seu Pen Drive (recomendado 4 GB ou mais).</li>
-                    <li>Espete o Pen Drive em qualquer computador (ex: unidades <code>E:\</code> ou <code>F:\</code>).</li>
-                    <li>Execute <code>LazarusPortable.exe</code> e clique em <code>▶ Lançar</code>. Todos os 142+ pacotes e caminhos XML serão atualizados automaticamente!</li>
+                    <li><strong>Copie a pasta do Lazarus:</strong> Copie toda a pasta onde o seu Lazarus está instalado no computador (exemplo: <code>C:\lazarus\</code>) para a raiz ou diretório desejado do seu Pen Drive (exemplo: <code>E:\Lazarus\</code>).</li>
+                    <li><strong>Insira o <code>LazarusPortable.exe</code> no Pen Drive:</strong> Copie o executável <code>LazarusPortable.exe</code> para a raiz da pasta do Lazarus no Pen Drive (no mesmo local onde fica o <code>lazarus.exe</code>, ex: <code>E:\Lazarus\LazarusPortable.exe</code>).</li>
+                    <li><strong>Abra o <code>LazarusPortable.exe</code> no Pen Drive:</strong> Na primeira inicialização no Pen Drive, o aplicativo importará automaticamente suas configurações do computador (pacotes, barras de ferramentas, teclas de atalho) para a pasta <code>LazarusConfig\</code> do Pen Drive.</li>
+                    <li><strong>Execute o Re-Patch e Inicie a IDE:</strong> Clique em <code>🔧 Re-Patch Configurações</code> ou no botão <code>▶ Lançar</code>. O aplicativo atualizará dinamicamente todos os caminhos dos arquivos XML (<code>environmentoptions.xml</code>, <code>packagefiles.xml</code>, <code>fpcdefines.xml</code>) para a nova letra de unidade do Pen Drive e abrirá a IDE pronta com todos os seus componentes!</li>
                 </ol>
 
                 <div class="alert alert-tip">
-                    💡 <strong>Dica de Desempenho:</strong> Para carregamentos instantâneos da IDE no Pen Drive, prefira unidades USB 3.0 ou SSDs Portáteis.
+                    💡 <strong>Uso Nativo dentro da IDE (LazPortableTools.lpk):</strong> Se você tem o pacote <code>LazPortableTools.lpk</code> instalado na sua IDE, você também pode usar o menu nativo <code>Ferramentas ➔ Lazarus Portable Tools</code> para realizar Re-Patch e Backups instantâneos diretamente da IDE.
                 </div>
             </section>
 

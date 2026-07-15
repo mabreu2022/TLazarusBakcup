@@ -320,6 +320,10 @@ end;
 
 procedure TfrmMain.FormDestroy(Sender: TObject);
 begin
+  try
+    tmrClock.Enabled := False;
+  except
+  end;
   FLauncher.Free;
   FDiagnostics.Free;
   FProfManager.Free;
@@ -330,7 +334,11 @@ end;
 
 procedure TfrmMain.FormClose(Sender: TObject; var CloseAction: TCloseAction);
 begin
-  CloseAction := caFree;
+  try
+    tmrClock.Enabled := False;
+  except
+  end;
+  CloseAction := caHide;
 end;
 
 procedure TfrmMain.FormResize(Sender: TObject);
@@ -404,6 +412,8 @@ end;
 
 procedure TfrmMain.lstMenuClick(Sender: TObject);
 begin
+  if (lstMenu.ItemIndex < 0) then Exit;
+
   // Item 9 = Sair — não navega para aba, trata diretamente
   if lstMenu.ItemIndex = 9 then
   begin
@@ -417,18 +427,21 @@ begin
     Exit;
   end;
 
-  pgcMain.ActivePageIndex := lstMenu.ItemIndex;
+  if (lstMenu.ItemIndex >= 0) and (lstMenu.ItemIndex < pgcMain.PageCount) then
+  begin
+    pgcMain.ActivePageIndex := lstMenu.ItemIndex;
 
-  case lstMenu.ItemIndex of
-    0: RefreshDashboard;
-    1: ; // Pacotes - refresca apenas quando clicar Varrer
-    2: RefreshProfileList;
-    3: RefreshPaymentReceipts;
-    4: ; // Diagnóstico
-    5: ; // Log
-    6: if lvOPM.Items.Count = 0 then btnOPMSearchClick(nil);
-    7: ; // Manual
-    8: ; // Sobre
+    case lstMenu.ItemIndex of
+      0: RefreshDashboard;
+      1: ; // Pacotes - refresca apenas quando clicar Varrer
+      2: RefreshProfileList;
+      3: RefreshPaymentReceipts;
+      4: ; // Diagnóstico
+      5: ; // Log
+      6: if lvOPM.Items.Count = 0 then btnOPMSearchClick(nil);
+      7: ; // Manual
+      8: ; // Sobre
+    end;
   end;
 end;
 
@@ -1198,10 +1211,14 @@ var
 begin
   HtmlFile := FConfig.PortableDir + 'MANUAL.html';
   if not FileExists(HtmlFile) then
+    HtmlFile := FConfig.PortableDir + 'manual' + PathDelim + 'MANUAL.html';
+  if not FileExists(HtmlFile) then
     HtmlFile := ExtractFileDir(Application.ExeName) + PathDelim + 'manual' + PathDelim + 'MANUAL.html';
+  if not FileExists(HtmlFile) then
+    HtmlFile := ExtractFileDir(Application.ExeName) + PathDelim + 'MANUAL.html';
 
   if FileExists(HtmlFile) then
-    OpenURL('file:///' + HtmlFile)
+    OpenDocument(HtmlFile)
   else
     MessageDlg('Manual Não Encontrado',
       'O arquivo MANUAL.html não foi localizado.' + #13#10 +
@@ -1230,24 +1247,30 @@ begin
     M.Add('--------------------------------');
     M.Add('- As configurações do Lazarus normalmente ficam em %LOCALAPPDATA%\lazarus.');
     M.Add('- O Lazarus Portable direciona a IDE para ler e salvar tudo na pasta local:');
-    M.Add('  $(PortableDir)\LazarusConfig\ (ex: C:\lazarus\LazarusConfig\).');
-    M.Add('- Sempre que você abre o programa ou o move para outro PC (onde a letra de');
+    M.Add('  $(PortableDir)\LazarusConfig\ (ex: E:\Lazarus\LazarusConfig\).');
+    M.Add('- Ao iniciar o aplicativo pela primeira vez no Pen Drive (sem a pasta LazarusConfig),');
+    M.Add('  ele importa AUTOMATICAMENTE a estrutura completa das configurações existentes');
+    M.Add('  na sua máquina em %LOCALAPPDATA%\lazarus (pacotes, barras, teclas e atalhos).');
+    M.Add('- Sempre que você abre o programa ou move para outro PC (onde a letra de');
     M.Add('  unidade como C:, D:, E: muda), o motor de patch atualiza automaticamente');
     M.Add('  todos os arquivos XML de configuração sem corromper pacotes instalados.');
     M.Add('');
-    M.Add('3. GUIA RÁPIDO PASSO A PASSO (USO EM PEN DRIVE)');
-    M.Add('-----------------------------------------------');
-    M.Add('► LANÇAR A IDE:');
-    M.Add('  Clique no botão "▶ Lançar" no topo da tela. O gerenciador fará um backup');
-    M.Add('  preventivo, aplicará os patches de caminho necessários e iniciará o Lazarus.');
+    M.Add('3. GUIA RÁPIDO PASSO A PASSO (COPIAR LAZARUS CONFIGURADO PARA PEN DRIVE)');
+    M.Add('------------------------------------------------------------------------');
+    M.Add('1. Copie a pasta do Lazarus do computador (ex: C:\lazarus\) para a raiz');
+    M.Add('   ou diretório do seu Pen Drive (ex: E:\Lazarus\).');
+    M.Add('2. Cole o arquivo executável "LazarusPortable.exe" na raiz da pasta do Lazarus');
+    M.Add('   no Pen Drive (no mesmo diretório onde está o lazarus.exe).');
+    M.Add('3. Execute o "LazarusPortable.exe" a partir do Pen Drive. Na primeira execução,');
+    M.Add('   ele detectará e importará automaticamente suas configurações do PC');
+    M.Add('   para a pasta LazarusConfig do Pen Drive.');
+    M.Add('4. Clique no botão "🔧 Re-Patch Configurações" ou "▶ Lançar". Todos os arquivos');
+    M.Add('   XML serão corrigidos para a nova letra de unidade e o Lazarus abrirá');
+    M.Add('   100% configurado no Pen Drive!');
     M.Add('');
-    M.Add('► COPIAR E USAR EM UM PEN DRIVE:');
-    M.Add('  1. No gerenciador, clique no botão "💾 Backup Manual" por prevenção.');
-    M.Add('  2. Copie a pasta inteira "C:\lazarus\" para a raiz do seu Pen Drive.');
-    M.Add('  3. Espete o Pen Drive em outro PC (ex: unidade E:\ ou F:\).');
-    M.Add('  4. Abra a pasta do Pen Drive e execute "LazarusPortable.exe".');
-    M.Add('  5. Clique em "▶ Lançar". Todos os 142 componentes e opções abrirão');
-    M.Add('     perfeitamente na nova letra de unidade!');
+    M.Add('► FERRAMENTAS DENTRO DA IDE (LazPortableTools.lpk):');
+    M.Add('  Com o pacote instalado na IDE, use o menu Ferramentas ➔ Lazarus Portable Tools');
+    M.Add('  para realizar Re-Patch e Backups das configurações diretamente do Lazarus.');
     M.Add('');
     M.Add('► ESPAÇO NECESSÁRIO NO PEN DRIVE:');
     M.Add('  Uma instalação completa do Lazarus com FPC e pacotes utiliza aproximadamente');
