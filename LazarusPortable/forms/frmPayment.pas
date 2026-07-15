@@ -9,7 +9,7 @@ interface
 
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls, ExtCtrls, Clipbrd,
-  fphttpclient, opensslsockets, HTTPDefs, uLicenseManager, uPIXPayload;
+  Buttons, Windows, FPHttpClient, HTTPDefs, fpreadjpeg, uLicenseManager, uPIXPayload;
 
 type
 
@@ -64,6 +64,11 @@ var
 begin
   FUserID := 0;
   LogoFile := ExtractFilePath(Application.ExeName) + 'logo_nova_conect.jpg';
+  if not FileExists(LogoFile) then
+    LogoFile := IncludeTrailingPathDelimiter(GetCurrentDir) + 'logo_nova_conect.jpg';
+  if not FileExists(LogoFile) then
+    LogoFile := 'C:\Fontes\Componentes\TLazarusBakcup\LazarusPortable\logo_nova_conect.jpg';
+
   if FileExists(LogoFile) then
   begin
     try

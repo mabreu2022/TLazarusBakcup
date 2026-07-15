@@ -70,6 +70,7 @@
       <Unit>
         <Filename Value="units\uLicenseManager.pas"/>
         <IsPartOfProject Value="True"/>
+        <IsVisibleTab Value="True"/>
         <EditorIndex Value="3"/>
         <TopLine Value="145"/>
         <CursorPos X="95" Y="166"/>
@@ -95,7 +96,6 @@
         <ComponentName Value="frmPayment"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
-        <IsVisibleTab Value="True"/>
         <EditorIndex Value="6"/>
         <TopLine Value="93"/>
         <CursorPos X="77" Y="93"/>

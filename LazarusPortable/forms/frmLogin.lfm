@@ -1,12 +1,12 @@
 object frmLogin: TfrmLogin
   Left = 350
-  Height = 515
+  Height = 540
   Top = 180
   Width = 450
   BorderIcons = [biSystemMenu, biMinimize]
   BorderStyle = bsSingle
   Caption = 'Autenticação & Licença - Lazarus Portable'
-  ClientHeight = 515
+  ClientHeight = 540
   ClientWidth = 450
   Color = 2105376
   Font.Color = clWhite
@@ -17,34 +17,35 @@ object frmLogin: TfrmLogin
   Position = poScreenCenter
   object pnlHeader: TPanel
     Left = 0
-    Height = 85
+    Height = 130
     Top = 0
     Width = 450
     Align = alTop
     BevelOuter = bvNone
     Color = 1315860
     TabOrder = 0
+    object imgLogo: TImage
+      Left = 115
+      Height = 75
+      Top = 10
+      Width = 220
+      Center = True
+      Proportional = True
+      Stretch = True
+    end
     object lblTitle: TLabel
-      Left = 16
+      Left = 0
       Height = 28
-      Top = 28
-      Width = 280
+      Top = 95
+      Width = 450
+      Alignment = taCenter
+      AutoSize = False
       Caption = '🔑 Entrar no Lazarus Portable'
       Font.Color = clWhite
       Font.Height = -18
       Font.Name = 'Segoe UI'
       Font.Style = [fsBold]
       ParentFont = False
-    end
-    object imgLogo: TImage
-      Left = 310
-      Height = 70
-      Top = 7
-      Width = 130
-      Align = alRight
-      Center = True
-      Proportional = True
-      Stretch = True
     end
   end
   object pnlBody: TPanel

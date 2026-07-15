@@ -9,7 +9,7 @@ interface
 
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls, ExtCtrls,
-  IniFiles, uLicenseManager, uConfigCrypt;
+  Buttons, Windows, fpreadjpeg, IniFiles, uLicenseManager, uConfigCrypt;
 
 type
 
@@ -68,7 +68,14 @@ begin
   FIsRegister  := False;
   FAuthSuccess := False;
 
+  pnlHeader.Height := 130;
+
   LogoFile := ExtractFilePath(Application.ExeName) + 'logo_nova_conect.jpg';
+  if not FileExists(LogoFile) then
+    LogoFile := IncludeTrailingPathDelimiter(GetCurrentDir) + 'logo_nova_conect.jpg';
+  if not FileExists(LogoFile) then
+    LogoFile := 'C:\Fontes\Componentes\TLazarusBakcup\LazarusPortable\logo_nova_conect.jpg';
+
   if FileExists(LogoFile) then
   begin
     try
@@ -76,6 +83,16 @@ begin
     except
     end;
   end;
+
+  imgLogo.Width := 220;
+  imgLogo.Height := 75;
+  imgLogo.Top := 10;
+  imgLogo.Left := (pnlHeader.Width - imgLogo.Width) div 2;
+
+  lblTitle.Top := 92;
+  lblTitle.Left := 0;
+  lblTitle.Width := pnlHeader.Width;
+  lblTitle.Alignment := taCenter;
 
   LoadVPSConfig;
   UpdateLayout;

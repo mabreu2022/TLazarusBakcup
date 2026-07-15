@@ -231,7 +231,7 @@ begin
     // Se o HostName for fornecido (ex: localhost, 127.0.0.1, IP remoto), conecta via TCP/IP
     // Isso permite conexões concorrentes com o IBExpert e evita o erro "arquivo em uso por outro processo"
     if Trim(FHost) = '' then
-      FHost := 'localhost';
+      FHost := '127.0.0.1';
     if FPort <= 0 then
       FPort := 3050;
 

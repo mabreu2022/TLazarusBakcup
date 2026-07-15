@@ -17,7 +17,7 @@ interface
 
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, LCLIntf,
-  ComCtrls, StdCtrls, ExtCtrls, Buttons, Windows,
+  ComCtrls, StdCtrls, ExtCtrls, Buttons, Windows, fpreadjpeg,
   uPortableCore, uPackageManager, uProfileManager,
   uDiagnostics, uLauncher, uLicenseManager, frmConfigDB, frmPayment,
   frmReceiptViewer;
@@ -234,6 +234,11 @@ begin
   ExeDir := ExtractFileDir(Application.ExeName);
 
   LogoFile := IncludeTrailingPathDelimiter(ExeDir) + 'logo_nova_conect.jpg';
+  if not FileExists(LogoFile) then
+    LogoFile := IncludeTrailingPathDelimiter(GetCurrentDir) + 'logo_nova_conect.jpg';
+  if not FileExists(LogoFile) then
+    LogoFile := 'C:\Fontes\Componentes\TLazarusBakcup\LazarusPortable\logo_nova_conect.jpg';
+
   if FileExists(LogoFile) then
   begin
     try
