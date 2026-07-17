@@ -8,11 +8,6 @@
       <Unit>
         <Filename Value="LazarusPortable.lpr"/>
         <IsPartOfProject Value="True"/>
-        <EditorIndex Value="7"/>
-        <TopLine Value="33"/>
-        <CursorPos X="94" Y="68"/>
-        <UsageCount Value="39"/>
-        <Loaded Value="True"/>
       </Unit>
       <Unit>
         <Filename Value="forms\frmMain.pas"/>
@@ -20,61 +15,30 @@
         <ComponentName Value="frmMain"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
-        <TopLine Value="1108"/>
-        <CursorPos X="93" Y="1135"/>
-        <UsageCount Value="39"/>
-        <Loaded Value="True"/>
       </Unit>
       <Unit>
         <Filename Value="units\uPortableCore.pas"/>
         <IsPartOfProject Value="True"/>
-        <EditorIndex Value="2"/>
-        <TopLine Value="248"/>
-        <CursorPos X="92" Y="269"/>
-        <UsageCount Value="39"/>
-        <Loaded Value="True"/>
       </Unit>
       <Unit>
         <Filename Value="units\uPackageManager.pas"/>
         <IsPartOfProject Value="True"/>
-        <EditorIndex Value="8"/>
-        <TopLine Value="386"/>
-        <CursorPos X="7" Y="386"/>
-        <UsageCount Value="39"/>
-        <Loaded Value="True"/>
       </Unit>
       <Unit>
         <Filename Value="units\uProfileManager.pas"/>
         <IsPartOfProject Value="True"/>
-        <EditorIndex Value="9"/>
-        <TopLine Value="148"/>
-        <CursorPos X="19" Y="148"/>
-        <UsageCount Value="39"/>
-        <Loaded Value="True"/>
       </Unit>
       <Unit>
         <Filename Value="units\uDiagnostics.pas"/>
         <IsPartOfProject Value="True"/>
-        <EditorIndex Value="10"/>
-        <TopLine Value="142"/>
-        <CursorPos X="21" Y="157"/>
-        <UsageCount Value="39"/>
-        <Loaded Value="True"/>
       </Unit>
       <Unit>
         <Filename Value="units\uConfigCrypt.pas"/>
         <IsPartOfProject Value="True"/>
-        <UsageCount Value="34"/>
       </Unit>
       <Unit>
         <Filename Value="units\uLicenseManager.pas"/>
         <IsPartOfProject Value="True"/>
-        <IsVisibleTab Value="True"/>
-        <EditorIndex Value="3"/>
-        <TopLine Value="145"/>
-        <CursorPos X="95" Y="166"/>
-        <UsageCount Value="34"/>
-        <Loaded Value="True"/>
       </Unit>
       <Unit>
         <Filename Value="forms\frmLogin.pas"/>
@@ -82,11 +46,6 @@
         <ComponentName Value="frmLogin"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
-        <EditorIndex Value="5"/>
-        <TopLine Value="41"/>
-        <CursorPos X="80" Y="61"/>
-        <UsageCount Value="34"/>
-        <Loaded Value="True"/>
       </Unit>
       <Unit>
         <Filename Value="forms\frmPayment.pas"/>
@@ -94,11 +53,6 @@
         <ComponentName Value="frmPayment"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
-        <EditorIndex Value="6"/>
-        <TopLine Value="93"/>
-        <CursorPos X="77" Y="93"/>
-        <UsageCount Value="34"/>
-        <Loaded Value="True"/>
       </Unit>
       <Unit>
         <Filename Value="forms\frmConfigDB.pas"/>
@@ -106,20 +60,10 @@
         <ComponentName Value="frmConfigDB"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
-        <EditorIndex Value="4"/>
-        <TopLine Value="95"/>
-        <CursorPos X="26" Y="95"/>
-        <UsageCount Value="34"/>
-        <Loaded Value="True"/>
       </Unit>
       <Unit>
         <Filename Value="units\uLauncher.pas"/>
         <IsPartOfProject Value="True"/>
-        <EditorIndex Value="1"/>
-        <TopLine Value="18"/>
-        <CursorPos X="31" Y="18"/>
-        <UsageCount Value="39"/>
-        <Loaded Value="True"/>
       </Unit>
       <Unit>
         <Filename Value="forms\frmReceiptViewer.pas"/>
@@ -127,134 +71,7 @@
         <ComponentName Value="frmReceiptViewer"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
-        <UsageCount Value="23"/>
       </Unit>
     </Units>
-    <JumpHistory HistoryIndex="29">
-      <Position>
-        <Filename Value="forms\frmMain.pas"/>
-        <Caret Line="187" Column="3" TopLine="168"/>
-      </Position>
-      <Position>
-        <Filename Value="forms\frmMain.pas"/>
-        <Caret Line="181" Column="75" TopLine="168"/>
-      </Position>
-      <Position>
-        <Filename Value="forms\frmMain.pas"/>
-        <Caret Line="543" Column="66" TopLine="531"/>
-      </Position>
-      <Position>
-        <Filename Value="forms\frmMain.pas"/>
-        <Caret Line="549" Column="3" TopLine="530"/>
-      </Position>
-      <Position>
-        <Filename Value="forms\frmMain.pas"/>
-        <Caret Line="556" Column="106" TopLine="530"/>
-      </Position>
-      <Position>
-        <Filename Value="forms\frmMain.pas"/>
-        <Caret Line="170" Column="33" TopLine="151"/>
-      </Position>
-      <Position>
-        <Filename Value="forms\frmMain.pas"/>
-        <Caret Line="194" Column="103" TopLine="165"/>
-      </Position>
-      <Position>
-        <Filename Value="forms\frmMain.pas"/>
-        <Caret Line="291" TopLine="263"/>
-      </Position>
-      <Position>
-        <Filename Value="forms\frmMain.pas"/>
-        <Caret Line="211" Column="67" TopLine="189"/>
-      </Position>
-      <Position>
-        <Filename Value="units\uDiagnostics.pas"/>
-        <Caret Line="95" Column="7" TopLine="95"/>
-      </Position>
-      <Position>
-        <Filename Value="units\uPortableCore.pas"/>
-        <Caret Line="273" Column="80" TopLine="248"/>
-      </Position>
-      <Position>
-        <Filename Value="forms\frmMain.pas"/>
-        <Caret Line="194" TopLine="188"/>
-      </Position>
-      <Position>
-        <Filename Value="units\uPortableCore.pas"/>
-        <Caret Line="269" Column="92" TopLine="248"/>
-      </Position>
-      <Position>
-        <Filename Value="units\uLicenseManager.pas"/>
-        <Caret Line="104" Column="107" TopLine="75"/>
-      </Position>
-      <Position>
-        <Filename Value="forms\frmConfigDB.pas"/>
-        <Caret Line="52" Column="3" TopLine="37"/>
-      </Position>
-      <Position>
-        <Filename Value="forms\frmLogin.pas"/>
-        <Caret Line="56" Column="3" TopLine="41"/>
-      </Position>
-      <Position>
-        <Filename Value="forms\frmPayment.pas"/>
-        <Caret Line="50" Column="3" TopLine="35"/>
-      </Position>
-      <Position>
-        <Filename Value="LazarusPortable.lpr"/>
-        <Caret Line="59" Column="45" TopLine="32"/>
-      </Position>
-      <Position>
-        <Filename Value="LazarusPortable.lpr"/>
-        <Caret Line="57" Column="72" TopLine="32"/>
-      </Position>
-      <Position>
-        <Filename Value="units\uLicenseManager.pas"/>
-        <Caret Line="170" Column="9" TopLine="155"/>
-      </Position>
-      <Position>
-        <Filename Value="forms\frmConfigDB.pas"/>
-        <Caret Line="114" TopLine="99"/>
-      </Position>
-      <Position>
-        <Filename Value="forms\frmConfigDB.pas"/>
-        <Caret Line="125" Column="77" TopLine="99"/>
-      </Position>
-      <Position>
-        <Filename Value="forms\frmLogin.pas"/>
-        <Caret Line="61" Column="80" TopLine="41"/>
-      </Position>
-      <Position>
-        <Filename Value="forms\frmMain.pas"/>
-        <Caret Line="922" Column="5" TopLine="908"/>
-      </Position>
-      <Position>
-        <Filename Value="units\uLicenseManager.pas"/>
-        <Caret Line="205" Column="125" TopLine="175"/>
-      </Position>
-      <Position>
-        <Filename Value="forms\frmConfigDB.pas"/>
-        <Caret Line="94" Column="26" TopLine="94"/>
-      </Position>
-      <Position>
-        <Filename Value="forms\frmConfigDB.pas"/>
-        <Caret Line="95" Column="26" TopLine="95"/>
-      </Position>
-      <Position>
-        <Filename Value="units\uLicenseManager.pas"/>
-        <Caret Line="164" Column="101" TopLine="141"/>
-      </Position>
-      <Position>
-        <Filename Value="units\uLicenseManager.pas"/>
-        <Caret Line="156" Column="27" TopLine="141"/>
-      </Position>
-      <Position>
-        <Filename Value="forms\frmPayment.pas"/>
-        <Caret Line="50" Column="3" TopLine="36"/>
-      </Position>
-    </JumpHistory>
-    <RunParams>
-      <FormatVersion Value="2"/>
-      <Modes ActiveMode=""/>
-    </RunParams>
   </ProjectSession>
 </CONFIG>

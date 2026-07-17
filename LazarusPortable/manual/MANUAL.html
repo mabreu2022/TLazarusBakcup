@@ -1,420 +1,691 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Manual do Usuário - Lazarus Portable Manager</title>
+    <title>Manual do Usuário - Lazarus Portable Manager v2.0</title>
     <style>
         :root {
-            --bg-color: #0f172a;
-            --card-bg: #1e293b;
-            --card-border: #334155;
-            --text-color: #f8fafc;
-            --text-muted: #94a3b8;
-            --accent-color: #00adb5;
-            --accent-hover: #008891;
-            --gold-color: #f59e0b;
-            --success-color: #10b981;
-            --danger-color: #ef4444;
+            --bg-color: #0f172a; --card-bg: #1e293b; --card-border: #334155;
+            --text-color: #f8fafc; --text-muted: #94a3b8; --accent-color: #00adb5;
+            --gold-color: #f59e0b; --success-color: #10b981; --danger-color: #ef4444;
             --code-bg: #090d16;
         }
-
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
-
-        body {
-            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
-            background-color: var(--bg-color);
-            color: var(--text-color);
-            line-height: 1.6;
-            padding: 20px;
-        }
-
-        .container {
-            max-width: 1100px;
-            margin: 0 auto;
-        }
-
-        header {
-            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
-            border: 1px solid var(--card-border);
-            border-left: 6px solid var(--accent-color);
-            padding: 30px;
-            border-radius: 12px;
-            margin-bottom: 25px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
-        }
-
-        header h1 {
-            font-size: 28px;
-            color: #ffffff;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            margin-bottom: 8px;
-        }
-
-        header p {
-            color: var(--text-muted);
-            font-size: 15px;
-        }
-
-        .grid {
-            display: grid;
-            grid-template-columns: 260px 1fr;
-            gap: 25px;
-        }
-
-        @media (max-width: 768px) {
-            .grid {
-                grid-template-columns: 1fr;
-            }
-        }
-
-        nav.toc {
-            background-color: var(--card-bg);
-            border: 1px solid var(--card-border);
-            padding: 20px;
-            border-radius: 12px;
-            position: sticky;
-            top: 20px;
-            height: fit-content;
-        }
-
-        nav.toc h3 {
-            font-size: 16px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            color: var(--accent-color);
-            margin-bottom: 15px;
-            border-bottom: 1px solid var(--card-border);
-            padding-bottom: 8px;
-        }
-
-        nav.toc ul {
-            list-style: none;
-        }
-
-        nav.toc li {
-            margin-bottom: 10px;
-        }
-
-        nav.toc a {
-            color: var(--text-muted);
-            text-decoration: none;
-            font-size: 14px;
-            transition: all 0.2s ease;
-            display: block;
-            padding: 4px 8px;
-            border-radius: 6px;
-        }
-
-        nav.toc a:hover {
-            color: #ffffff;
-            background-color: rgba(0, 173, 181, 0.15);
-            transform: translateX(4px);
-        }
-
-        section.card {
-            background-color: var(--card-bg);
-            border: 1px solid var(--card-border);
-            padding: 30px;
-            border-radius: 12px;
-            margin-bottom: 25px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-        }
-
-        section.card h2 {
-            font-size: 20px;
-            color: #ffffff;
-            margin-bottom: 15px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            border-bottom: 2px solid rgba(0, 173, 181, 0.3);
-            padding-bottom: 8px;
-        }
-
-        section.card h3 {
-            font-size: 16px;
-            color: var(--gold-color);
-            margin: 18px 0 10px 0;
-        }
-
-        p {
-            margin-bottom: 12px;
-            color: #cbd5e1;
-            font-size: 14.5px;
-        }
-
-        ul, ol {
-            margin: 10px 0 15px 25px;
-            color: #cbd5e1;
-            font-size: 14.5px;
-        }
-
-        li {
-            margin-bottom: 6px;
-        }
-
-        .alert {
-            padding: 15px 20px;
-            border-radius: 8px;
-            margin: 15px 0;
-            font-size: 14px;
-            display: flex;
-            align-items: flex-start;
-            gap: 12px;
-        }
-
-        .alert-tip {
-            background-color: rgba(16, 185, 129, 0.1);
-            border: 1px solid rgba(16, 185, 129, 0.3);
-            color: #6ee7b7;
-        }
-
-        .alert-warning {
-            background-color: rgba(245, 158, 11, 0.1);
-            border: 1px solid rgba(245, 158, 11, 0.3);
-            color: #fcd34d;
-        }
-
-        .alert-note {
-            background-color: rgba(0, 173, 181, 0.1);
-            border: 1px solid rgba(0, 173, 181, 0.3);
-            color: #67e8f9;
-        }
-
-        code, pre {
-            font-family: 'Consolas', 'Courier New', monospace;
-            background-color: var(--code-bg);
-            border: 1px solid #1e293b;
-            border-radius: 6px;
-        }
-
-        code {
-            padding: 2px 6px;
-            color: #38bdf8;
-            font-size: 13.5px;
-        }
-
-        pre {
-            padding: 15px;
-            overflow-x: auto;
-            margin: 12px 0;
-            color: #f1f5f9;
-            font-size: 13px;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin: 15px 0;
-            font-size: 14px;
-        }
-
-        th, td {
-            padding: 10px 14px;
-            text-align: left;
-            border: 1px solid var(--card-border);
-        }
-
-        th {
-            background-color: rgba(0, 173, 181, 0.15);
-            color: #ffffff;
-            font-weight: 600;
-        }
-
-        tr:nth-child(even) {
-            background-color: rgba(255, 255, 255, 0.02);
-        }
-
-        .badge {
-            display: inline-block;
-            padding: 3px 8px;
-            border-radius: 12px;
-            font-size: 11px;
-            font-weight: bold;
-            text-transform: uppercase;
-        }
-
-        .badge-pro {
-            background-color: #8b5cf6;
-            color: #ffffff;
-        }
-
-        .badge-free {
-            background-color: #10b981;
-            color: #ffffff;
-        }
-
-        footer {
-            text-align: center;
-            padding: 20px;
-            color: var(--text-muted);
-            font-size: 13px;
-            margin-top: 30px;
-            border-top: 1px solid var(--card-border);
-        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Segoe UI', system-ui, sans-serif; background-color: var(--bg-color); color: var(--text-color); line-height: 1.7; padding: 20px; }
+        .container { max-width: 1180px; margin: 0 auto; }
+        header { background: linear-gradient(135deg,#1e293b 0%,#0a1628 100%); border: 1px solid var(--card-border); border-left: 6px solid var(--accent-color); padding: 30px 35px; border-radius: 12px; margin-bottom: 28px; box-shadow: 0 10px 30px rgba(0,0,0,.4); }
+        header h1 { font-size: 30px; color: #fff; display: flex; align-items: center; gap: 14px; margin-bottom: 8px; }
+        header p { color: var(--text-muted); font-size: 15px; }
+        .vbadge { display:inline-block; background:linear-gradient(90deg,#00adb5,#0ea5e9); color:#fff; font-size:12px; font-weight:700; padding:3px 10px; border-radius:20px; margin-left:10px; vertical-align:middle; }
+        .grid { display: grid; grid-template-columns: 270px 1fr; gap: 28px; align-items: start; }
+        @media(max-width:820px){.grid{grid-template-columns:1fr;}}
+        nav.toc { background-color: var(--card-bg); border: 1px solid var(--card-border); padding: 22px; border-radius: 12px; position: sticky; top: 20px; height: fit-content; }
+        nav.toc h3 { font-size: 13px; text-transform: uppercase; letter-spacing: 1.5px; color: var(--accent-color); margin-bottom: 16px; border-bottom: 1px solid var(--card-border); padding-bottom: 10px; }
+        nav.toc ul { list-style: none; }
+        nav.toc li { margin-bottom: 4px; }
+        nav.toc a { color: var(--text-muted); text-decoration: none; font-size: 13.5px; transition: all 0.2s ease; display: block; padding: 5px 10px; border-radius: 6px; }
+        nav.toc a:hover { color: #fff; background-color: rgba(0,173,181,.15); transform: translateX(4px); }
+        nav.toc .toc-sub a { padding-left: 22px; font-size: 12.5px; }
+        section.card { background-color: var(--card-bg); border: 1px solid var(--card-border); padding: 32px 36px; border-radius: 12px; margin-bottom: 28px; box-shadow: 0 4px 18px rgba(0,0,0,.2); }
+        section.card h2 { font-size: 22px; color: #fff; margin-bottom: 18px; display: flex; align-items: center; gap: 12px; border-bottom: 2px solid rgba(0,173,181,.3); padding-bottom: 10px; }
+        section.card h3 { font-size: 16px; color: var(--gold-color); margin: 22px 0 10px 0; }
+        section.card h4 { font-size: 14px; color: #7dd3fc; margin: 14px 0 8px 0; }
+        p { margin-bottom: 12px; color: #cbd5e1; font-size: 14.5px; }
+        ul, ol { margin: 10px 0 16px 24px; color: #cbd5e1; font-size: 14.5px; }
+        li { margin-bottom: 7px; }
+        .btn-doc { display:inline-flex; align-items:center; gap:6px; padding:4px 12px; border-radius:6px; font-size:13px; font-weight:700; font-family:'Segoe UI',sans-serif; white-space:nowrap; cursor:default; border:1px solid; }
+        .btn-primary   { background:#1e40af; border-color:#3b82f6; color:#fff; }
+        .btn-success   { background:#065f46; border-color:#10b981; color:#a7f3d0; }
+        .btn-warning   { background:#78350f; border-color:#f59e0b; color:#fde68a; }
+        .btn-danger    { background:#7f1d1d; border-color:#ef4444; color:#fca5a5; }
+        .btn-neutral   { background:#1e293b; border-color:#475569; color:#cbd5e1; }
+        .btn-accent    { background:#164e63; border-color:#00adb5; color:#67e8f9; }
+        .btn-purple    { background:#4c1d95; border-color:#8b5cf6; color:#ddd6fe; }
+        .btn-row { display:flex; flex-wrap:wrap; gap:10px; margin:12px 0; }
+        .alert { padding:14px 18px; border-radius:8px; margin:16px 0; font-size:14px; display:flex; align-items:flex-start; gap:12px; }
+        .alert-tip     { background-color:rgba(16,185,129,.1);  border:1px solid rgba(16,185,129,.3);  color:#6ee7b7; }
+        .alert-warning { background-color:rgba(245,158,11,.1);  border:1px solid rgba(245,158,11,.3);  color:#fcd34d; }
+        .alert-note    { background-color:rgba(0,173,181,.1);   border:1px solid rgba(0,173,181,.3);   color:#67e8f9; }
+        .alert-danger  { background-color:rgba(239,68,68,.1);   border:1px solid rgba(239,68,68,.3);   color:#fca5a5; }
+        .alert-admin   { background-color:rgba(139,92,246,.12); border:1px solid rgba(139,92,246,.4);  color:#ddd6fe; }
+        table { width:100%; border-collapse:collapse; margin:16px 0; font-size:13.5px; }
+        th, td { padding:10px 14px; text-align:left; border:1px solid var(--card-border); vertical-align:top; }
+        th { background-color:rgba(0,173,181,.15); color:#fff; font-weight:600; font-size:13px; }
+        tr:nth-child(even) { background-color:rgba(255,255,255,.025); }
+        code,pre { font-family:'Consolas','Courier New',monospace; background-color:var(--code-bg); border:1px solid #1e293b; border-radius:5px; }
+        code { padding:2px 7px; color:#38bdf8; font-size:13px; }
+        pre { padding:14px 18px; overflow-x:auto; margin:12px 0; color:#f1f5f9; font-size:13px; line-height:1.5; }
+        .badge { display:inline-block; padding:3px 9px; border-radius:12px; font-size:11px; font-weight:700; text-transform:uppercase; }
+        .badge-pro  { background:#8b5cf6; color:#fff; }
+        .badge-free { background:#10b981; color:#fff; }
+        .badge-admin{ background:#ef4444; color:#fff; }
+        .sdiv { height:1px; background:linear-gradient(90deg,var(--accent-color),transparent); margin:20px 0; opacity:.4; }
+        footer { text-align:center; padding:22px; color:var(--text-muted); font-size:13px; margin-top:36px; border-top:1px solid var(--card-border); }
+        footer a { color:#00adb5; }
     </style>
 </head>
 <body>
-
 <div class="container">
-    <header>
-        <h1>📘 Lazarus Portable Manager — Manual Interativo</h1>
-        <p>Guia completo de operação, mobilidade em Pen Drives, gerenciamento de perfis e licenciamento Firebird.</p>
-    </header>
+<header>
+    <h1>📘 Lazarus Portable Manager <span class="vbadge">v2.0</span></h1>
+    <p>Manual completo de operação — Todas as telas, botões e funcionalidades explicados em detalhe.</p>
+</header>
+<div class="grid">
+<!-- TOC -->
+<nav class="toc">
+    <h3>📚 Índice</h3>
+    <ul>
+        <li><a href="#visao-geral">1. Visão Geral</a></li>
+        <li><a href="#tela-login">2. Tela de Login / Cadastro</a></li>
+        <li class="toc-sub"><a href="#login-botoes">↳ Botões da Tela de Login</a></li>
+        <li><a href="#layout">3. Layout da Janela Principal</a></li>
+        <li><a href="#topo">4. Barra Superior (Topo)</a></li>
+        <li><a href="#menu-lateral">5. Menu Lateral</a></li>
+        <li><a href="#dashboard">6. Dashboard</a></li>
+        <li class="toc-sub"><a href="#cards-status">↳ Cards de Status</a></li>
+        <li class="toc-sub"><a href="#barra-produtividade">↳ Barra de Produtividade</a></li>
+        <li><a href="#pacotes">7. Aba Pacotes</a></li>
+        <li><a href="#perfis">8. Aba Perfis</a></li>
+        <li><a href="#pagamentos">9. Aba Pagamentos</a></li>
+        <li class="toc-sub"><a href="#pix-screen">↳ Tela PIX / Comprovante</a></li>
+        <li><a href="#diagnostico">10. Aba Diagnóstico</a></li>
+        <li><a href="#log">11. Aba Log</a></li>
+        <li><a href="#opm">12. Aba OPM Online</a></li>
+        <li><a href="#manual-aba">13. Aba Manual</a></li>
+        <li><a href="#configdb">14. Config BD (Admin)</a></li>
+        <li><a href="#portabilidade">15. Portabilidade e Pen Drive</a></li>
+        <li><a href="#licenciamento">16. Licenciamento</a></li>
+        <li><a href="#faq">17. Perguntas Frequentes</a></li>
+    </ul>
+</nav>
+<main>
 
-    <div class="grid">
-        <!-- Sumário (TOC) -->
-        <nav class="toc">
-            <h3>Navegação</h3>
-            <ul>
-                <li><a href="#visao-geral">1. Visão Geral</a></li>
-                <li><a href="#portabilidade">2. Portabilidade & Pen Drive</a></li>
-                <li><a href="#perfis">3. Perfis de Configuração</a></li>
-                <li><a href="#licenciamento">4. Licenciamento & PIX</a></li>
-                <li><a href="#firebird">5. Conexão Firebird (VPS)</a></li>
-                <li><a href="#ferramentas">6. Ferramentas & Botões</a></li>
-                <li><a href="#faq">7. Perguntas Frequentes (FAQ)</a></li>
-            </ul>
-        </nav>
+<!-- ===== 1. VISAO GERAL ===== -->
+<section id="visao-geral" class="card">
+<h2>1. Visão Geral do Sistema</h2>
+<p>O <strong>Lazarus Portable Manager</strong> é uma solução de orquestração avançada que transforma o Lazarus IDE em uma aplicação 100% portável, podendo ser executada a partir de qualquer unidade (Pen Drive, HD externo ou pasta local) em qualquer computador Windows — sem instalação prévia.</p>
+<div class="alert alert-note">📌 <strong>Objetivo Central:</strong> Executar o Lazarus IDE completo (FPC, LCL, pacotes OPM, componentes personalizados e perfis de usuário) a partir de um Pen Drive ou HD externo em <em>qualquer</em> computador Windows, mantendo todas as configurações, layouts e atalhos intactos.</div>
+<h3>🧩 Módulos Internos</h3>
+<table>
+<thead><tr><th>Módulo</th><th>Responsabilidade</th></tr></thead>
+<tbody>
+<tr><td><code>uPortableCore</code></td><td>Motor de patch de XMLs, backup/restore, gerência dos diretórios portáveis.</td></tr>
+<tr><td><code>uPackageManager</code></td><td>Varredura de pacotes <code>.lpk</code> instalados, exportação JSON e integração com OPM online.</td></tr>
+<tr><td><code>uProfileManager</code></td><td>Criação, ativação, salvamento e exclusão de perfis de configuração isolados.</td></tr>
+<tr><td><code>uDiagnostics</code></td><td>Diagnóstico de 23+ pontos críticos do ambiente FPC/Lazarus com relatório exportável.</td></tr>
+<tr><td><code>uLauncher</code></td><td>Lançamento do <code>lazarus.exe</code> com variáveis de ambiente portáveis e backup automático.</td></tr>
+<tr><td><code>uLicenseManager</code></td><td>Autenticação, cadastro, trial de 10 dias, aprovação de PIX e comunicação com VPS Firebird.</td></tr>
+<tr><td><code>uConfigCrypt</code></td><td>Criptografia XOR Hexadecimal do arquivo <code>vps_config.ini</code> com migração automática de INIs legados.</td></tr>
+<tr><td><code>uPIXPayload</code></td><td>Geração do payload EMV Pix Copia e Cola e QR Code via API externa.</td></tr>
+</tbody>
+</table>
+</section>
 
-        <!-- Conteúdo Principal -->
-        <main>
-            <!-- 1. Visão Geral -->
-            <section id="visao-geral" class="card">
-                <h2>1. Visão Geral do Sistema</h2>
-                <p>O <strong>Lazarus Portable Manager</strong> é uma solução de orquestração avançada projetada para transformar a sua IDE Lazarus em uma aplicação 100% portável, segura e de alto desempenho.</p>
-                <div class="alert alert-note">
-                    📌 <strong>Objetivo Principal:</strong> Executar o Lazarus IDE completo com todos os seus componentes, ferramentas FPC e pacotes OPM em qualquer computador Windows (diretamente de um Pen Drive ou HD Externo) sem depender de instalações no sistema operacional.
-                </div>
-            </section>
+<!-- ===== 2. TELA DE LOGIN ===== -->
+<section id="tela-login" class="card">
+<h2>2. Tela de Login / Cadastro (<code>frmLogin</code>)</h2>
+<p>Ao iniciar o <code>LazarusPortable.exe</code>, a primeira tela exibida é o <strong>Formulário de Autenticação</strong>. Ela possui dois modos: <strong>Login</strong> e <strong>Cadastro</strong>, alternáveis pelo botão de modo.</p>
+<div class="alert alert-note">💡 Ao abrir, o sistema verifica automaticamente o <strong>Trial local</strong> e exibe a mensagem de status abaixo do formulário (ex: "Período de testes: 8 dias restantes"). Ao carregar, os parâmetros de conexão VPS são lidos do arquivo <code>LazarusConfig\vps_config.ini</code> (criptografado).</div>
+<h3 id="login-botoes">🖱️ Botões da Tela de Login</h3>
+<table>
+<thead><tr><th style="width:250px;">Botão</th><th>Modo Ativo</th><th>Ação Executada</th></tr></thead>
+<tbody>
+<tr>
+<td><span class="btn-doc btn-primary">🔑 Entrar com E-mail e Senha</span></td>
+<td>Login</td>
+<td>Autentica o usuário no banco Firebird VPS com e-mail e senha. Se aprovado, abre o painel principal (<code>frmMain</code>). Em caso de falha, exibe o motivo no campo de status e em um diálogo de aviso.</td>
+</tr>
+<tr>
+<td><span class="btn-doc btn-success">✨ Cadastrar e Ganhar 10 Dias Grátis</span></td>
+<td>Cadastro</td>
+<td>Registra novo usuário (nome, e-mail, senha) no banco Firebird VPS e inicia imediatamente o período trial de 10 dias completos. Após o cadastro bem-sucedido, o sistema entra automaticamente no painel principal.</td>
+</tr>
+<tr>
+<td><span class="btn-doc btn-neutral">Não tem conta? Cadastre-se e ganhe 10 dias grátis</span></td>
+<td>Login</td>
+<td>Alterna o formulário para o <strong>modo Cadastro</strong>, exibindo o campo "Nome Completo" e trocando o texto do botão de ação.</td>
+</tr>
+<tr>
+<td><span class="btn-doc btn-neutral">Já possui uma conta? Clique aqui para entrar</span></td>
+<td>Cadastro</td>
+<td>Alterna de volta para o <strong>modo Login</strong>, ocultando o campo de nome e reduzindo o formulário.</td>
+</tr>
+<tr>
+<td><span class="btn-doc btn-warning">⏳ Continuar no Modo Trial</span></td>
+<td>Ambos</td>
+<td>Permite usar o sistema sem fazer login, desde que o trial (10 dias) ainda esteja ativo. Se o trial estiver expirado, exibe aviso e retorna à tela de login com <code>mrCancel</code>. Requer pagamento PIX para liberar acesso após a expiração.</td>
+</tr>
+</tbody>
+</table>
+<h3>📝 Campos do Formulário</h3>
+<table>
+<thead><tr><th>Campo</th><th>Obrigatório em</th><th>Descrição</th></tr></thead>
+<tbody>
+<tr><td>Nome Completo</td><td>Modo Cadastro</td><td>Nome do usuário para identificação no banco e na interface.</td></tr>
+<tr><td>E-mail</td><td>Sempre</td><td>E-mail único de acesso, serve como chave de identificação na conta.</td></tr>
+<tr><td>Senha</td><td>Sempre</td><td>Senha da conta. Armazenada com hash no banco Firebird VPS.</td></tr>
+</tbody>
+</table>
+</section>
 
-            <!-- 2. Portabilidade -->
-            <section id="portabilidade" class="card">
-                <h2>2. Como Funciona a Portabilidade & Pen Drive</h2>
-                <p>Por padrão, o Lazarus armazena arquivos de configuração no diretório do usuário do Windows (<code>%LOCALAPPDATA%\lazarus</code>). O <strong>Lazarus Portable Manager</strong> altera dinamicamente essa dependência para direcionar 100% dos dados para a pasta local:</p>
-                <pre>$(DiretórioDoExe)\LazarusConfig\</pre>
-                <p>Quando o aplicativo é iniciado pela primeira vez em uma pasta (como no Pen Drive), ele detecta se a pasta <code>LazarusConfig</code> ainda não possui as configurações e <strong>importa automaticamente a estrutura completa do seu computador</strong> (<code>%LOCALAPPDATA%\lazarus</code>), incluindo todos os pacotes, componentes, atalhos e preferências personalizadas!</p>
+<!-- ===== 3. LAYOUT ===== -->
+<section id="layout" class="card">
+<h2>3. Layout da Janela Principal (<code>frmMain</code>)</h2>
+<p>Após login bem-sucedido, o painel principal abre <strong>maximizado</strong> com três regiões:</p>
+<pre>┌────────────────────────────────────────────────────────────────────────┐
+│  BARRA SUPERIOR  [Logo]  Lazarus Portable Manager    [▶ Lançar] [⚙ Config]  │
+├─────────────┬──────────────────────────────────────────────────────────┤
+│             │                                                          │
+│  🏠 Dashboard    │           ÁREA DE CONTEÚDO (PageControl)                  │
+│  📦 Pacotes │         (uma aba por item do menu lateral)               │
+│  👤 Perfis  │                                                          │
+│  💳 Pagamentos                                                         │
+│  🔍 Diagnóstico                                                        │
+│  📋 Log     │                                                          │
+│  🌐 OPM Online                                                         │
+│  📖 Manual  │                                                          │
+│  ℹ  Sobre   │                                                          │
+│  🚪 Sair    │                                                          │
+├─────────────┴──────────────────────────────────────────────────────────┤
+│  STATUS BAR  [Usuário: ... | Status Licença]        🕒 dd/mm/yyyy hh:nn:ss  v2.0 │
+└────────────────────────────────────────────────────────────────────────┘</pre>
+<p>A janela se redimensiona dinamicamente: os cards do Dashboard e os botões da Barra de Produtividade ajustam suas larguras proporcionalmente à janela via evento <code>FormResize</code>.</p>
+</section>
 
-                <h3>🚀 Guia Passo a Passo: Como Copiar Seu Lazarus Configurado para o Pen Drive:</h3>
-                <ol>
-                    <li><strong>Copie a pasta do Lazarus:</strong> Copie toda a pasta onde o seu Lazarus está instalado no computador (exemplo: <code>C:\lazarus\</code>) para a raiz ou diretório desejado do seu Pen Drive (exemplo: <code>E:\Lazarus\</code>).</li>
-                    <li><strong>Insira o <code>LazarusPortable.exe</code> no Pen Drive:</strong> Copie o executável <code>LazarusPortable.exe</code> para a raiz da pasta do Lazarus no Pen Drive (no mesmo local onde fica o <code>lazarus.exe</code>, ex: <code>E:\Lazarus\LazarusPortable.exe</code>).</li>
-                    <li><strong>Abra o <code>LazarusPortable.exe</code> no Pen Drive:</strong> Na primeira inicialização no Pen Drive, o aplicativo importará automaticamente suas configurações do computador (pacotes, barras de ferramentas, teclas de atalho) para a pasta <code>LazarusConfig\</code> do Pen Drive.</li>
-                    <li><strong>Execute o Re-Patch e Inicie a IDE:</strong> Clique em <code>🔧 Re-Patch Configurações</code> ou no botão <code>▶ Lançar</code>. O aplicativo atualizará dinamicamente todos os caminhos dos arquivos XML (<code>environmentoptions.xml</code>, <code>packagefiles.xml</code>, <code>fpcdefines.xml</code>) para a nova letra de unidade do Pen Drive e abrirá a IDE pronta com todos os seus componentes!</li>
-                </ol>
+<!-- ===== 4. BARRA SUPERIOR ===== -->
+<section id="topo" class="card">
+<h2>4. Barra Superior (Topo)</h2>
+<p>Sempre visível, independente da aba selecionada. Contém o logotipo, título da aplicação e dois botões globais:</p>
+<table>
+<thead><tr><th style="width:180px;">Botão</th><th>Ação Detalhada</th></tr></thead>
+<tbody>
+<tr>
+<td><span class="btn-doc btn-primary">▶&nbsp;&nbsp;Lançar</span></td>
+<td><strong>Lança o Lazarus IDE portável.</strong> Executa automaticamente o patch de caminhos em todos os XMLs da pasta <code>LazarusConfig\</code> (substituindo a letra de unidade antiga pela atual), realiza um backup automático das configurações, depois inicia o <code>lazarus.exe</code> em modo não-bloqueante. Erros são exibidos em diálogo e registrados no Log.</td>
+</tr>
+<tr>
+<td><span class="btn-doc btn-neutral">⚙ Config</span></td>
+<td><strong>Abre a tela de Configuração do Banco de Dados Firebird</strong> (<code>frmConfigDB</code>). <span class="badge badge-admin">Somente Admin</span> — Bloqueado para usuários comuns com mensagem de acesso restrito. Apenas o Super Administrador (<code>IS_ADMIN = 1</code>) pode acessar.</td>
+</tr>
+</tbody>
+</table>
+<h3>📊 Barra de Status (Rodapé)</h3>
+<p>Painel inferior (<code>pnlBottom</code>) sempre visível com três informações em tempo real:</p>
+<ul>
+<li><strong>Esquerda:</strong> e-mail do usuário logado e status da licença/trial com ícone e dias restantes.</li>
+<li><strong>Centro-direita:</strong> relógio digital atualizado a cada 1 segundo pelo timer <code>tmrClock</code>.</li>
+<li><strong>Extrema direita:</strong> versão atual do software (<code>v2.0</code>).</li>
+</ul>
+</section>
 
-                <div class="alert alert-tip">
-                    💡 <strong>Uso Nativo dentro da IDE (LazPortableTools.lpk):</strong> Se você tem o pacote <code>LazPortableTools.lpk</code> instalado na sua IDE, você também pode usar o menu nativo <code>Ferramentas ➔ Lazarus Portable Tools</code> para realizar Re-Patch e Backups instantâneos diretamente da IDE.
-                </div>
-            </section>
+<!-- ===== 5. MENU LATERAL ===== -->
+<section id="menu-lateral" class="card">
+<h2>5. Menu Lateral de Navegação (<code>lstMenu</code>)</h2>
+<p>Lista com 10 itens que controla qual aba é exibida na área de conteúdo. Cada item possui comportamento específico ao ser clicado:</p>
+<table>
+<thead><tr><th>Item do Menu</th><th>Aba Ativada</th><th>Comportamento ao Selecionar</th></tr></thead>
+<tbody>
+<tr><td>🏠 Dashboard</td><td><code>tabDashboard</code></td><td>Recarrega todos os 4 cards de status: consulta licença, conta pacotes, lista perfis e atualiza data de backup.</td></tr>
+<tr><td>📦 Pacotes</td><td><code>tabPackages</code></td><td>Exibe a lista de pacotes instalados. <strong>Não varre automaticamente</strong> — o usuário precisa clicar "🔄 Varrer".</td></tr>
+<tr><td>👤 Perfis</td><td><code>tabProfiles</code></td><td>Carrega e exibe automaticamente a lista de perfis disponíveis na pasta <code>Profiles\</code>.</td></tr>
+<tr><td>💳 Pagamentos</td><td><code>tabPayments</code></td><td>Consulta o banco VPS e carrega o histórico de comprovantes PIX do usuário atual.</td></tr>
+<tr><td>🔍 Diagnóstico</td><td><code>tabDiag</code></td><td>Exibe a tela de diagnóstico. Aguarda clique manual em "▶ Executar" para iniciar a varredura.</td></tr>
+<tr><td>📋 Log</td><td><code>tabLog</code></td><td>Exibe o log completo e cronológico de todas as operações da sessão atual.</td></tr>
+<tr><td>🌐 OPM Online</td><td><code>tabOPM</code></td><td>Abre o gerenciador online de pacotes. Se a lista estiver vazia, executa busca padrão automaticamente (<code>*</code>).</td></tr>
+<tr><td>📖 Manual</td><td><code>tabManual</code></td><td>Exibe o manual em texto puro no TMemo interno. Não recarrega (já carregado na inicialização).</td></tr>
+<tr><td>ℹ Sobre</td><td><code>tabAbout</code></td><td>Exibe versão, lista de recursos, compatibilidade (Lazarus 4.8 / FPC 3.2.4+ / Windows) e créditos.</td></tr>
+<tr><td>🚪 Sair</td><td>— (não navega)</td><td>Exibe diálogo de confirmação. Se confirmado, fecha o painel principal e retorna à tela de Login sem encerrar o processo.</td></tr>
+</tbody>
+</table>
+</section>
 
-            <!-- 3. Perfis de Configuração -->
-            <section id="perfis" class="card">
-                <h2>3. Perfis de Configuração Isolados</h2>
-                <p>Na aba <code>👤 Perfis</code>, você pode criar e alternar entre diferentes ambientes de trabalho no Lazarus sem misturar pacotes ou reinstalar a IDE.</p>
-                
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Recurso / Botão</th>
-                            <th>Descrição de Uso</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td><code>+ Novo Perfil</code></td>
-                            <td>Cria um perfil com ambiente limpo e isolado de configurações.</td>
-                        </tr>
-                        <tr>
-                            <td><code>☑ Ativar Perfil</code></td>
-                            <td>Carrega o perfil selecionado na IDE Lazarus em tempo de execução.</td>
-                        </tr>
-                        <tr>
-                            <td><code>💾 Salvar Config Atual</code></td>
-                            <td>Salva as modificações e novos pacotes instalados na IDE para o perfil.</td>
-                        </tr>
-                        <tr>
-                            <td><code>🗑 Deletar</code></td>
-                            <td>Remove o perfil selecionado permanentemente.</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </section>
 
-            <!-- 4. Licenciamento & PIX -->
-            <section id="licenciamento" class="card">
-                <h2>4. Sistema de Autenticação, Trial & PIX</h2>
-                <p>O gerenciador conta com controle de licenças e avaliação gratuita:</p>
-                <ul>
-                    <li><span class="badge badge-free">Trial 10 Dias</span> Na primeira execução, o usuário obtém 10 dias de testes gratuitos completos sem restrição.</li>
-                    <li><span class="badge badge-pro">Licença Vitalícia</span> Administradores e usuários aprovados têm acesso ilimitado com chave PIX e envio de comprovante.</li>
-                </ul>
-            </section>
+<!-- ===== 6. DASHBOARD ===== -->
+<section id="dashboard" class="card">
+<h2>6. Aba Dashboard (🏠)</h2>
+<p>Tela inicial e principal da aplicação. Reúne em uma única visão os indicadores de status do sistema e as ações mais utilizadas no dia a dia.</p>
 
-            <!-- 5. Firebird -->
-            <section id="firebird" class="card">
-                <h2>5. Configuração do Banco de Dados Firebird (VPS / Local)</h2>
-                <p>Apenas o <strong>Super Administrador</strong> (<code>conectsolutions@hotmail.com</code> ou marcados com <code>IS_ADMIN = 1</code>) tem acesso à tela de configurações do banco Firebird através do botão <code>⚙ Config</code>.</p>
+<h3 id="cards-status">📊 Cards de Status</h3>
+<p>Quatro painéis informativos exibem o estado atual do sistema. Cada card possui um botão de ação rápida que navega para a tela ou função correspondente:</p>
+<table>
+<thead><tr><th>Card</th><th>Informações Exibidas</th><th>Botão de Ação</th><th>O que o Botão Faz</th></tr></thead>
+<tbody>
+<tr>
+<td>🛡️ <strong>LICENÇA / TRIAL</strong></td>
+<td>Dias restantes de acesso, data de vencimento e barra de progresso visual (de 0 a 30 dias). Administradores veem "Acesso Vitalício Total".</td>
+<td><span class="btn-doc btn-purple">💳 Renovar PIX</span></td>
+<td>Abre a tela de pagamento PIX (<code>frmPayment</code>) para envio de comprovante de renovação.</td>
+</tr>
+<tr>
+<td>📦 <strong>COMPONENTES</strong></td>
+<td>Número total de pacotes <code>.lpk</code> detectados na instalação atual do Lazarus portável.</td>
+<td><span class="btn-doc btn-neutral">📦 Gerenciar</span></td>
+<td>Navega diretamente para a aba <strong>Pacotes</strong>.</td>
+</tr>
+<tr>
+<td>👤 <strong>PERFIL ATIVO</strong></td>
+<td>Nome do perfil de configuração atualmente ativo e quantos perfis no total existem.</td>
+<td><span class="btn-doc btn-neutral">👤 Ver Perfis</span></td>
+<td>Navega diretamente para a aba <strong>Perfis</strong>.</td>
+</tr>
+<tr>
+<td>💾 <strong>ÚLTIMO BACKUP</strong></td>
+<td>Data e hora do último backup de configurações realizado na sessão.</td>
+<td><span class="btn-doc btn-success">💾 Criar Backup</span></td>
+<td>Executa imediatamente um backup completo das configurações (mesmo comportamento do botão da Barra de Produtividade).</td>
+</tr>
+</tbody>
+</table>
+<div class="alert alert-warning">⚠️ <strong>Banner de Alerta de Licença:</strong> Se restarem <strong>7 dias ou menos</strong>, um painel amarelo aparece no topo do Dashboard com a mensagem de aviso e o botão <span class="btn-doc btn-warning">💳 Renovar Agora</span>, que abre a tela de pagamento PIX diretamente.</div>
 
-                <div class="alert alert-warning">
-                    ⚠️ <strong>Segurança do .INI:</strong> O usuário e a senha do banco Firebird são gravados criptografados com cifra XOR Hexadecimal no arquivo <code>vps_config.ini</code>.
-                </div>
-            </section>
-
-            <!-- 6. Ferramentas -->
-            <section id="ferramentas" class="card">
-                <h2>6. Resumo dos Botões Principais</h2>
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Botão</th>
-                            <th>Ação Executada</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td><code>▶ Lançar</code></td>
-                            <td>Aplica o patch de caminhos XML e inicia o Lazarus IDE.</td>
-                        </tr>
-                        <tr>
-                            <td><code>🔧 Re-Patch Configurações</code></td>
-                            <td>Regrava todos os caminhos dos arquivos XML na pasta <code>LazarusConfig</code>.</td>
-                        </tr>
-                        <tr>
-                            <td><code>🔍 Executar Diagnóstico</code></td>
-                            <td>Analisa 23 pontos críticos do ambiente FPC e Lazarus.</td>
-                        </tr>
-                        <tr>
-                            <td><code>🌐 OPM Online</code></td>
-                            <td>Instala componentes da comunidade Lazarus com 1 clique.</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </section>
-
-            <!-- 7. FAQ -->
-            <section id="faq" class="card">
-                <h2>7. Perguntas Frequentes (FAQ)</h2>
-                <h3>Q: O banco Firebird deu erro "arquivo em uso por outro processo", o que fazer?</h3>
-                <p>R: Isso ocorre quando o IBExpert está conectado no modo Local (Embedded). Na tela de <code>⚙ Config</code>, certifique-se de que o Servidor é <code>localhost</code> ou <code>127.0.0.1</code> e a porta é <code>3050</code> para conectar via Socket TCP/IP.</p>
-
-                <h3>Q: Como redefinir ou salvar um backup de emergência?</h3>
-                <p>R: Vá até a tela inicial (Dashboard) e clique no botão <code>💾 Backup Manual</code>.</p>
-            </section>
-        </main>
-    </div>
-
-    <footer>
-        <p>Lazarus Portable Manager v2.0 &copy; 2026 — Desenvolvido para máxima portabilidade e produtividade.</p>
-    </footer>
+<h3 id="barra-produtividade">⚡ Barra de Produtividade (6 botões em 2 linhas)</h3>
+<p>Os botões se redimensionam dinamicamente para se adequar à largura da janela (3 colunas).</p>
+<div class="sdiv"></div>
+<h4>🔵 Linha 1 — Acesso Rápido</h4>
+<div class="btn-row">
+<span class="btn-doc btn-primary">▶ Lançar Lazarus IDE</span>
+<span class="btn-doc btn-neutral">📂 Pasta LazarusConfig</span>
+<span class="btn-doc btn-neutral">💻 Terminal Portável</span>
 </div>
+<table>
+<thead><tr><th style="width:240px;">Botão</th><th>Ação Detalhada</th></tr></thead>
+<tbody>
+<tr>
+<td><span class="btn-doc btn-primary">▶ Lançar Lazarus IDE</span></td>
+<td>Idêntico ao botão "▶ Lançar" da barra superior. Aplica o patch nos XMLs de configuração, executa um backup automático das configurações, depois inicia o <code>lazarus.exe</code> portável sem bloquear a interface. Registra o evento no log com timestamp.</td>
+</tr>
+<tr>
+<td><span class="btn-doc btn-neutral">📂 Pasta LazarusConfig</span></td>
+<td>Abre a pasta <code>LazarusConfig\</code> diretamente no <strong>Windows Explorer</strong> usando <code>OpenURL('file:///...')</code>. Útil para inspecionar ou editar manualmente os arquivos <code>.xml</code> de configuração do Lazarus.</td>
+</tr>
+<tr>
+<td><span class="btn-doc btn-neutral">💻 Terminal Portável</span></td>
+<td>Abre o <strong>Prompt de Comando</strong> (<code>cmd.exe</code>) via <code>OpenDocument</code>. Permite realizar compilações manuais com o FPC portável, instalar pacotes via linha de comando ou depurar problemas de ambiente.</td>
+</tr>
+</tbody>
+</table>
+<div class="sdiv"></div>
+<h4>🟢 Linha 2 — Manutenção do Ambiente</h4>
+<div class="btn-row">
+<span class="btn-doc btn-warning">🧹 Limpar Cache (.ppu / .o)</span>
+<span class="btn-doc btn-accent">🔧 Re-Patch Config</span>
+<span class="btn-doc btn-neutral">🔍 Diagnóstico Completo</span>
+</div>
+<table>
+<thead><tr><th style="width:240px;">Botão</th><th>Ação Detalhada</th></tr></thead>
+<tbody>
+<tr>
+<td><span class="btn-doc btn-warning">🧹 Limpar Cache (.ppu / .o)</span></td>
+<td>Varre <strong>recursivamente</strong> as pastas <code>LazarusConfig\</code> e <code>lib\</code> do diretório portável e deleta todos os arquivos de cache de compilação (<code>.ppu</code> — unidades pré-compiladas, e <code>.o</code> — objetos binários). Exibe ao final quantos arquivos foram removidos. Ideal após trocar a versão do FPC ou ao enfrentar erros de compilação inexplicáveis.</td>
+</tr>
+<tr>
+<td><span class="btn-doc btn-accent">🔧 Re-Patch Config</span></td>
+<td>Executa manualmente o <strong>motor de patch de caminhos</strong> (<code>FConfig.PatchAll</code>). Lê todos os arquivos XML da pasta <code>LazarusConfig\</code> e substitui qualquer referência antiga de letra de unidade ou caminho absoluto pelo caminho atual do Pen Drive. Exibe o número de arquivos processados e lista erros no Log. Essencial ao mover o Pen Drive para outro PC com letra de unidade diferente.</td>
+</tr>
+<tr>
+<td><span class="btn-doc btn-neutral">🔍 Diagnóstico Completo</span></td>
+<td>Navega automaticamente para a aba <strong>Diagnóstico</strong> e executa a varredura completa do ambiente de forma imediata, sem cliques adicionais. Equivale a selecionar "🔍 Diagnóstico" no menu e clicar "▶ Executar".</td>
+</tr>
+</tbody>
+</table>
 
+<h3>📋 Mini-Log do Dashboard</h3>
+<p>Na parte inferior do Dashboard há um painel de log somente-leitura (<code>memoLog</code>) com fundo preto e texto amarelo. Exibe em tempo real todos os eventos da sessão (ações executadas, erros, resultados de operações). O log completo, com histórico total, pode ser visto e exportado na aba <strong>📋 Log</strong>.</p>
+</section>
+
+<!-- ===== 7. ABA PACOTES ===== -->
+<section id="pacotes" class="card">
+<h2>7. Aba Pacotes (📦)</h2>
+<p>Exibe todos os pacotes <code>.lpk</code> instalados e registrados na instalação portável do Lazarus. A lista em modo relatório contém as colunas: <strong>Nome</strong>, <strong>Versão</strong>, <strong>Autor</strong>, <strong>Status</strong> e <strong>Caminho</strong> do arquivo <code>.lpk</code>.</p>
+<h3>🖱️ Botões da Aba Pacotes</h3>
+<table>
+<thead><tr><th style="width:220px;">Botão</th><th>Ação Detalhada</th></tr></thead>
+<tbody>
+<tr>
+<td><span class="btn-doc btn-accent">🔄 Varrer</span></td>
+<td>Executa varredura completa lendo o <code>packagefiles.xml</code> da instalação portável e localizando todos os arquivos <code>.lpk</code> referenciados. Preenche a lista com nome, versão, autor, status e caminho. Pacotes com caminho inválido recebem o marcador <code>⚠️</code> na coluna Status. Exibe a contagem total abaixo da lista.</td>
+</tr>
+<tr>
+<td><span class="btn-doc btn-neutral">📤 Exportar Lista</span></td>
+<td>Abre um diálogo <strong>Salvar Arquivo</strong> para exportar a lista completa de pacotes em formato <strong>JSON</strong> (sugerindo o nome <code>pacotes_lazarus.json</code>). Útil para documentação, auditoria ou comparação entre diferentes ambientes de desenvolvimento.</td>
+</tr>
+<tr>
+<td><span class="btn-doc btn-accent">🌐 OPM - Instalar Online</span></td>
+<td>Atalho que navega diretamente para a aba <strong>OPM Online</strong>, onde é possível pesquisar e baixar novos componentes da comunidade Lazarus sem sair do gerenciador.</td>
+</tr>
+</tbody>
+</table>
+<div class="alert alert-tip">💡 <strong>Estados dos Pacotes:</strong> <code>psOK</code> = arquivo <code>.lpk</code> encontrado e acessível. <code>psPathBroken</code> = arquivo não localizado no caminho registrado — execute <span class="btn-doc btn-accent">🔧 Re-Patch Config</span> para corrigir os caminhos automaticamente.</div>
+</section>
+
+<!-- ===== 8. ABA PERFIS ===== -->
+<section id="perfis" class="card">
+<h2>8. Aba Perfis (👤)</h2>
+<p>Permite criar e gerenciar <strong>ambientes de trabalho completamente isolados</strong> para o Lazarus — cada perfil possui seus próprios pacotes, layouts de paleta, atalhos de teclado e configurações de compilador, sem misturar ou reinstalar a IDE.</p>
+<p>A lista exibe: <strong>Nome</strong> (✅ para o perfil ativo), <strong>Descrição</strong>, <strong>Criado em</strong> e <strong>Último Uso</strong>.</p>
+<div class="alert alert-note">💡 <strong>O que cada perfil armazena individualmente:</strong> pacotes e componentes instalados, layout de janelas e paletas, caminhos de compiladores, macros do editor, atalhos de teclado e lista de arquivos recentes.</div>
+<h3>🖱️ Botões da Aba Perfis</h3>
+<table>
+<thead><tr><th style="width:240px;">Botão</th><th>Ação Detalhada</th></tr></thead>
+<tbody>
+<tr>
+<td><span class="btn-doc btn-success">➕ Novo Perfil</span></td>
+<td>Solicita via caixa de diálogo o <strong>nome</strong> e uma <strong>descrição opcional</strong> para o novo perfil. Cria uma pasta vazia e isolada com esse nome em <code>Profiles\[Nome]\</code> dentro do diretório portável. O novo perfil aparece imediatamente na lista com sua data de criação.</td>
+</tr>
+<tr>
+<td><span class="btn-doc btn-accent">✅ Ativar Perfil</span></td>
+<td>Ativa o perfil selecionado na lista. Antes de prosseguir, exibe um diálogo de <strong>confirmação</strong> alertando que a operação sobrescreve a configuração atual do <code>LazarusConfig\</code> com os arquivos do perfil escolhido. Após ativar, o perfil recebe o ícone ✅ e a data de "Último uso" é atualizada.</td>
+</tr>
+<tr>
+<td><span class="btn-doc btn-neutral">💾 Salvar Config Atual</span></td>
+<td>Solicita o nome de um perfil via diálogo e <strong>copia o estado atual</strong> completo da pasta <code>LazarusConfig\</code> para <code>Profiles\[NomeDoPerfil]\</code>. Use após instalar novos componentes na IDE para "congelar" esse ambiente para uso futuro.</td>
+</tr>
+<tr>
+<td><span class="btn-doc btn-danger">🗑 Deletar</span></td>
+<td>Remove permanentemente o perfil selecionado e todos os seus arquivos. Exige confirmação antes de excluir. <strong>Não é possível deletar o perfil atualmente ativo</strong> — uma mensagem de erro é exibida se tentado.</td>
+</tr>
+</tbody>
+</table>
+<h3>💡 Exemplos de Uso de Perfis</h3>
+<ul>
+<li><strong>Por Cliente:</strong> "Cliente_A_ACBr" (ACBr + Fortes Reports instalados) vs "Cliente_B_REST" (componentes REST e JSON).</li>
+<li><strong>Por Ambiente:</strong> "Dev_Debug" (ferramentas de debug e logs ativos) vs "Release_Clean" (IDE limpa e rápida para compilação final).</li>
+<li><strong>Por Versão FPC:</strong> Um perfil configurado para FPC 3.2.2 e outro para FPC 3.2.4.</li>
+<li><strong>Por Plataforma:</strong> "Proj_Android_LAMW" vs "Proj_Windows_VCL".</li>
+</ul>
+</section>
+
+
+<!-- ===== 9. ABA PAGAMENTOS ===== -->
+<section id="pagamentos" class="card">
+<h2>9. Aba Pagamentos (💳)</h2>
+<p>Gerencia o histórico de comprovantes de pagamento PIX e permite ao Administrador aprovar ou rejeitar licenças. A lista em modo relatório exibe: <strong>ID</strong>, <strong>Data Envio</strong>, <strong>Usuário / Chave PIX</strong>, <strong>Valor Pago</strong>, <strong>Comprovante</strong>, <strong>Status Análise</strong> e <strong>Observação</strong>.</p>
+<h3>🖱️ Botões da Aba Pagamentos</h3>
+<table>
+<thead><tr><th style="width:240px;">Botão</th><th>Visível para</th><th>Ação Detalhada</th></tr></thead>
+<tbody>
+<tr>
+<td><span class="btn-doc btn-success">➕ Enviar PIX</span></td>
+<td>Todos</td>
+<td>Abre a <strong>Tela de Pagamento PIX</strong> (<code>frmPayment</code>) para gerar o código Copia e Cola / QR Code e enviar o comprovante de pagamento ao servidor VPS.</td>
+</tr>
+<tr>
+<td><span class="btn-doc btn-accent">🔄 Atualizar</span></td>
+<td>Todos</td>
+<td>Recarrega a lista de comprovantes diretamente do banco de dados Firebird VPS, buscando novos registros enviados ou atualizações de status (ex: "Aprovado" ou "Rejeitado").</td>
+</tr>
+<tr>
+<td><span class="btn-doc btn-success">✅ Aprovar Licença (30 Dias)</span></td>
+<td><span class="badge badge-admin">Admin</span></td>
+<td>Selecione um comprovante na lista e clique. Solicita uma observação (ex: "Pagamento PIX verificado e aprovado") e adiciona automaticamente <strong>30 dias de licença</strong> ao usuário remetente, marcando o comprovante como "Aprovado" no banco. Botão visível somente para administradores.</td>
+</tr>
+<tr>
+<td><span class="btn-doc btn-danger">❌ Rejeitar Comprovante</span></td>
+<td><span class="badge badge-admin">Admin</span></td>
+<td>Selecione um comprovante e clique. Solicita o <strong>motivo da rejeição</strong> (ex: "Comprovante ilegível ou valor incorreto") e atualiza o status no banco para "Rejeitado" sem adicionar dias ao usuário. Botão visível somente para administradores.</td>
+</tr>
+<tr>
+<td><span class="btn-doc btn-neutral">👁️ Ver Comprovante</span></td>
+<td>Todos</td>
+<td>Abre o <strong>Visualizador de Comprovante</strong> (<code>frmReceiptViewer</code>) exibindo a imagem ou PDF do comprovante selecionado, baixado do servidor VPS.</td>
+</tr>
+</tbody>
+</table>
+<div class="alert alert-note">💡 <strong>Duplo Clique na Lista:</strong> Fazer duplo clique em qualquer comprovante abre automaticamente o visualizador (<code>frmReceiptViewer</code>), equivalente ao botão "👁️ Ver Comprovante".</div>
+<div class="alert alert-admin">🔐 <strong>Visão do Administrador:</strong> Quando logado como admin, a coluna "Usuário / Chave PIX" exibe o nome completo e e-mail do usuário remetente. Os botões Aprovar e Rejeitar ficam visíveis apenas nesse modo.</div>
+
+<h3 id="pix-screen">💳 Tela de Pagamento PIX (<code>frmPayment</code>)</h3>
+<p>Aberta ao clicar em "➕ Enviar PIX" ou "💳 Renovar PIX". As informações de pagamento (chave PIX, valor, banco, titular) são carregadas automaticamente do servidor VPS. O payload EMV Copia e Cola é gerado pelo módulo <code>uPIXPayload</code>.</p>
+<table>
+<thead><tr><th style="width:220px;">Botão</th><th>Ação Detalhada</th></tr></thead>
+<tbody>
+<tr>
+<td><span class="btn-doc btn-accent">📋 Copiar Código PIX</span></td>
+<td>Copia o <strong>payload EMV PIX Copia e Cola</strong> para a área de transferência do Windows. Cole no aplicativo do banco para realizar o pagamento sem digitar. O QR Code exibido ao lado serve como alternativa para escanear com o celular.</td>
+</tr>
+<tr>
+<td><span class="btn-doc btn-neutral">📁 Selecionar Arquivo</span></td>
+<td>Abre um diálogo de seleção de arquivo para escolher o comprovante de pagamento (PDF, PNG, JPG ou qualquer formato de imagem). O caminho completo do arquivo selecionado é exibido no campo correspondente.</td>
+</tr>
+<tr>
+<td><span class="btn-doc btn-success">📤 Enviar Comprovante</span></td>
+<td>Faz o <strong>upload do arquivo</strong> selecionado para o servidor VPS via conexão Firebird, associando-o ao ID do usuário logado, à chave PIX e observações preenchidas. Após envio bem-sucedido, o comprovante entra na fila de análise do Administrador e a tela fecha com resultado OK.</td>
+</tr>
+</tbody>
+</table>
+<div class="alert alert-tip">💡 <strong>Sem conexão com a internet:</strong> O QR Code não será carregado (gerado via <code>api.qrserver.com</code>), mas o código <strong>Copia e Cola permanece 100% funcional</strong> para realizar o pagamento no banco.</div>
+</section>
+
+<!-- ===== 10. ABA DIAGNOSTICO ===== -->
+<section id="diagnostico" class="card">
+<h2>10. Aba Diagnóstico (🔍)</h2>
+<p>O módulo <code>uDiagnostics</code> verifica <strong>23+ pontos críticos</strong> da instalação portável, organizados por categoria, e exibe o resultado em lista com ícones de status. Colunas: <strong>Status</strong> (✅ ⚠️ ❌ ℹ️), <strong>Categoria</strong>, <strong>Verificação</strong> e <strong>Detalhe / Valor encontrado</strong>.</p>
+<h3>🖱️ Botões da Aba Diagnóstico</h3>
+<table>
+<thead><tr><th style="width:200px;">Botão</th><th>Ação Detalhada</th></tr></thead>
+<tbody>
+<tr>
+<td><span class="btn-doc btn-primary">▶ Executar</span></td>
+<td>
+Inicia a <strong>varredura completa do ambiente</strong>. Verifica os seguintes pontos críticos:
+<ul>
+<li>Existência e acessibilidade de <code>lazarus.exe</code> e <code>fpc.exe</code></li>
+<li>Existência e integridade dos XMLs principais: <code>environmentoptions.xml</code>, <code>packagefiles.xml</code>, <code>fpcdefines.xml</code></li>
+<li>Presença e validade dos arquivos <code>.lpk</code> de pacotes referenciados</li>
+<li>Configuração e acessibilidade da LCL (Library Control Library)</li>
+<li>Configuração de variáveis de ambiente FPC (<code>FPCDIR</code>, <code>LAZARUSDIR</code>)</li>
+<li>Espaço em disco disponível na unidade portável</li>
+<li>Configurações de caminho no perfil ativo</li>
+<li>Outros pontos de verificação específicos do ambiente portável</li>
+</ul>
+Ao terminar, exibe resumo colorido no rodapé: <strong>verde</strong> (tudo OK), <strong>amarelo</strong> (avisos), <strong>vermelho</strong> (erros críticos que impedem o funcionamento).
+</td>
+</tr>
+<tr>
+<td><span class="btn-doc btn-neutral">📄 Salvar Relatório</span></td>
+<td>Abre diálogo <strong>Salvar Arquivo</strong> para exportar o relatório completo em formato <strong>texto plano</strong> com timestamp no nome (ex: <code>diagnostico_lazarus_20260717_104500.txt</code>). Útil para suporte técnico ou registro histórico de ambiente.</td>
+</tr>
+</tbody>
+</table>
+</section>
+
+<!-- ===== 11. ABA LOG ===== -->
+<section id="log" class="card">
+<h2>11. Aba Log (📋)</h2>
+<p>Exibe o <strong>log completo e cronológico</strong> de todas as operações realizadas na sessão. Cada linha é prefixada com o horário e um indicador de nível:</p>
+<ul>
+<li><code>[hh:nn:ss]</code> — Timestamp de cada evento</li>
+<li><code>[AVS]</code> — Aviso / Warning (nível 1)</li>
+<li><code>[ERR]</code> — Erro crítico (nível 2)</li>
+<li>(sem prefixo) — Informação normal (nível 0)</li>
+</ul>
+<h3>🖱️ Botões da Aba Log</h3>
+<table>
+<thead><tr><th style="width:160px;">Botão</th><th>Ação Detalhada</th></tr></thead>
+<tbody>
+<tr>
+<td><span class="btn-doc btn-danger">🗑 Limpar</span></td>
+<td>Apaga <strong>todo o conteúdo</strong> do log da sessão — tanto o mini-log do Dashboard quanto o log completo desta aba. A operação não pode ser desfeita. Use antes de uma operação específica para capturar somente os logs desejados.</td>
+</tr>
+<tr>
+<td><span class="btn-doc btn-neutral">💾 Salvar Log</span></td>
+<td>Abre diálogo <strong>Salvar Arquivo</strong> para exportar o log em formato <code>.txt</code> com data no nome (ex: <code>log_lazarusportable_20260717.txt</code>). Permite arquivar histórico de operações para análise posterior ou envio ao suporte técnico.</td>
+</tr>
+</tbody>
+</table>
+</section>
+
+<!-- ===== 12. ABA OPM ===== -->
+<section id="opm" class="card">
+<h2>12. Aba OPM Online (🌐)</h2>
+<p>O <strong>Online Package Manager</strong> permite pesquisar e baixar componentes da comunidade Lazarus diretamente do repositório oficial OPM sem sair do gerenciador portável. A lista exibe: <strong>Nome</strong>, <strong>Versão</strong>, <strong>Autor</strong>, <strong>Categoria</strong> e <strong>Descrição</strong>.</p>
+<h3>🖱️ Controles da Aba OPM</h3>
+<table>
+<thead><tr><th style="width:260px;">Controle</th><th>Ação Detalhada</th></tr></thead>
+<tbody>
+<tr>
+<td>Campo <code>🔎 Buscar pacotes no OPM...</code></td>
+<td>Campo de texto para digitar o nome ou palavra-chave do pacote desejado. Deixar vazio e buscar retorna até 30 pacotes populares (o sistema usa <code>"*"</code> como coringa internamente).</td>
+</tr>
+<tr>
+<td><span class="btn-doc btn-accent">🔍 Buscar</span></td>
+<td>Consulta o repositório OPM online usando o termo digitado, retornando até 30 resultados. Preenche a lista com os pacotes encontrados. Exibe status de busca e contagem na barra inferior. Se nenhum resultado for encontrado, exibe mensagem informativa.</td>
+</tr>
+<tr>
+<td><span class="btn-doc btn-primary">⬇ Baixar Pacote Selecionado</span></td>
+<td>
+Selecione um pacote na lista e clique. O sistema:
+<ol>
+<li>Busca a URL de download oficial do pacote via API OPM.</li>
+<li>Realiza o download para a pasta <code>components_ext\</code> no diretório portável.</li>
+<li>Extrai automaticamente o conteúdo do pacote baixado.</li>
+<li>Registra o pacote na varredura de pacotes instalados.</li>
+<li>Exibe mensagem com as instruções de instalação do <code>.lpk</code> no Lazarus.</li>
+</ol>
+A barra de progresso (<code>pbOPM</code>) e o label de status mostram o andamento em tempo real.
+</td>
+</tr>
+</tbody>
+</table>
+<div class="alert alert-tip">💡 <strong>Como instalar o pacote baixado na IDE:</strong>
+<ol>
+<li>Clique em <span class="btn-doc btn-primary">▶ Lançar Lazarus IDE</span>.</li>
+<li>Na IDE, acesse <strong>Pacote → Abrir Arquivo de Pacote (.lpk)</strong>.</li>
+<li>Navegue até <code>[PortableDir]\components_ext\</code>, selecione o <code>.lpk</code> e clique em <strong>Usar → Instalar</strong>.</li>
+<li>Após a recompilação automática da IDE, o componente aparecerá na paleta.</li>
+</ol>
+</div>
+</section>
+
+<!-- ===== 13. ABA MANUAL ===== -->
+<section id="manual-aba" class="card">
+<h2>13. Aba Manual (📖)</h2>
+<p>Exibe o manual do usuário em formato texto diretamente dentro da aplicação, disponível offline em qualquer situação. O conteúdo é gerado e carregado automaticamente durante a inicialização da aplicação. Uma cópia em texto plano é salva em <code>MANUAL.txt</code> no diretório portável.</p>
+<table>
+<thead><tr><th style="width:300px;">Botão</th><th>Ação Detalhada</th></tr></thead>
+<tbody>
+<tr>
+<td><span class="btn-doc btn-accent">🌐 Abrir Manual no Navegador (HTML)</span></td>
+<td>Localiza o arquivo <code>MANUAL.html</code> (buscando em múltiplos caminhos: <code>[PortableDir]\manual\MANUAL.html</code>, <code>[PortableDir]\MANUAL.html</code>, e junto ao executável) e o abre no <strong>navegador padrão do sistema</strong> para uma visualização mais rica e completa. Se o arquivo não for encontrado, exibe mensagem com o caminho esperado.</td>
+</tr>
+</tbody>
+</table>
+</section>
+
+<!-- ===== 14. CONFIG BD ===== -->
+<section id="configdb" class="card">
+<h2>14. Tela de Configuração do Banco de Dados (<code>frmConfigDB</code>)</h2>
+<div class="alert alert-admin">🔐 <strong>Acesso Exclusivo de Administrador:</strong> Esta tela é acessível apenas pelo Super Administrador (usuário com <code>IS_ADMIN = 1</code> no banco Firebird). Usuários comuns recebem mensagem "Apenas o Administrador do sistema tem permissão para acessar as configurações do banco de dados" ao clicar em "⚙ Config".</div>
+<p>Permite configurar os parâmetros de conexão com o banco de dados <strong>Firebird</strong> utilizado para autenticação, licenciamento e armazenamento de comprovantes PIX. As configurações são salvas criptografadas no arquivo <code>LazarusConfig\vps_config.ini</code>.</p>
+<h3>📝 Parâmetros Configuráveis</h3>
+<table>
+<thead><tr><th>Parâmetro</th><th>Valor Padrão</th><th>Descrição</th></tr></thead>
+<tbody>
+<tr><td>Host (Servidor)</td><td><code>localhost</code></td><td>Endereço IP ou hostname do servidor Firebird. Use <code>localhost</code> ou <code>127.0.0.1</code> para conexão local via TCP/IP.</td></tr>
+<tr><td>Porta</td><td><code>3050</code></td><td>Porta TCP do servidor Firebird. Padrão internacional: 3050.</td></tr>
+<tr><td>Caminho do Banco</td><td><code>LazarusBackup.fdb</code></td><td>Caminho completo do arquivo <code>.fdb</code> no servidor (ou local).</td></tr>
+<tr><td>Usuário</td><td><code>SYSDBA</code></td><td>Usuário de autenticação no Firebird.</td></tr>
+<tr><td>Senha</td><td><code>masterkey</code></td><td>Senha do banco. Armazenada com cifra XOR Hexadecimal no <code>vps_config.ini</code>.</td></tr>
+<tr><td>Charset</td><td><code>UTF8</code></td><td>Conjunto de caracteres da conexão com o banco.</td></tr>
+<tr><td>Biblioteca Cliente (DLL)</td><td><code>fbclient.dll</code></td><td>Caminho completo para a <code>fbclient.dll</code> do Firebird instalada na máquina (ex: <code>C:\Program Files (x86)\Firebird\Firebird_5_0\fbclient.dll</code>).</td></tr>
+</tbody>
+</table>
+<div class="alert alert-warning">⚠️ <strong>Segurança do <code>vps_config.ini</code>:</strong> Todos os valores de conexão são gravados com <strong>cifra XOR Hexadecimal</strong> (<code>TConfigCrypt</code>). O módulo <code>MigrateAndEncrypt</code> converte automaticamente versões legadas em texto plano para o formato criptografado. Nunca edite o <code>.ini</code> manualmente — use sempre esta tela de configuração.</div>
+<div class="alert alert-tip">💡 <strong>Erro "arquivo em uso por outro processo":</strong> Ocorre quando o IBExpert ou outra ferramenta está conectada em modo Embedded (acesso direto ao arquivo <code>.fdb</code>). Configure o Host como <code>localhost</code> e a Porta como <code>3050</code> para forçar a conexão via Socket TCP/IP, eliminando o conflito de acesso exclusivo ao arquivo.</div>
+</section>
+
+<!-- ===== 15. PORTABILIDADE ===== -->
+<section id="portabilidade" class="card">
+<h2>15. Portabilidade e Pen Drive</h2>
+<p>O Lazarus armazena suas configurações em <code>%LOCALAPPDATA%\lazarus</code> (fixo no computador). O <strong>Lazarus Portable Manager</strong> redireciona 100% desses dados para:</p>
+<pre>$(DiretórioDoExe)\LazarusConfig\</pre>
+<p>Qualquer referência absoluta de caminho nos arquivos XML de configuração (letra de unidade, pasta do usuário) é automaticamente corrigida para apontar para o diretório atual do Pen Drive.</p>
+<h3>🚀 Guia Passo a Passo: Configurando o Pen Drive pela Primeira Vez</h3>
+<ol>
+<li><strong>Copie o Lazarus:</strong> Copie a pasta completa de instalação do Lazarus do computador (ex: <code>C:\lazarus\</code>) para a raiz ou diretório desejado do Pen Drive (ex: <code>E:\Lazarus\</code>).</li>
+<li><strong>Insira o executável:</strong> Copie o arquivo <code>LazarusPortable.exe</code> para a mesma pasta onde está o <code>lazarus.exe</code> no Pen Drive (ex: <code>E:\Lazarus\LazarusPortable.exe</code>).</li>
+<li><strong>Primeira execução no Pen Drive:</strong> Execute o <code>LazarusPortable.exe</code> pelo Pen Drive. O sistema detecta que a pasta <code>LazarusConfig\</code> está vazia ou ausente e <strong>importa automaticamente</strong> toda a configuração de <code>%LOCALAPPDATA%\lazarus</code> do PC atual — pacotes, barras de ferramentas, atalhos, temas e preferências.</li>
+<li><strong>Patch e Lançamento:</strong> Clique em <span class="btn-doc btn-accent">🔧 Re-Patch Config</span> ou diretamente em <span class="btn-doc btn-primary">▶ Lançar</span>. Todos os caminhos dos XMLs são atualizados para a nova letra de unidade e o Lazarus abre completamente configurado, pronto para desenvolvimento.</li>
+</ol>
+<div class="alert alert-tip">💡 <strong>Espaço necessário:</strong> Uma instalação completa com FPC e pacotes comuns ocupa aproximadamente <strong>2,5 GB</strong>. Recomenda-se usar Pen Drives <strong>USB 3.0 de 8 GB ou mais</strong> para melhor performance de compilação.</div>
+<div class="alert alert-tip">💡 <strong>Integração nativa na IDE (LazPortableTools.lpk):</strong> Instale o pacote <code>LazPortableTools.lpk</code> na IDE e use o menu <strong>Ferramentas → Lazarus Portable Tools</strong> para executar Re-Patch e Backups diretamente de dentro do Lazarus, sem sair da IDE.</div>
+</section>
+
+<!-- ===== 16. LICENCIAMENTO ===== -->
+<section id="licenciamento" class="card">
+<h2>16. Sistema de Licenciamento</h2>
+<h3>📋 Tipos de Acesso</h3>
+<table>
+<thead><tr><th>Tipo</th><th>Duração</th><th>Características</th></tr></thead>
+<tbody>
+<tr>
+<td><span class="badge badge-free">Trial Gratuito</span></td>
+<td>10 dias</td>
+<td>Inicia automaticamente no primeiro cadastro. Acesso completo a todas as funcionalidades sem restrição. Verificado localmente a cada inicialização. Pode ser usado sem login ativo (botão "Continuar no Modo Trial").</td>
+</tr>
+<tr>
+<td><span class="badge badge-pro">Licença Paga</span></td>
+<td>30 dias por pagamento aprovado</td>
+<td>Ativada pelo Administrador após verificação e aprovação do comprovante PIX enviado. Renovável a qualquer momento enviando novos comprovantes. Dias adicionados cumulativamente no banco.</td>
+</tr>
+<tr>
+<td><span class="badge badge-admin">Administrador</span></td>
+<td>Vitalício</td>
+<td>Usuário com <code>IS_ADMIN = 1</code> no banco Firebird. Acesso total, sem expiração, sem restrições. Capacidade de aprovar/rejeitar licenças de outros usuários e acessar configurações do banco de dados.</td>
+</tr>
+</tbody>
+</table>
+<h3>🔄 Fluxo Completo de Renovação via PIX</h3>
+<ol>
+<li>Clique em <span class="btn-doc btn-purple">💳 Renovar PIX</span> no card de Licença do Dashboard (ou "➕ Enviar PIX" na aba Pagamentos).</li>
+<li>Na tela PIX, escaneie o QR Code com o celular ou copie o código Copia e Cola (<span class="btn-doc btn-accent">📋 Copiar Código PIX</span>).</li>
+<li>Realize o pagamento no aplicativo do banco de sua preferência.</li>
+<li>Clique em <span class="btn-doc btn-neutral">📁 Selecionar Arquivo</span> e escolha o arquivo do comprovante (PDF, PNG ou JPG).</li>
+<li>Clique em <span class="btn-doc btn-success">📤 Enviar Comprovante</span> para submeter ao servidor VPS.</li>
+<li>Aguarde a análise do Administrador. Quando aprovado, os 30 dias são adicionados automaticamente e a interface atualiza o status.</li>
+</ol>
+</section>
+
+<!-- ===== 17. FAQ ===== -->
+<section id="faq" class="card">
+<h2>17. Perguntas Frequentes (FAQ)</h2>
+
+<h3>Q: O Lazarus abriu sem meus componentes na paleta — o que fazer?</h3>
+<p>R: Clique em <span class="btn-doc btn-accent">🔧 Re-Patch Config</span> no Dashboard para garantir que todos os caminhos dos pacotes estão corretos para a unidade atual. Se o problema persistir, vá à aba <strong>Perfis</strong> e ative o último perfil funcional com <span class="btn-doc btn-accent">✅ Ativar Perfil</span>.</p>
+
+<h3>Q: Ao mover o Pen Drive para outro PC, o Lazarus não abre. O que fazer?</h3>
+<p>R: A letra de unidade provavelmente mudou (ex: de <code>E:\</code> para <code>G:\</code>). Clique em <span class="btn-doc btn-accent">🔧 Re-Patch Config</span> antes de lançar a IDE. O motor de patch detecta a letra atual e corrige todos os XMLs automaticamente.</p>
+
+<h3>Q: O banco Firebird deu erro "arquivo em uso por outro processo" — como resolver?</h3>
+<p>R: Outra ferramenta (ex: IBExpert) está conectada em modo Embedded ao arquivo <code>.fdb</code>. Acesse <span class="btn-doc btn-neutral">⚙ Config</span> (como Admin) e configure Host como <code>localhost</code> e Porta como <code>3050</code> para forçar conexão TCP/IP.</p>
+
+<h3>Q: Como instalar um pacote baixado via OPM no Lazarus?</h3>
+<p>R: Após baixar pela aba OPM Online, abra o Lazarus IDE, vá em <strong>Pacote → Abrir Arquivo de Pacote (.lpk)</strong>, navegue até <code>[PortableDir]\components_ext\</code>, selecione o <code>.lpk</code> e clique em <strong>Usar → Instalar</strong>. A IDE recompilará automaticamente.</p>
+
+<h3>Q: Como fazer um backup de emergência das configurações?</h3>
+<p>R: No Dashboard, clique em <span class="btn-doc btn-success">💾 Criar Backup</span> no card de Último Backup. O sistema cria uma cópia completa com data e hora na pasta <code>backup\</code> do diretório portável (ex: <code>backup\20260717_104500\</code>).</p>
+
+<h3>Q: Posso ter múltiplos perfis de Lazarus no mesmo Pen Drive?</h3>
+<p>R: Sim! Use a aba <strong>👤 Perfis</strong>. Cada perfil é um diretório isolado em <code>Profiles\</code> com seus próprios pacotes, layouts e configurações. Alterne entre eles sem conflito usando <span class="btn-doc btn-accent">✅ Ativar Perfil</span>.</p>
+
+<h3>Q: O que são os arquivos <code>.ppu</code> e <code>.o</code> que o sistema pode limpar?</h3>
+<p>R: São arquivos de cache do compilador FPC — unidades pré-compiladas (<code>.ppu</code>) e objetos binários (<code>.o</code>). São seguros de deletar: o FPC os recria na próxima compilação. Use <span class="btn-doc btn-warning">🧹 Limpar Cache</span> quando houver erros estranhos após atualizar o FPC ou componentes.</p>
+
+<h3>Q: O QR Code PIX não aparece na tela de pagamento. Isso bloqueia o pagamento?</h3>
+<p>R: Não. O QR Code é carregado via internet (<code>api.qrserver.com</code>). Sem conexão, o código <strong>Copia e Cola continua 100% funcional</strong> — use <span class="btn-doc btn-accent">📋 Copiar Código PIX</span> e cole no seu aplicativo bancário.</p>
+
+<h3>Q: Como exportar a lista de pacotes instalados?</h3>
+<p>R: Vá à aba <strong>📦 Pacotes</strong>, clique em <span class="btn-doc btn-accent">🔄 Varrer</span> para atualizar a lista e depois em <span class="btn-doc btn-neutral">📤 Exportar Lista</span> para salvar um arquivo JSON com todos os pacotes, versões e caminhos.</p>
+
+</section>
+
+</main>
+</div>
+<footer>
+<p>Lazarus Portable Manager v2.0 &copy; 2026 — Desenvolvido para máxima portabilidade e produtividade com Lazarus / FPC no Windows.</p>
+<p style="margin-top:6px;font-size:12px;">Baseado em: <a href="https://github.com/JoeJoeTV/startLazarusPortable">github.com/JoeJoeTV/startLazarusPortable</a></p>
+</footer>
+</div>
 </body>
 </html>

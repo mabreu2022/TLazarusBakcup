@@ -106,6 +106,7 @@ type
     pnlPayBottom         : TPanel;
     btnApproveReceipt    : TButton;
     btnRejectReceipt     : TButton;
+    btnViewReceipt       : TButton;
 
     { Tab Diagnóstico }
     tabDiag        : TTabSheet;
