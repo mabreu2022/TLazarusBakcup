@@ -121,6 +121,13 @@ begin
       CopyDirTree(RoamingAppDir, ExtBkpBaseDir + 'AppData_Roaming_Lazarus' + PathDelim, [cffOverwriteFile, cffCreateDestDirectory]);
     end;
     
+    // Copia a pasta inteira do Lazarus (Portável)
+    if DirectoryExists(FPortableDir) then
+    begin
+      LogMsg('  Copiando pasta inteira do Lazarus...');
+      CopyDirTree(FPortableDir, ExtBkpBaseDir + 'Lazarus' + PathDelim, [cffOverwriteFile, cffCreateDestDirectory]);
+    end;
+    
     ExtBackupOk := True;
     LogMsg('Backup externo concluído com sucesso.');
   end

@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
@@ -273,7 +273,7 @@
 <td>💾 <strong>ÚLTIMO BACKUP</strong></td>
 <td>Data e hora do último backup de configurações realizado na sessão.</td>
 <td><span class="btn-doc btn-success">💾 Criar Backup</span></td>
-<td>Executa imediatamente um backup completo das configurações (mesmo comportamento do botão da Barra de Produtividade).</td>
+<td>Executa imediatamente um backup completo das configurações (cópia de <code>LazarusConfig</code>), das pastas locais do Windows (LOCALAPPDATA/APPDATA) e de toda a pasta de instalação <code>C:\Lazarus</code> no backup local e externo.</td>
 </tr>
 </tbody>
 </table>
@@ -326,6 +326,24 @@
 <tr>
 <td><span class="btn-doc btn-neutral">🔍 Diagnóstico Completo</span></td>
 <td>Navega automaticamente para a aba <strong>Diagnóstico</strong> e executa a varredura completa do ambiente de forma imediata, sem cliques adicionais. Equivale a selecionar "🔍 Diagnóstico" no menu e clicar "▶ Executar".</td>
+</tr>
+</table>
+<div class="sdiv"></div>
+<h4>📦 Linha 3 — Portabilidade de Perfis</h4>
+<div class="btn-row">
+<span class="btn-doc btn-purple">📦 Exportar Perfil (.zip)</span>
+<span class="btn-doc btn-purple">📥 Importar Perfil (.zip)</span>
+</div>
+<table>
+<thead><tr><th style="width:240px;">Botão</th><th>Ação Detalhada</th></tr></thead>
+<tbody>
+<tr>
+<td><span class="btn-doc btn-purple">📦 Exportar Perfil (.zip)</span></td>
+<td>Compacta toda a pasta de configuração portável <code>LazarusConfig</code>, as pastas locais do Windows (LOCALAPPDATA/APPDATA) e a pasta de instalação completa <code>C:\Lazarus</code> em um arquivo <code>.zip</code> portátil único para backup ou migração rápida de ambiente.</td>
+</tr>
+<tr>
+<td><span class="btn-doc btn-purple">📥 Importar Perfil (.zip)</span></td>
+<td>Extrai as pastas de metadados, configurações e instalação completa do Lazarus a partir do arquivo <code>.zip</code> selecionado e roda o Re-Patch automático para portabilizar os caminhos físicos na nova pasta ou Pen Drive.</td>
 </tr>
 </tbody>
 </table>
@@ -663,8 +681,8 @@ A barra de progresso (<code>pbOPM</code>) e o label de status mostram o andament
 <h3>Q: Como instalar um pacote baixado via OPM no Lazarus?</h3>
 <p>R: Após baixar pela aba OPM Online, abra o Lazarus IDE, vá em <strong>Pacote → Abrir Arquivo de Pacote (.lpk)</strong>, navegue até <code>[PortableDir]\components_ext\</code>, selecione o <code>.lpk</code> e clique em <strong>Usar → Instalar</strong>. A IDE recompilará automaticamente.</p>
 
-<h3>Q: Como fazer um backup de emergência das configurações?</h3>
-<p>R: No Dashboard, clique em <span class="btn-doc btn-success">💾 Criar Backup</span> no card de Último Backup. O sistema cria uma cópia completa com data e hora na pasta <code>backup\</code> do diretório portável (ex: <code>backup\20260717_104500\</code>).</p>
+<h3>Q: Como fazer um backup das configurações e do Lazarus?</h3>
+<p>R: No Dashboard, clique em <span class="btn-doc btn-success">💾 Criar Backup</span> no card de Último Backup. O sistema cria uma cópia local na pasta <code>backup\</code> (ex: <code>backup\20260717_104500\</code>) e também uma cópia completa externa contendo a pasta inteira do Lazarus (ex: <code>C:\Lazarus</code>) e os dados de usuários do Windows (APPDATA/LOCALAPPDATA) na pasta externa <code>C:\Users\<Usuario>\LazarusBackup\Backup_<TimeStamp>\</code>. Para restaurar qualquer ponto de backup local ou externo, utilize o botão de restauração no dashboard para abrir a janela de escolha de backup e aplicar a reversão.</p>
 
 <h3>Q: Posso ter múltiplos perfis de Lazarus no mesmo Pen Drive?</h3>
 <p>R: Sim! Use a aba <strong>👤 Perfis</strong>. Cada perfil é um diretório isolado em <code>Profiles\</code> com seus próprios pacotes, layouts e configurações. Alterne entre eles sem conflito usando <span class="btn-doc btn-accent">✅ Ativar Perfil</span>.</p>

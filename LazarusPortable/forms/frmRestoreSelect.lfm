@@ -1,0 +1,86 @@
+object frmRestoreSelect: TfrmRestoreSelect
+  Left = 350
+  Height = 380
+  Top = 200
+  Width = 520
+  BorderStyle = bsDialog
+  Caption = 'Restaurar Backup'
+  ClientHeight = 380
+  ClientWidth = 520
+  Color = 2105376
+  Font.Color = clWhite
+  Font.Height = -13
+  Font.Name = 'Segoe UI'
+  OnCreate = FormCreate
+  OnDestroy = FormDestroy
+  Position = poScreenCenter
+  object lblTitle: TLabel
+    Left = 10
+    Height = 25
+    Top = 10
+    Width = 500
+    Align = alTop
+    Alignment = taCenter
+    AutoSize = False
+    Caption = 'Selecione um Backup para Restaurar'
+    Font.Color = clWhite
+    Font.Height = -16
+    Font.Name = 'Segoe UI'
+    Font.Style = [fsBold]
+    ParentColor = False
+    ParentFont = False
+  end
+  object lstBackups: TListBox
+    Left = 10
+    Height = 255
+    Top = 45
+    Width = 500
+    Align = alClient
+    BorderSpacing.Around = 10
+    Color = 1315860
+    Font.Color = clWhite
+    Font.Height = -13
+    Font.Name = 'Segoe UI'
+    ItemHeight = 22
+    ParentFont = False
+    TabOrder = 0
+  end
+  object pnlBottom: TPanel
+    Left = 0
+    Height = 50
+    Top = 330
+    Width = 520
+    Align = alBottom
+    BevelOuter = bvNone
+    ClientHeight = 50
+    ClientWidth = 520
+    Color = 2105376
+    ParentColor = False
+    TabOrder = 1
+    object btnRestore: TButton
+      Left = 130
+      Height = 32
+      Top = 9
+      Width = 120
+      Caption = '↩️ Restaurar'
+      Font.Height = -13
+      Font.Name = 'Segoe UI'
+      Font.Style = [fsBold]
+      OnClick = btnRestoreClick
+      ParentFont = False
+      TabOrder = 0
+    end
+    object btnCancel: TButton
+      Left = 270
+      Height = 32
+      Top = 9
+      Width = 120
+      Caption = '❌ Cancelar'
+      Font.Height = -13
+      Font.Name = 'Segoe UI'
+      OnClick = btnCancelClick
+      ParentFont = False
+      TabOrder = 1
+    end
+  end
+end

@@ -20,7 +20,7 @@ uses
   ComCtrls, StdCtrls, ExtCtrls, Buttons, Windows, fpreadjpeg,
   uPortableCore, uPackageManager, uProfileManager,
   uDiagnostics, uLauncher, uLicenseManager, frmConfigDB, frmPayment,
-  frmReceiptViewer;
+  frmReceiptViewer, frmRestoreSelect;
 
 type
   { TfrmMain }
@@ -877,26 +877,37 @@ begin
 end;
 
 procedure TfrmMain.btnRestoreClick(Sender: TObject);
+var
+  FormRestore: TfrmRestoreSelect;
 begin
-  if MessageDlg('Restaurar Backup',
-    'Isso irá sobrescrever a configuração atual com o backup mais recente.'#13#10 +
-    'Deseja continuar?',
-    mtConfirmation, [mbYes, mbNo], 0) <> mrYes then Exit;
+  FormRestore := TfrmRestoreSelect.Create(nil);
+  try
+    FormRestore.Config := FConfig;
+    if FormRestore.ShowModal = mrOK then
+    begin
+      if MessageDlg('Restaurar Backup',
+        'Isso irá sobrescrever e restaurar os arquivos do backup selecionado.'#13#10 +
+        'Deseja continuar?',
+        mtConfirmation, [mbYes, mbNo], 0) <> mrYes then Exit;
 
-  SetStatus('Restaurando backup...');
-  AppLog('Restaurando backup...');
+      SetStatus('Restaurando backup...');
+      AppLog('Restaurando backup de: ' + FormRestore.SelectedPath);
 
-  if FConfig.RestoreBackup then
-  begin
-    AppLog('Restauração concluída!');
-    SetStatus('Backup restaurado.');
-    ShowMessage('Configuração restaurada com sucesso!');
-  end
-  else
-  begin
-    AppLog('ERRO na restauração!', 2);
-    SetStatus('Erro na restauração.');
-    MessageDlg('Erro', 'Não foi possível restaurar o backup.', mtError, [mbOK], 0);
+      if FConfig.RestoreBackupFromPath(FormRestore.SelectedPath, FormRestore.SelectedIsExternal) then
+      begin
+        AppLog('Restauração concluída com sucesso!');
+        SetStatus('Backup restaurado.');
+        ShowMessage('Configuração restaurada com sucesso!');
+      end
+      else
+      begin
+        AppLog('ERRO na restauração!', 2);
+        SetStatus('Erro na restauração.');
+        MessageDlg('Erro', 'Não foi possível restaurar o backup selecionado.', mtError, [mbOK], 0);
+      end;
+    end;
+  finally
+    FormRestore.Free;
   end;
 end;
 
@@ -1391,11 +1402,20 @@ begin
     M.Add('  Útil ao trocar de computador ou alterar pastas manualmente.');
     M.Add('');
     M.Add('[ 💾 Backup Manual ]');
-    M.Add('  Cria uma cópia de segurança instantânea de LazarusConfig na pasta Backup\');
-    M.Add('  com marcação de data e hora (Ex: Backup\20260714_130000\).');
+    M.Add('  Cria uma cópia de segurança instantânea do LazarusConfig, das pastas locais');
+    M.Add('  do Windows (LOCALAPPDATA/APPDATA) e de toda a pasta de instalação C:\Lazarus');
+    M.Add('  na pasta Backup\ local e na pasta externa C:\Users\<Usuario>\LazarusBackup\.');
     M.Add('');
     M.Add('[ ↩️ Restaurar Backup ]');
-    M.Add('  Lista os backups salvos e restaura a configuração selecionada.');
+    M.Add('  Abre a janela de escolha de backups para selecionar um backup local ou externo');
+    M.Add('  e restaurar a configuração e a pasta completa do Lazarus.');
+    M.Add('');
+    M.Add('[ 📦 Exportar Perfil (.zip) ]');
+    M.Add('  Compacta as configurações, AppDatas do Windows e toda a pasta de instalação do');
+    M.Add('  Lazarus em um arquivo .zip portátil para transferência facilitada.');
+    M.Add('');
+    M.Add('[ 📥 Importar Perfil (.zip) ]');
+    M.Add('  Restaura e portabiliza um perfil completo de um arquivo .zip em nova pasta/unidade.');
     M.Add('');
     M.Add('[ 🔍 Executar Diagnóstico ]');
     M.Add('  Testa 23 pontos críticos da instalação (lazarus.exe, fpc.exe, LCL, etc.).');

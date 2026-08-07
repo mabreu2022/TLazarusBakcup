@@ -98,6 +98,7 @@ type
     function BackupConfigs: Boolean;
     { Restaura o backup mais recente }
     function RestoreBackup: Boolean;
+    function RestoreBackupFromPath(const ABkpPath: string; AIsExternal: Boolean): Boolean;
     function BackupConfigsExternal(out AExternalBkpPath: string): Boolean;
     function ExportProfile(const ADestZipFile: string): Boolean;
     { Importa o perfil de um arquivo .zip e faz o re-patch }
@@ -517,7 +518,92 @@ begin
   Log('Restauração concluída.', 0);
 end;
 
-procedure AddFolderToZip(Zip: TZipper; const AFolder, ABaseFolder, ARelativePrefix: string);
+function TPortableConfig.RestoreBackupFromPath(const ABkpPath: string; AIsExternal: Boolean): Boolean;
+var
+  SR: TSearchRec;
+  SrcFile, DstFile: string;
+  LocalAppDir, RoamingAppDir: string;
+begin
+  Result := False;
+  Log('Iniciando restauração do backup de: ' + ABkpPath, 0);
+
+  if not AIsExternal then
+  begin
+    // 1. Restaurar backup Local (apenas LazarusConfig)
+    if not DirectoryExists(ABkpPath) then Exit;
+    
+    // Limpa a pasta portável ativa antes de restaurar
+    if DirectoryExists(FConfigDir) then
+      DeleteDirectory(FConfigDir, False);
+    ForceDirectories(FConfigDir);
+
+    if FindFirst(ABkpPath + '*.*', faAnyFile - faDirectory, SR) = 0 then
+    try
+      repeat
+        if (SR.Name <> '.') and (SR.Name <> '..') then
+        begin
+          SrcFile := ABkpPath + SR.Name;
+          DstFile := FConfigDir + SR.Name;
+          if CopyFile(SrcFile, DstFile) then
+            Log('  Restaurado: ' + SR.Name, 0)
+          else
+            Log('  ERRO ao restaurar: ' + SR.Name, 2);
+        end;
+      until FindNext(SR) <> 0;
+    finally
+      FindClose(SR);
+    end;
+  end
+  else
+  begin
+    // 2. Restaurar backup Externo
+    if not DirectoryExists(ABkpPath) then Exit;
+
+    // Restaurar LazarusConfig
+    if DirectoryExists(ABkpPath + 'LazarusConfig') then
+    begin
+      Log('  Restaurando configuração portável...', 0);
+      if DirectoryExists(FConfigDir) then
+        DeleteDirectory(FConfigDir, False);
+      CopyDirTree(ABkpPath + 'LazarusConfig', FConfigDir, [cffOverwriteFile, cffCreateDestDirectory]);
+    end;
+
+    // Restaurar AppData Local
+    if DirectoryExists(ABkpPath + 'AppData_Local_Lazarus') then
+    begin
+      Log('  Restaurando AppData Local...', 0);
+      LocalAppDir := IncludeTrailingPathDelimiter(GetEnvironmentVariable('LOCALAPPDATA')) + 'lazarus' + PathDelim;
+      if DirectoryExists(LocalAppDir) then
+        DeleteDirectory(LocalAppDir, False);
+      CopyDirTree(ABkpPath + 'AppData_Local_Lazarus', LocalAppDir, [cffOverwriteFile, cffCreateDestDirectory]);
+    end;
+
+    // Restaurar AppData Roaming
+    if DirectoryExists(ABkpPath + 'AppData_Roaming_Lazarus') then
+    begin
+      Log('  Restaurando AppData Roaming...', 0);
+      RoamingAppDir := IncludeTrailingPathDelimiter(GetEnvironmentVariable('APPDATA')) + 'lazarus' + PathDelim;
+      if DirectoryExists(RoamingAppDir) then
+        DeleteDirectory(RoamingAppDir, False);
+      CopyDirTree(ABkpPath + 'AppData_Roaming_Lazarus', RoamingAppDir, [cffOverwriteFile, cffCreateDestDirectory]);
+    end;
+
+    // Restaurar pasta inteira do Lazarus (FPortableDir)
+    if DirectoryExists(ABkpPath + 'Lazarus') then
+    begin
+      Log('  Restaurando pasta inteira do Lazarus...', 0);
+      CopyDirTree(ABkpPath + 'Lazarus', FPortableDir, [cffOverwriteFile, cffCreateDestDirectory]);
+    end;
+  end;
+
+  // Aplica patches de caminho para o local atual
+  PatchAll;
+
+  Result := True;
+  Log('Restauração concluída.', 0);
+end;
+
+procedure AddFolderToZip(Zip: TZipper; const AFolder, ABaseFolder, ARelativePrefix: string; const AExcludeZipFile: string = '');
 var
   SR: TSearchRec;
   SubFolder: string;
@@ -531,11 +617,19 @@ begin
       begin
         if (SR.Attr and faDirectory) <> 0 then
         begin
+          // Ignora pastas de backup e temporárias se estivermos adicionando a pasta do Lazarus inteira
+          if (SR.Name = 'Backup') or (SR.Name = 'temp') or (SR.Name = 'LazarusBackup') then
+            Continue;
+
           SubFolder := AFolder + SR.Name + PathDelim;
-          AddFolderToZip(Zip, SubFolder, ABaseFolder, ARelativePrefix);
+          AddFolderToZip(Zip, SubFolder, ABaseFolder, ARelativePrefix, AExcludeZipFile);
         end
         else
         begin
+          // Ignora o próprio arquivo ZIP de destino para não entrar em loop/conflito
+          if (AExcludeZipFile <> '') and SameFileName(AFolder + SR.Name, AExcludeZipFile) then
+            Continue;
+
           RelPath := ExtractRelativePath(ABaseFolder, AFolder + SR.Name);
           DestName := ARelativePrefix + RelPath;
           DestName := StringReplace(DestName, '\', '/', [rfReplaceAll]);
@@ -588,6 +682,13 @@ begin
   begin
     Log('  Copiando Lazarus de APPDATA (Roaming)...', 0);
     CopyDirTree(RoamingAppDir, ExtBkpBaseDir + 'AppData_Roaming_Lazarus' + PathDelim, [cffOverwriteFile, cffCreateDestDirectory]);
+  end;
+
+  // 4. Copia a pasta inteira do Lazarus (Portável)
+  if DirectoryExists(FPortableDir) then
+  begin
+    Log('  Copiando pasta inteira do Lazarus (' + FPortableDir + ')...', 0);
+    CopyDirTree(FPortableDir, ExtBkpBaseDir + 'Lazarus' + PathDelim, [cffOverwriteFile, cffCreateDestDirectory]);
   end;
 
   AExternalBkpPath := ExtBkpBaseDir;
@@ -648,7 +749,7 @@ begin
     if DirectoryExists(FConfigDir) then
     begin
       Log('  Adicionando LazarusConfig ao pacote...', 0);
-      AddFolderToZip(Zip, FConfigDir, FConfigDir, 'LazarusConfig/');
+      AddFolderToZip(Zip, FConfigDir, FConfigDir, 'LazarusConfig/', ADestZipFile);
     end;
 
     // 3. Adiciona %LOCALAPPDATA%\lazarus
@@ -656,7 +757,7 @@ begin
     if DirectoryExists(LocalAppDir) then
     begin
       Log('  Adicionando AppData Local ao pacote...', 0);
-      AddFolderToZip(Zip, LocalAppDir, LocalAppDir, 'AppData_Local_Lazarus/');
+      AddFolderToZip(Zip, LocalAppDir, LocalAppDir, 'AppData_Local_Lazarus/', ADestZipFile);
     end;
 
     // 4. Adiciona %APPDATA%\lazarus
@@ -664,7 +765,14 @@ begin
     if DirectoryExists(RoamingAppDir) then
     begin
       Log('  Adicionando AppData Roaming ao pacote...', 0);
-      AddFolderToZip(Zip, RoamingAppDir, RoamingAppDir, 'AppData_Roaming_Lazarus/');
+      AddFolderToZip(Zip, RoamingAppDir, RoamingAppDir, 'AppData_Roaming_Lazarus/', ADestZipFile);
+    end;
+
+    // 5. Adiciona a pasta inteira do Lazarus (FPortableDir)
+    if DirectoryExists(FPortableDir) then
+    begin
+      Log('  Adicionando pasta inteira do Lazarus ao pacote...', 0);
+      AddFolderToZip(Zip, FPortableDir, FPortableDir, 'Lazarus/', ADestZipFile);
     end;
 
     Log('  Compactando arquivos...', 0);
@@ -821,6 +929,10 @@ begin
   // 3. Copia AppData_Roaming_Lazarus do ZIP para a pasta portável ativa (Mesclagem/Portabilização)
   if DirectoryExists(TempExtractDir + 'AppData_Roaming_Lazarus') then
     CopyDirTree(TempExtractDir + 'AppData_Roaming_Lazarus', FConfigDir, [cffOverwriteFile, cffCreateDestDirectory]);
+
+  // 4. Copia a pasta inteira do Lazarus do ZIP para a pasta portável ativa
+  if DirectoryExists(TempExtractDir + 'Lazarus') then
+    CopyDirTree(TempExtractDir + 'Lazarus', FPortableDir, [cffOverwriteFile, cffCreateDestDirectory]);
 
   Log('  Substituindo caminhos antigos nos arquivos importados...', 0);
   // Realiza substituições de caminhos antigos para caminhos novos

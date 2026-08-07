@@ -8,6 +8,7 @@
       <Unit>
         <Filename Value="LazarusPortable.lpr"/>
         <IsPartOfProject Value="True"/>
+        <UsageCount Value="20"/>
       </Unit>
       <Unit>
         <Filename Value="forms\frmMain.pas"/>
@@ -15,30 +16,44 @@
         <ComponentName Value="frmMain"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
+        <UsageCount Value="20"/>
+        <Loaded Value="True"/>
+        <LoadedDesigner Value="True"/>
       </Unit>
       <Unit>
         <Filename Value="units\uPortableCore.pas"/>
         <IsPartOfProject Value="True"/>
+        <UsageCount Value="20"/>
       </Unit>
       <Unit>
         <Filename Value="units\uPackageManager.pas"/>
         <IsPartOfProject Value="True"/>
+        <UsageCount Value="20"/>
       </Unit>
       <Unit>
         <Filename Value="units\uProfileManager.pas"/>
         <IsPartOfProject Value="True"/>
+        <UsageCount Value="20"/>
       </Unit>
       <Unit>
         <Filename Value="units\uDiagnostics.pas"/>
         <IsPartOfProject Value="True"/>
+        <UsageCount Value="20"/>
       </Unit>
       <Unit>
         <Filename Value="units\uConfigCrypt.pas"/>
         <IsPartOfProject Value="True"/>
+        <UsageCount Value="20"/>
       </Unit>
       <Unit>
         <Filename Value="units\uLicenseManager.pas"/>
         <IsPartOfProject Value="True"/>
+        <IsVisibleTab Value="True"/>
+        <EditorIndex Value="1"/>
+        <TopLine Value="231"/>
+        <CursorPos Y="249"/>
+        <UsageCount Value="20"/>
+        <Loaded Value="True"/>
       </Unit>
       <Unit>
         <Filename Value="forms\frmLogin.pas"/>
@@ -46,6 +61,7 @@
         <ComponentName Value="frmLogin"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
+        <UsageCount Value="20"/>
       </Unit>
       <Unit>
         <Filename Value="forms\frmPayment.pas"/>
@@ -53,6 +69,7 @@
         <ComponentName Value="frmPayment"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
+        <UsageCount Value="20"/>
       </Unit>
       <Unit>
         <Filename Value="forms\frmConfigDB.pas"/>
@@ -60,10 +77,12 @@
         <ComponentName Value="frmConfigDB"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
+        <UsageCount Value="20"/>
       </Unit>
       <Unit>
         <Filename Value="units\uLauncher.pas"/>
         <IsPartOfProject Value="True"/>
+        <UsageCount Value="20"/>
       </Unit>
       <Unit>
         <Filename Value="forms\frmReceiptViewer.pas"/>
@@ -71,7 +90,21 @@
         <ComponentName Value="frmReceiptViewer"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
+        <UsageCount Value="20"/>
       </Unit>
     </Units>
+    <JumpHistory HistoryIndex="1">
+      <Position>
+        <Filename Value="forms\frmMain.pas"/>
+      </Position>
+      <Position>
+        <Filename Value="units\uLicenseManager.pas"/>
+        <Caret Line="256" Column="85" TopLine="231"/>
+      </Position>
+    </JumpHistory>
+    <RunParams>
+      <FormatVersion Value="2"/>
+      <Modes ActiveMode=""/>
+    </RunParams>
   </ProjectSession>
 </CONFIG>

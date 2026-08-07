@@ -1,41 +1,40 @@
-# Walkthrough - Backup Externo e Perfil ZIP Portátil do Lazarus
+# Walkthrough - Backup Externo, Perfil ZIP Portátil e Restauração Seletiva do Lazarus
 
-Implementamos com sucesso a cópia adicional das configurações locais do usuário do Windows (`LOCALAPPDATA` e `APPDATA` do Lazarus) para uma pasta de backup externa (`C:\Users\<NomeUsuario>\LazarusBackup`), corrigimos a rotina de backup local que não copiava os arquivos no Addon da IDE e adicionamos a funcionalidade de **Exportação e Importação de Perfil (.zip único)**.
+Implementamos com sucesso a cópia completa das configurações locais do usuário do Windows (`LOCALAPPDATA` e `APPDATA` do Lazarus), a inclusão da pasta inteira de instalação do Lazarus (`C:\Lazarus`) nos backups e ZIPs, a correção de dupla criptografia do banco de dados e a nova **Interface de Escolha e Restauração de Backups**.
 
 ---
 
 ## Alterações Realizadas
 
 ### 1. Núcleo Portável (`uPortableCore.pas`)
-- Implementado o método `BackupConfigsExternal` que cria uma pasta timestamped em `C:\Users\<NomeUsuario>\LazarusBackup\Backup_AAAAMMDD_HHMMSS\` e copia:
-  1. A pasta de configuração portátil (`LazarusConfig`).
-  2. A pasta do Lazarus em AppData Local (`%LOCALAPPDATA%\lazarus`).
-  3. A pasta do Lazarus em AppData Roaming (`%APPDATA%\lazarus`).
-- Implementado o método `ExportProfile` que compacta em um único arquivo `.zip` as pastas acima juntamente com um arquivo `profile_metadata.ini` contendo os caminhos originais para portabilização.
-- Implementado o método `ImportProfile` que:
-  1. Descompacta o arquivo `.zip` selecionado.
-  2. Limpa e substitui a pasta `LazarusConfig` portátil ativa.
-  3. Mescla as configurações importadas (tanto da pasta portável antiga quanto das pastas do perfil AppData original).
-  4. Realiza uma busca e substituição inteligente nos arquivos de configuração importados (`.xml`, `.cfg`, `.ini`) para substituir os caminhos antigos da máquina original pelo caminho atual do Lazarus (pendrive ou nova pasta).
-  5. Roda o patcher (`PatchAll`) para garantir que o Lazarus e o compilador FPC estejam apontando para os caminhos corretos.
+- **Pasta Completa do Lazarus**: 
+  - Atualizada a rotina `BackupConfigsExternal` para copiar a pasta inteira do Lazarus (`FPortableDir`, ex: `C:\Lazarus`) para o diretório de backup externo (`LazarusBackup\Backup_<TimeStamp>\Lazarus\`).
+  - Atualizada a função `ExportProfile` para compactar recursivamente a pasta do Lazarus inteira para dentro do ZIP na raiz `/Lazarus`.
+  - Adicionados filtros na recursão do ZIP (`AddFolderToZip`) para excluir as pastas de backup locais, temporárias e o próprio arquivo ZIP gerado, evitando redundância e loops de escrita.
+- **Restauração Seletiva e Patches**:
+  - Implementada a função `RestoreBackupFromPath(const ABkpPath: string; AIsExternal: Boolean): Boolean`.
+  - Se for um backup local (apenas configurações), limpa e restaura os arquivos XML na pasta portátil ativa.
+  - Se for um backup externo, restaura a configuração portátil, os diretórios de AppData local e roaming, e substitui a pasta inteira de instalação `C:\Lazarus` pelos arquivos guardados.
+  - Roda a rotina de patches dinâmicos (`PatchAll`) após qualquer restauração para garantir que todos os caminhos do Lazarus e FPC apontem para a unidade/unidade atual (ex: pendrive ou nova pasta de máquina).
 
-### 2. Standalone Launcher UI (`frmMain.pas` / `frmMain.lfm`)
-- Atualizado o evento do botão de backup (`btnBackupClick`) para rodar tanto o backup interno atual quanto o novo backup externo.
-- Aumentada a altura do painel de Ações Rápidas (`pnlActions`) para comportar uma terceira linha de botões.
-- Adicionados os botões **📦 Exportar Perfil (.zip)** e **📥 Importar Perfil (.zip)** com diálogos interativos de salvar/abrir arquivo.
-- Ajustada a rotina de redimensionamento dinâmico (`FormResize`) para calcular e alinhar corretamente os novos botões na tela.
+### 2. Standalone Launcher UI (`frmMain.pas` / `frmRestoreSelect.pas` / `frmRestoreSelect.lfm`)
+- **Tela de Escolha de Backups**:
+  - Criada a nova tela `frmRestoreSelect` que varre a pasta local (`LazarusPortable\Backup\`) e a pasta externa (`C:\Users\<Usuario>\LazarusBackup\`) e as lista em um visual unificado.
+  - Cada item exibe se é `[Local]` ou `[Externo]` e o timestamp.
+  - O botão de restauração do dashboard (`btnRestoreClick`) agora abre essa janela modal para que o usuário escolha o ponto de restauração desejado antes de aplicar a ação.
 
-### 3. Addon da IDE (`frmPortablePanel.pas` / `uPortableIDEAddon.pas`)
-- Adicionada a unit `FileUtil` aos usos de `frmPortablePanel.pas`.
-- Corrigida a rotina local de backup no Addon (`btnBackupClick`), que antes apenas criava a pasta mas não copiava os arquivos (agora usa `CopyDirTree` para copiar a pasta `LazarusConfig`).
-- Adicionado o backup externo também no botão do painel da IDE para garantir que a cópia para a pasta do usuário do Windows aconteça a partir de qualquer uma das ferramentas.
-- Resolvido o erro de compilação da IDE ("Duplicate identifier") renomeando a variável global `frmPortablePanel` para `frmPortablePanelVar`, eliminando o conflito com o nome do arquivo unit.
-- Corrigido o tipo da variável `PortableCmd` em `uPortableIDEAddon.pas` para `TIDEMenuCommand` e alterada a seção de menu alvo para `mnuTools` para compilar com sucesso.
+### 3. Addon da IDE (`frmPortablePanel.pas`)
+- Atualizada a rotina de backup externo no Addon da IDE para também copiar a pasta de instalação completa do Lazarus (`FPortableDir`) para a pasta de backup do usuário, garantindo paridade de comportamento com o launcher independente.
+
+### 4. Correção de Conexão com o Banco de Dados (`vps_config.ini`)
+- Identificada a causa da mensagem de erro de login: a rotina de migração encontrou parâmetros em formato hexadecimal de criptografia prévia sem o prefixo `ENC:`, interpretando-os como texto puro e aplicando uma segunda camada de criptografia sobre eles (dupla criptografia).
+- Corrigidas todas as chaves do arquivo [vps_config.ini](file:///c:/Fontes/Componentes/TLazarusBakcup/LazarusPortable/LazarusConfig/vps_config.ini) para utilizarem criptografia de camada única válida, restabelecendo a conexão com o host do banco de dados remoto (`45.225.129.86:3050`) e aceitando a senha do usuário com sucesso.
 
 ---
 
 ## Verificação e Resultados
 
 Executamos a compilação utilizando o compilador oficial do Lazarus (`lazbuild.exe`):
-1. **LazarusPortable.lpi (Launcher)**: Compilação concluída com sucesso. O instalador foi gerado pelo Inno Setup em `Output\LazarusPortableSetup.exe`.
-2. **LazPortableTools.lpk (Addon IDE)**: Compilação concluída com sucesso com zero erros.
+1. **LazarusPortable.lpi (Launcher)**: Compilado com sucesso. O instalador final `LazarusPortableSetup.exe` foi gerado perfeitamente pelo compilador Inno Setup em `Output\LazarusPortableSetup.exe`.
+2. **LazPortableTools.lpk (Addon IDE)**: Compilado com sucesso com zero erros.
+3. **Conexão de Banco**: Teste de conexão local via driver Firebird completado com **sucesso** apontando para as novas credenciais.
