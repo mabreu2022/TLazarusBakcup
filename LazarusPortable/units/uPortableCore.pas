@@ -20,7 +20,7 @@ interface
 uses
   Classes, SysUtils, IniFiles,
   Laz2_DOM, Laz2_XMLRead, Laz2_XMLWrite,
-  FileUtil, LazFileUtils;
+  FileUtil, LazFileUtils, zipper;
 
 const
   { Diretórios padrão dentro da instalação portável }
@@ -91,11 +91,17 @@ type
 
     { Verificação de integridade }
     function Validate: TValidationArray;
+    { Verifica se a instalação portável está íntegra }
     function IsValid: Boolean;
 
     { Preparação do ambiente antes de lançar }
     function BackupConfigs: Boolean;
+    { Restaura o backup mais recente }
     function RestoreBackup: Boolean;
+    function BackupConfigsExternal(out AExternalBkpPath: string): Boolean;
+    function ExportProfile(const ADestZipFile: string): Boolean;
+    { Importa o perfil de um arquivo .zip e faz o re-patch }
+    function ImportProfile(const ASourceZipFile: string): Boolean;
 
     { Patch de todos os arquivos de configuração }
     function PatchAll: TPatchResultArray;
@@ -509,6 +515,326 @@ begin
 
   Result := True;
   Log('Restauração concluída.', 0);
+end;
+
+procedure AddFolderToZip(Zip: TZipper; const AFolder, ABaseFolder, ARelativePrefix: string);
+var
+  SR: TSearchRec;
+  SubFolder: string;
+  RelPath: string;
+  DestName: string;
+begin
+  if FindFirst(AFolder + '*.*', faAnyFile, SR) = 0 then
+  try
+    repeat
+      if (SR.Name <> '.') and (SR.Name <> '..') then
+      begin
+        if (SR.Attr and faDirectory) <> 0 then
+        begin
+          SubFolder := AFolder + SR.Name + PathDelim;
+          AddFolderToZip(Zip, SubFolder, ABaseFolder, ARelativePrefix);
+        end
+        else
+        begin
+          RelPath := ExtractRelativePath(ABaseFolder, AFolder + SR.Name);
+          DestName := ARelativePrefix + RelPath;
+          DestName := StringReplace(DestName, '\', '/', [rfReplaceAll]);
+          Zip.Entries.AddFileEntry(AFolder + SR.Name, DestName);
+        end;
+      end;
+    until FindNext(SR) <> 0;
+  finally
+    FindClose(SR);
+  end;
+end;
+
+function TPortableConfig.BackupConfigsExternal(out AExternalBkpPath: string): Boolean;
+var
+  ExtBkpBaseDir : string;
+  TimeStamp     : string;
+  LocalAppDir   : string;
+  RoamingAppDir : string;
+begin
+  Result := False;
+  TimeStamp := FormatDateTime('YYYYMMDD_HHNNSS', Now);
+  ExtBkpBaseDir := IncludeTrailingPathDelimiter(GetEnvironmentVariable('USERPROFILE')) + 'LazarusBackup' + PathDelim + 'Backup_' + TimeStamp + PathDelim;
+  
+  if not ForceDirectories(ExtBkpBaseDir) then
+  begin
+    Log('ERRO: Não foi possível criar diretório de backup externo: ' + ExtBkpBaseDir, 2);
+    Exit;
+  end;
+
+  Log('Iniciando backup externo em: ' + ExtBkpBaseDir, 0);
+
+  // 1. Copia LazarusConfig (Portável)
+  if DirectoryExists(FConfigDir) then
+  begin
+    Log('  Copiando configuração portável...', 0);
+    CopyDirTree(FConfigDir, ExtBkpBaseDir + 'LazarusConfig' + PathDelim, [cffOverwriteFile, cffCreateDestDirectory]);
+  end;
+
+  // 2. Copia %LOCALAPPDATA%\lazarus
+  LocalAppDir := IncludeTrailingPathDelimiter(GetEnvironmentVariable('LOCALAPPDATA')) + 'lazarus' + PathDelim;
+  if DirectoryExists(LocalAppDir) then
+  begin
+    Log('  Copiando Lazarus de LOCALAPPDATA...', 0);
+    CopyDirTree(LocalAppDir, ExtBkpBaseDir + 'AppData_Local_Lazarus' + PathDelim, [cffOverwriteFile, cffCreateDestDirectory]);
+  end;
+
+  // 3. Copia %APPDATA%\lazarus
+  RoamingAppDir := IncludeTrailingPathDelimiter(GetEnvironmentVariable('APPDATA')) + 'lazarus' + PathDelim;
+  if DirectoryExists(RoamingAppDir) then
+  begin
+    Log('  Copiando Lazarus de APPDATA (Roaming)...', 0);
+    CopyDirTree(RoamingAppDir, ExtBkpBaseDir + 'AppData_Roaming_Lazarus' + PathDelim, [cffOverwriteFile, cffCreateDestDirectory]);
+  end;
+
+  AExternalBkpPath := ExtBkpBaseDir;
+  Result := True;
+  Log('Backup externo concluído com sucesso.', 0);
+end;
+
+function TPortableConfig.ExportProfile(const ADestZipFile: string): Boolean;
+var
+  Zip: TZipper;
+  LocalAppDir: string;
+  RoamingAppDir: string;
+  MetaFile: string;
+  MetaList: TStringList;
+begin
+  Result := False;
+  Log('Iniciando exportação de perfil para: ' + ADestZipFile, 0);
+  
+  if not ForceDirectories(ExtractFileDir(ADestZipFile)) then
+  begin
+    Log('ERRO: Não foi possível criar pasta de destino do perfil.', 2);
+    Exit;
+  end;
+
+  // Deleta arquivo ZIP existente se houver
+  if FileExists(ADestZipFile) then
+    DeleteFile(ADestZipFile);
+
+  // Cria arquivo temporário de metadados
+  MetaFile := FTempDir + 'profile_metadata.ini';
+  MetaList := TStringList.Create;
+  try
+    MetaList.Add('[Metadata]');
+    MetaList.Add('ExportDate=' + FormatDateTime('yyyy-mm-dd hh:nn:ss', Now));
+    MetaList.Add('OldPortableDir=' + FPortableDir);
+    MetaList.Add('OldConfigDir=' + FConfigDir);
+    MetaList.Add('OldLocalAppData=' + IncludeTrailingPathDelimiter(GetEnvironmentVariable('LOCALAPPDATA')) + 'lazarus' + PathDelim);
+    MetaList.Add('OldAppData=' + IncludeTrailingPathDelimiter(GetEnvironmentVariable('APPDATA')) + 'lazarus' + PathDelim);
+    MetaList.SaveToFile(MetaFile);
+  except
+    on E: Exception do
+    begin
+      Log('ERRO ao criar arquivo de metadados: ' + E.Message, 2);
+      MetaList.Free;
+      Exit;
+    end;
+  end;
+  MetaList.Free;
+
+  Zip := TZipper.Create;
+  try
+    Zip.FileName := ADestZipFile;
+
+    // 1. Adiciona metadados
+    Zip.Entries.AddFileEntry(MetaFile, 'profile_metadata.ini');
+
+    // 2. Adiciona LazarusConfig (Portável)
+    if DirectoryExists(FConfigDir) then
+    begin
+      Log('  Adicionando LazarusConfig ao pacote...', 0);
+      AddFolderToZip(Zip, FConfigDir, FConfigDir, 'LazarusConfig/');
+    end;
+
+    // 3. Adiciona %LOCALAPPDATA%\lazarus
+    LocalAppDir := IncludeTrailingPathDelimiter(GetEnvironmentVariable('LOCALAPPDATA')) + 'lazarus' + PathDelim;
+    if DirectoryExists(LocalAppDir) then
+    begin
+      Log('  Adicionando AppData Local ao pacote...', 0);
+      AddFolderToZip(Zip, LocalAppDir, LocalAppDir, 'AppData_Local_Lazarus/');
+    end;
+
+    // 4. Adiciona %APPDATA%\lazarus
+    RoamingAppDir := IncludeTrailingPathDelimiter(GetEnvironmentVariable('APPDATA')) + 'lazarus' + PathDelim;
+    if DirectoryExists(RoamingAppDir) then
+    begin
+      Log('  Adicionando AppData Roaming ao pacote...', 0);
+      AddFolderToZip(Zip, RoamingAppDir, RoamingAppDir, 'AppData_Roaming_Lazarus/');
+    end;
+
+    Log('  Compactando arquivos...', 0);
+    Zip.ZipAllFiles;
+    Result := True;
+    Log('Exportação de perfil concluída com sucesso.', 0);
+  except
+    on E: Exception do
+      Log('ERRO na exportação de perfil: ' + E.Message, 2);
+  end;
+  Zip.Free;
+
+  // Limpa o arquivo de metadados temporário
+  if FileExists(MetaFile) then
+    DeleteFile(MetaFile);
+end;
+
+function TPortableConfig.ImportProfile(const ASourceZipFile: string): Boolean;
+var
+  UnZip: TUnZipper;
+  TempExtractDir: string;
+  MetaFile: string;
+  INI: TIniFile;
+  OldPortableDir: string;
+  OldConfigDir: string;
+  OldLocalAppData: string;
+  OldAppData: string;
+  FileContent: TStringList;
+  
+  procedure ProcessReplacementsInFolder(const AFolder: string);
+  var
+    SearchRec: TSearchRec;
+    SubF: string;
+    FPath: string;
+  begin
+    if FindFirst(AFolder + '*.*', faAnyFile, SearchRec) = 0 then
+    try
+      repeat
+        if (SearchRec.Name <> '.') and (SearchRec.Name <> '..') then
+        begin
+          if (SearchRec.Attr and faDirectory) <> 0 then
+          begin
+            SubF := AFolder + SearchRec.Name + PathDelim;
+            ProcessReplacementsInFolder(SubF);
+          end
+          else
+          begin
+            FPath := AFolder + SearchRec.Name;
+            // Apenas processa arquivos XML, CFG e INI
+            if SameText(ExtractFileExt(FPath), '.xml') or 
+               SameText(ExtractFileExt(FPath), '.cfg') or 
+               SameText(ExtractFileExt(FPath), '.ini') then
+            begin
+              FileContent := TStringList.Create;
+              try
+                FileContent.LoadFromFile(FPath);
+                // Realiza substituições
+                if OldPortableDir <> '' then
+                  FileContent.Text := StringReplace(FileContent.Text, OldPortableDir, FPortableDir, [rfReplaceAll, rfIgnoreCase]);
+                if OldConfigDir <> '' then
+                  FileContent.Text := StringReplace(FileContent.Text, OldConfigDir, FConfigDir, [rfReplaceAll, rfIgnoreCase]);
+                if OldLocalAppData <> '' then
+                  FileContent.Text := StringReplace(FileContent.Text, OldLocalAppData, FConfigDir, [rfReplaceAll, rfIgnoreCase]);
+                if OldAppData <> '' then
+                  FileContent.Text := StringReplace(FileContent.Text, OldAppData, FConfigDir, [rfReplaceAll, rfIgnoreCase]);
+                
+                FileContent.SaveToFile(FPath);
+              except
+                // Ignora erro em arquivo individual
+              end;
+              FileContent.Free;
+            end;
+          end;
+        end;
+      until FindNext(SearchRec) <> 0;
+    finally
+      FindClose(SearchRec);
+    end;
+  end;
+
+begin
+  Result := False;
+  Log('Iniciando importação de perfil de: ' + ASourceZipFile, 0);
+
+  if not FileExists(ASourceZipFile) then
+  begin
+    Log('ERRO: Arquivo de perfil não encontrado: ' + ASourceZipFile, 2);
+    Exit;
+  end;
+
+  TempExtractDir := FTempDir + 'ImportTemp' + PathDelim;
+  
+  // Limpa pasta temporária de extração anterior se existir
+  if DirectoryExists(TempExtractDir) then
+    DeleteDirectory(TempExtractDir, False);
+    
+  if not ForceDirectories(TempExtractDir) then
+  begin
+    Log('ERRO: Não foi possível criar pasta temporária para importação.', 2);
+    Exit;
+  end;
+
+  UnZip := TUnZipper.Create;
+  try
+    UnZip.FileName := ASourceZipFile;
+    UnZip.OutputPath := TempExtractDir;
+    Log('  Descompactando arquivos de perfil...', 0);
+    UnZip.UnZipAllFiles;
+  except
+    on E: Exception do
+    begin
+      Log('ERRO ao descompactar perfil: ' + E.Message, 2);
+      UnZip.Free;
+      DeleteDirectory(TempExtractDir, False);
+      Exit;
+    end;
+  end;
+  UnZip.Free;
+
+  // Lendo metadados
+  MetaFile := TempExtractDir + 'profile_metadata.ini';
+  if not FileExists(MetaFile) then
+  begin
+    Log('ERRO: Metadados do perfil não encontrados. Arquivo ZIP inválido.', 2);
+    DeleteDirectory(TempExtractDir, False);
+    Exit;
+  end;
+
+  INI := TIniFile.Create(MetaFile);
+  try
+    OldPortableDir  := INI.ReadString('Metadata', 'OldPortableDir', '');
+    OldConfigDir    := INI.ReadString('Metadata', 'OldConfigDir', '');
+    OldLocalAppData := INI.ReadString('Metadata', 'OldLocalAppData', '');
+    OldAppData      := INI.ReadString('Metadata', 'OldAppData', '');
+  finally
+    INI.Free;
+  end;
+
+  Log('  Mesclando configurações importadas...', 0);
+
+  // Limpa a pasta atual de configurações portáveis antes de importar
+  if DirectoryExists(FConfigDir) then
+    DeleteDirectory(FConfigDir, False);
+  ForceDirectories(FConfigDir);
+
+  // 1. Copia LazarusConfig do ZIP para a pasta portável ativa
+  if DirectoryExists(TempExtractDir + 'LazarusConfig') then
+    CopyDirTree(TempExtractDir + 'LazarusConfig', FConfigDir, [cffOverwriteFile, cffCreateDestDirectory]);
+
+  // 2. Copia AppData_Local_Lazarus do ZIP para a pasta portável ativa (Mesclagem/Portabilização)
+  if DirectoryExists(TempExtractDir + 'AppData_Local_Lazarus') then
+    CopyDirTree(TempExtractDir + 'AppData_Local_Lazarus', FConfigDir, [cffOverwriteFile, cffCreateDestDirectory]);
+
+  // 3. Copia AppData_Roaming_Lazarus do ZIP para a pasta portável ativa (Mesclagem/Portabilização)
+  if DirectoryExists(TempExtractDir + 'AppData_Roaming_Lazarus') then
+    CopyDirTree(TempExtractDir + 'AppData_Roaming_Lazarus', FConfigDir, [cffOverwriteFile, cffCreateDestDirectory]);
+
+  Log('  Substituindo caminhos antigos nos arquivos importados...', 0);
+  // Realiza substituições de caminhos antigos para caminhos novos
+  ProcessReplacementsInFolder(FConfigDir);
+
+  // Executa o patch padrão (PatchAll) para atualizar para o diretório físico atual
+  Log('  Aplicando patches de portabilidade finais...', 0);
+  PatchAll;
+
+  // Limpa a pasta temporária de extração
+  DeleteDirectory(TempExtractDir, False);
+
+  Result := True;
+  Log('Importação de perfil concluída com sucesso.', 0);
 end;
 
 { Patch do environmentoptions.xml — arquivo principal de configuração }

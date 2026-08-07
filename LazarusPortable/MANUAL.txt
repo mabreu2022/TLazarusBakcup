@@ -1,0 +1,100 @@
+===============================================================================
+               📖 MANUAL DO USUÁRIO - LAZARUS PORTABLE MANAGER
+===============================================================================
+
+1. VISÃO GERAL
+--------------
+O Lazarus Portable Manager transforma a sua instalação do Lazarus IDE em um
+ambiente 100% portável, permitindo transportar o Lazarus com todas as suas
+configurações, ferramentas, componentes e perfis de ambiente em um Pen Drive
+ou HD externo para executar em qualquer computador com Windows sem necessidade
+de instalação prévia.
+
+2. COMO FUNCIONA A PORTABILIDADE
+--------------------------------
+- As configurações do Lazarus normalmente ficam em %LOCALAPPDATA%\lazarus.
+- O Lazarus Portable direciona a IDE para ler e salvar tudo na pasta local:
+  $(PortableDir)\LazarusConfig\ (ex: E:\Lazarus\LazarusConfig\).
+- Ao iniciar o aplicativo pela primeira vez no Pen Drive (sem a pasta LazarusConfig),
+  ele importa AUTOMATICAMENTE a estrutura completa das configurações existentes
+  na sua máquina em %LOCALAPPDATA%\lazarus (pacotes, barras, teclas e atalhos).
+- Sempre que você abre o programa ou move para outro PC (onde a letra de
+  unidade como C:, D:, E: muda), o motor de patch atualiza automaticamente
+  todos os arquivos XML de configuração sem corromper pacotes instalados.
+
+3. GUIA RÁPIDO PASSO A PASSO (COPIAR LAZARUS CONFIGURADO PARA PEN DRIVE)
+------------------------------------------------------------------------
+1. Copie a pasta do Lazarus do computador (ex: C:\lazarus\) para a raiz
+   ou diretório do seu Pen Drive (ex: E:\Lazarus\).
+2. Cole o arquivo executável "LazarusPortable.exe" na raiz da pasta do Lazarus
+   no Pen Drive (no mesmo diretório onde está o lazarus.exe).
+3. Execute o "LazarusPortable.exe" a partir do Pen Drive. Na primeira execução,
+   ele detectará e importará automaticamente suas configurações do PC
+   para a pasta LazarusConfig do Pen Drive.
+4. Clique no botão "🔧 Re-Patch Configurações" ou "▶ Lançar". Todos os arquivos
+   XML serão corrigidos para a nova letra de unidade e o Lazarus abrirá
+   100% configurado no Pen Drive!
+
+► FERRAMENTAS DENTRO DA IDE (LazPortableTools.lpk):
+  Com o pacote instalado na IDE, use o menu Ferramentas ➔ Lazarus Portable Tools
+  para realizar Re-Patch e Backups das configurações diretamente do Lazarus.
+
+► ESPAÇO NECESSÁRIO NO PEN DRIVE:
+  Uma instalação completa do Lazarus com FPC e pacotes utiliza aproximadamente
+  2,5 GB. Recomendamos utilizar Pen Drives de 4 GB, 8 GB ou maiores.
+
+4. BOTÕES DA INTERFACE E SUAS FUNÇÕES
+-------------------------------------
+[ 🔧 Re-Patch Configurações ]
+  Ajusta todos os caminhos dos XMLs da pasta LazarusConfig para a pasta atual.
+  Útil ao trocar de computador ou alterar pastas manualmente.
+
+[ 💾 Backup Manual ]
+  Cria uma cópia de segurança instantânea de LazarusConfig na pasta Backup\
+  com marcação de data e hora (Ex: Backup\20260714_130000\).
+
+[ ↩️ Restaurar Backup ]
+  Lista os backups salvos e restaura a configuração selecionada.
+
+[ 🔍 Executar Diagnóstico ]
+  Testa 23 pontos críticos da instalação (lazarus.exe, fpc.exe, LCL, etc.).
+
+[ 📂 Abrir LazarusConfig ]
+  Abre a pasta de configurações diretamente no Windows Explorer.
+
+[ 🌐 OPM Online ]
+  Navegue e pesquise na biblioteca remota oficial de pacotes da comunidade
+  do Lazarus e baixe componentes com 1 clique.
+
+5. GERENCIAMENTO DE PERFIS DE CONFIGURAÇÃO
+------------------------------------------
+A aba "👤 Perfis" permite criar, salvar e alternar entre múltiplos ambientes de
+trabalho completamente isolados para a sua IDE Lazarus.
+
+► O QUE É SALVO EM CADA PERFIL:
+  Cada perfil armazena individualmente: pacotes e componentes instalados, layouts
+  de janelas e paletas, caminhos de compiladores, macros de editor, atalhos de
+  teclado e arquivos recentes.
+
+► EXEMPLOS DE USO:
+  - Perfis por Cliente/Projeto: "Cliente A (ACBr + Fortes)" vs "Projeto Web (LAMW)".
+  - Perfis por Ambiente: "Dev/Testes" (com logs e ferramentas de debug) vs
+    "Produção/Clean" (IDE limpa e ultra-rápida para compilação final).
+
+► FUNÇÕES DOS BOTÕES DE PERFIL:
+  [ + Novo Perfil ]       ➔ Cria uma pasta de perfil de configuração limpa.
+  [ ☑ Ativar Perfil ]     ➔ Aplica o perfil selecionado na IDE Lazarus.
+  [ 💾 Salvar Config Atual]➔ Grava as alterações atuais da IDE dentro do perfil.
+  [ 🗑 Deletar ]           ➔ Exclui permanentemente um perfil selecionado.
+
+6. RESOLUÇÃO DE DÚVIDAS E PROBLEMAS
+------------------------------------
+Q: O Lazarus abriu sem meus componentes na paleta, o que fazer?
+R: Clique no botão "↩️ Restaurar Backup" no Dashboard e selecione a última
+   data de backup.
+
+Q: Como instalar novos pacotes via OPM ou arquivo .lpk?
+R: Na aba OPM Online, busque e baixe o pacote desejado. Na IDE do Lazarus,
+   vá em Pacote ➔ Abrir Arquivo de Pacote (.lpk) e clique em Usar ➔ Instalar.
+
+===============================================================================

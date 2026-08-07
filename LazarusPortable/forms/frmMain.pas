@@ -71,6 +71,8 @@ type
     btnCleanCache       : TButton;
     btnPatchNow         : TButton;
     btnDiag             : TButton;
+    btnExportProfile    : TButton;
+    btnImportProfile    : TButton;
     memoLog             : TMemo;
 
     { Tab Pacotes }
@@ -178,6 +180,8 @@ type
     procedure btnPatchNowClick(Sender: TObject);
     procedure btnBackupClick(Sender: TObject);
     procedure btnRestoreClick(Sender: TObject);
+    procedure btnExportProfileClick(Sender: TObject);
+    procedure btnImportProfileClick(Sender: TObject);
     procedure btnDiagClick(Sender: TObject);
     procedure btnOpenConfigClick(Sender: TObject);
     procedure btnOpenConfigDirClick(Sender: TObject);
@@ -397,6 +401,13 @@ begin
 
     btnDiag.Left           := 12 + (BtnW + Spacing) * 2;
     btnDiag.Width          := BtnW;
+
+    // Linha 3
+    btnExportProfile.Left  := 12;
+    btnExportProfile.Width := BtnW;
+
+    btnImportProfile.Left  := 12 + BtnW + Spacing;
+    btnImportProfile.Width := BtnW;
   end;
 end;
 
@@ -751,21 +762,117 @@ begin
 end;
 
 procedure TfrmMain.btnBackupClick(Sender: TObject);
+var
+  ExtBkpPath: string;
+  LocalOk, ExtOk: Boolean;
 begin
   SetStatus('Fazendo backup...');
   AppLog('Iniciando backup manual...');
 
-  if FConfig.BackupConfigs then
+  LocalOk := FConfig.BackupConfigs;
+  if LocalOk then
+    AppLog('Backup local concluído com sucesso!')
+  else
+    AppLog('ERRO ao realizar backup local!', 2);
+
+  AppLog('Iniciando backup externo...');
+  ExtOk := FConfig.BackupConfigsExternal(ExtBkpPath);
+  if ExtOk then
+    AppLog('Backup externo concluído com sucesso em: ' + ExtBkpPath)
+  else
+    AppLog('ERRO ao realizar backup externo!', 2);
+
+  if LocalOk and ExtOk then
   begin
-    AppLog('Backup concluído com sucesso!');
-    SetStatus('Backup realizado.');
-    ShowMessage('Backup realizado com sucesso em:' + #13#10 + FConfig.BackupDir);
+    SetStatus('Backup concluído.');
+    ShowMessage('Backups realizados com sucesso!' + #13#10#13#10 +
+                'Local (interno):' + #13#10 + FConfig.BackupDir + #13#10#13#10 +
+                'Externo (usuário Windows):' + #13#10 + ExtBkpPath);
+  end
+  else if LocalOk then
+  begin
+    SetStatus('Parcialmente concluído.');
+    ShowMessage('Backup local realizado com sucesso, mas ocorreu um erro no backup externo.' + #13#10 +
+                'Verifique o log para detalhes.');
   end
   else
   begin
-    AppLog('ERRO ao fazer backup!', 2);
     SetStatus('Erro no backup.');
-    MessageDlg('Erro no Backup', 'Não foi possível realizar o backup.', mtError, [mbOK], 0);
+    MessageDlg('Erro no Backup', 'Não foi possível realizar o backup das configurações.', mtError, [mbOK], 0);
+  end;
+end;
+
+procedure TfrmMain.btnExportProfileClick(Sender: TObject);
+var
+  SD: TSaveDialog;
+  ZipFile: string;
+begin
+  SD := TSaveDialog.Create(nil);
+  try
+    SD.Title := 'Exportar Perfil de Desenvolvimento (.zip)';
+    SD.Filter := 'Arquivo ZIP (*.zip)|*.zip';
+    SD.DefaultExt := 'zip';
+    SD.InitialDir := IncludeTrailingPathDelimiter(SysUtils.GetEnvironmentVariable('USERPROFILE')) + 'LazarusBackup';
+    SD.FileName := 'LazarusProfile_' + FormatDateTime('YYYYMMDD_HHNNSS', Now) + '.zip';
+    
+    if SD.Execute then
+    begin
+      ZipFile := SD.FileName;
+      SetStatus('Exportando perfil...');
+      AppLog('Iniciando exportação de perfil...');
+      
+      if FConfig.ExportProfile(ZipFile) then
+      begin
+        SetStatus('Perfil exportado.');
+        ShowMessage('Perfil exportado com sucesso!' + #13#10 + 'Arquivo: ' + ZipFile);
+      end
+      else
+      begin
+        SetStatus('Erro na exportação.');
+        MessageDlg('Erro ao Exportar', 'Ocorreu um erro ao exportar o perfil. Veja o log para mais detalhes.', mtError, [mbOK], 0);
+      end;
+    end;
+  finally
+    SD.Free;
+  end;
+end;
+
+procedure TfrmMain.btnImportProfileClick(Sender: TObject);
+var
+  OD: TOpenDialog;
+  ZipFile: string;
+begin
+  if MessageDlg('Importar Perfil',
+    'ATENÇÃO: Importar um perfil irá limpar e substituir TODA a configuração portátil atual.' + #13#10 +
+    'Além disso, após a descompactação, todos os caminhos do Lazarus serão corrigidos para a pasta atual.' + #13#10#13#10 +
+    'Deseja realmente continuar?', mtWarning, [mbYes, mbNo], 0) <> mrYes then Exit;
+
+  OD := TOpenDialog.Create(nil);
+  try
+    OD.Title := 'Importar Perfil de Desenvolvimento (.zip)';
+    OD.Filter := 'Arquivo ZIP (*.zip)|*.zip';
+    OD.InitialDir := IncludeTrailingPathDelimiter(SysUtils.GetEnvironmentVariable('USERPROFILE')) + 'LazarusBackup';
+    
+    if OD.Execute then
+    begin
+      ZipFile := OD.FileName;
+      SetStatus('Importando perfil...');
+      AppLog('Iniciando importação de perfil de: ' + ZipFile);
+      
+      if FConfig.ImportProfile(ZipFile) then
+      begin
+        SetStatus('Perfil importado.');
+        ShowMessage('Perfil importado e re-patcheado com sucesso!');
+        RefreshDashboard; // Atualiza informações na tela principal
+      end
+      else
+      begin
+        SetStatus('Erro na importação.');
+        MessageDlg('Erro ao Importar', 'Ocorreu um erro ao importar o perfil. Veja o log para mais detalhes.', mtError, [mbOK], 0);
+      end;
+    end;
+  finally
+    OD.Free;
   end;
 end;
 

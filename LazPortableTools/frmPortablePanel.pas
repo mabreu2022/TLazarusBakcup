@@ -9,7 +9,7 @@ interface
 
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls, ExtCtrls, Buttons,
-  uSharedPatcher;
+  uSharedPatcher, FileUtil;
 
 type
   { TfrmPortablePanel }
@@ -32,7 +32,7 @@ type
   end;
 
 var
-  frmPortablePanel: TfrmPortablePanel;
+  frmPortablePanelVar: TfrmPortablePanel;
 
 implementation
 
@@ -65,15 +65,78 @@ end;
 procedure TfrmPortablePanel.btnBackupClick(Sender: TObject);
 var
   BkpDir: string;
+  ExtBkpBaseDir: string;
+  TimeStamp: string;
+  LocalAppDir: string;
+  RoamingAppDir: string;
+  LocalBackupOk, ExtBackupOk: Boolean;
 begin
-  BkpDir := FPortableDir + 'Backup' + PathDelim + FormatDateTime('YYYYMMDD_HHNNSS', Now) + PathDelim;
+  TimeStamp := FormatDateTime('YYYYMMDD_HHNNSS', Now);
+  BkpDir := FPortableDir + 'Backup' + PathDelim + TimeStamp + PathDelim;
+  
+  LogMsg('Iniciando backups das configurações...');
+  
+  // 1. Backup local (copia LazarusConfig)
+  LocalBackupOk := False;
   if ForceDirectories(BkpDir) then
   begin
-    LogMsg('Backup das configs criado em: ' + BkpDir);
-    ShowMessage('Backup realizado em: ' + BkpDir);
+    if CopyDirTree(FConfigDir, BkpDir, [cffOverwriteFile, cffCreateDestDirectory]) then
+    begin
+      LogMsg('Backup local criado em: ' + BkpDir);
+      LocalBackupOk := True;
+    end
+    else
+      LogMsg('Erro ao copiar arquivos no backup local.');
   end
   else
-    ShowMessage('Erro ao criar pasta de backup.');
+    LogMsg('Erro ao criar pasta do backup local.');
+
+  // 2. Backup externo (salvo fora do Lazarus, na pasta do usuário Windows)
+  ExtBackupOk := False;
+  ExtBkpBaseDir := IncludeTrailingPathDelimiter(SysUtils.GetEnvironmentVariable('USERPROFILE')) + 'LazarusBackup' + PathDelim + 'Backup_' + TimeStamp + PathDelim;
+  if ForceDirectories(ExtBkpBaseDir) then
+  begin
+    LogMsg('Criando backup externo em: ' + ExtBkpBaseDir);
+    
+    // Copia LazarusConfig Portável
+    if DirectoryExists(FConfigDir) then
+    begin
+      LogMsg('  Copiando configuração portável...');
+      CopyDirTree(FConfigDir, ExtBkpBaseDir + 'LazarusConfig' + PathDelim, [cffOverwriteFile, cffCreateDestDirectory]);
+    end;
+
+    // Copia LOCALAPPDATA lazarus
+    LocalAppDir := IncludeTrailingPathDelimiter(SysUtils.GetEnvironmentVariable('LOCALAPPDATA')) + 'lazarus' + PathDelim;
+    if DirectoryExists(LocalAppDir) then
+    begin
+      LogMsg('  Copiando Lazarus de LOCALAPPDATA...');
+      CopyDirTree(LocalAppDir, ExtBkpBaseDir + 'AppData_Local_Lazarus' + PathDelim, [cffOverwriteFile, cffCreateDestDirectory]);
+    end;
+
+    // Copia APPDATA lazarus (Roaming)
+    RoamingAppDir := IncludeTrailingPathDelimiter(SysUtils.GetEnvironmentVariable('APPDATA')) + 'lazarus' + PathDelim;
+    if DirectoryExists(RoamingAppDir) then
+    begin
+      LogMsg('  Copiando Lazarus de APPDATA (Roaming)...');
+      CopyDirTree(RoamingAppDir, ExtBkpBaseDir + 'AppData_Roaming_Lazarus' + PathDelim, [cffOverwriteFile, cffCreateDestDirectory]);
+    end;
+    
+    ExtBackupOk := True;
+    LogMsg('Backup externo concluído com sucesso.');
+  end
+  else
+    LogMsg('Erro ao criar pasta do backup externo.');
+
+  // Exibe mensagem final
+  if LocalBackupOk and ExtBackupOk then
+    ShowMessage('Backups realizados com sucesso!' + #13#10 +
+                'Local: ' + BkpDir + #13#10 +
+                'Externo: ' + ExtBkpBaseDir)
+  else if LocalBackupOk then
+    ShowMessage('Backup local realizado com sucesso, mas ocorreu um erro no backup externo.' + #13#10 +
+                'Local: ' + BkpDir)
+  else
+    ShowMessage('Ocorreu um erro ao realizar os backups. Verifique o log do painel.');
 end;
 
 end.

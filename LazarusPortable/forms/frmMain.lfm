@@ -398,7 +398,7 @@ object frmMain: TfrmMain
           end
           object pnlActions: TPanel
             Left = 8
-            Height = 120
+            Height = 160
             Top = 209
             Width = 702
             Align = alTop
@@ -479,6 +479,26 @@ object frmMain: TfrmMain
               Font.Height = -12
               OnClick = btnDiagClick
               TabOrder = 5
+            end
+            object btnExportProfile: TButton
+              Left = 12
+              Height = 34
+              Top = 114
+              Width = 215
+              Caption = '📦 Exportar Perfil (.zip)'
+              Font.Height = -12
+              OnClick = btnExportProfileClick
+              TabOrder = 6
+            end
+            object btnImportProfile: TButton
+              Left = 241
+              Height = 34
+              Top = 114
+              Width = 215
+              Caption = '📥 Importar Perfil (.zip)'
+              Font.Height = -12
+              OnClick = btnImportProfileClick
+              TabOrder = 7
             end
           end
           object memoLog: TMemo

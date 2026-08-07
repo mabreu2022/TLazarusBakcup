@@ -17,13 +17,13 @@ procedure Register;
 implementation
 
 var
-  PortableCmd: TIDECommand;
+  PortableCmd: TIDEMenuCommand;
 
 procedure ShowPortablePanelExecuted(Sender: TObject);
 begin
-  if frmPortablePanel = nil then
-    Application.CreateForm(TfrmPortablePanel, frmPortablePanel);
-  frmPortablePanel.Show;
+  if frmPortablePanelVar = nil then
+    Application.CreateForm(TfrmPortablePanel, frmPortablePanelVar);
+  frmPortablePanelVar.Show;
 end;
 
 procedure Register;
@@ -31,7 +31,7 @@ var
   ToolsMenu: TIDEMenuSection;
 begin
   // Adiciona comando no Menu "Tools" da IDE do Lazarus
-  ToolsMenu := RegisterIDEMenuSection(itmMainTools, 'PortableToolsSection');
+  ToolsMenu := RegisterIDEMenuSection(mnuTools, 'PortableToolsSection');
   
   PortableCmd := RegisterIDEMenuCommand(
     ToolsMenu,
