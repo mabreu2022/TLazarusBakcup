@@ -50,11 +50,20 @@ de instalação prévia.
   Útil ao trocar de computador ou alterar pastas manualmente.
 
 [ 💾 Backup Manual ]
-  Cria uma cópia de segurança instantânea de LazarusConfig na pasta Backup\
-  com marcação de data e hora (Ex: Backup\20260714_130000\).
+  Cria uma cópia de segurança instantânea do LazarusConfig, das pastas locais
+  do Windows (LOCALAPPDATA/APPDATA) e de toda a pasta de instalação C:\Lazarus
+  na pasta Backup\ local e na pasta externa C:\Users\<Usuario>\LazarusBackup\.
 
 [ ↩️ Restaurar Backup ]
-  Lista os backups salvos e restaura a configuração selecionada.
+  Abre a janela de escolha de backups para selecionar um backup local ou externo
+  e restaurar a configuração e a pasta completa do Lazarus.
+
+[ 📦 Exportar Perfil (.zip) ]
+  Compacta as configurações, AppDatas do Windows e toda a pasta de instalação do
+  Lazarus em um arquivo .zip portátil para transferência facilitada.
+
+[ 📥 Importar Perfil (.zip) ]
+  Restaura e portabiliza um perfil completo de um arquivo .zip em nova pasta/unidade.
 
 [ 🔍 Executar Diagnóstico ]
   Testa 23 pontos críticos da instalação (lazarus.exe, fpc.exe, LCL, etc.).

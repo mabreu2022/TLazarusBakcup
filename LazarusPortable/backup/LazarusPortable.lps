@@ -51,7 +51,7 @@
         <IsVisibleTab Value="True"/>
         <EditorIndex Value="1"/>
         <TopLine Value="231"/>
-        <CursorPos X="85" Y="256"/>
+        <CursorPos Y="249"/>
         <UsageCount Value="20"/>
         <Loaded Value="True"/>
       </Unit>
@@ -93,9 +93,13 @@
         <UsageCount Value="20"/>
       </Unit>
     </Units>
-    <JumpHistory>
+    <JumpHistory HistoryIndex="1">
       <Position>
         <Filename Value="forms\frmMain.pas"/>
+      </Position>
+      <Position>
+        <Filename Value="units\uLicenseManager.pas"/>
+        <Caret Line="256" Column="85" TopLine="231"/>
       </Position>
     </JumpHistory>
     <RunParams>
